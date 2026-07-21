@@ -782,3 +782,488 @@ function selectPlayer(c, card) {
     goToVS();
   }, 700);
 }
+
+function goToVS() {
+  document.getElementById('vs-player-img').src = playerChar.SD_full;
+  document.getElementById('vs-player-name').textContent = playerChar.name;
+  document.getElementById('vs-enemy-img').src = enemyChar.SD_full;
+  document.getElementById('vs-enemy-name').textContent = enemyChar.name;
+  showScreen('vs-screen');
+  setTimeout(() => startBattle(), 2000);
+}
+
+// ===================== BATTLE =====================
+const canvas = document.getElementById('battle-canvas');
+const ctx = canvas.getContext('2d');
+let W, H, midY;
+let player, enemy;
+let bullets = [];
+let effects = [];
+let keys = {};
+let timer = 100;
+let timerInterval = null;
+let lastTime = 0;
+let battleActive = false;
+
+function resizeCanvas() {
+  const rect = canvas.parentElement.getBoundingClientRect();
+  canvas.width = rect.width;
+  canvas.height = rect.height - 70;
+  W = canvas.width;
+  H = canvas.height;
+  midY = H * 0.48;
+}
+window.addEventListener('resize', () => {
+  if (gameState === 'battle') resizeCanvas();
+});
+
+function startBattle() {
+  showScreen('battle-screen');
+  resizeCanvas();
+
+  player = {
+    x: W / 2, y: H - 100,
+    char: playerChar,
+    eng: playerChar.Eng,
+    maxEng: playerChar.Eng,
+    spd: playerChar.spd,
+    type: playerChar.type,
+    bomb: playerChar.bomb,
+    hitTimer: 0,
+    fireCD: 0,
+    bombUsed: false,
+    status: {}
+  };
+  enemy = {
+    x: W / 2, y: 100,
+    char: enemyChar,
+    eng: enemyChar.Eng,
+    maxEng: enemyChar.Eng,
+    spd: enemyChar.spd,
+    type: enemyChar.type,
+    bomb: enemyChar.bomb,
+    hitTimer: 0,
+    fireCD: 1.5,
+    bombUsed: false,
+    status: {},
+    aiTimer: 0,
+    aiDir: 1
+  };
+
+  bullets = [];
+  effects = [];
+  timer = 100;
+  battleActive = true;
+
+  document.getElementById('player-face').src = playerChar.face_n;
+  document.getElementById('enemy-face').src = enemyChar.face_n;
+  updateHPBars();
+  document.getElementById('timer').textContent = timer;
+
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    if (!battleActive) return;
+    timer--;
+    document.getElementById('timer').textContent = timer;
+    if (timer <= 0) endBattleByTime();
+  }, 1000);
+
+  lastTime = performance.now();
+  requestAnimationFrame(battleLoop);
+
+  window.onkeydown = e => {
+    keys[e.key] = true;
+    if (e.key === 'q' || e.key === 'Q') useBomb(player);
+  };
+  window.onkeyup = e => { keys[e.key] = false; };
+}
+
+function updateHPBars() {
+  document.getElementById('player-hp-bar').style.width = Math.max(0, player.eng / player.maxEng * 100) + '%';
+  document.getElementById('enemy-hp-bar').style.width = Math.max(0, enemy.eng / enemy.maxEng * 100) + '%';
+}
+
+function battleLoop(now) {
+  if (!battleActive) return;
+  const dt = Math.min((now - lastTime) / 1000, 0.05);
+  lastTime = now;
+  update(dt);
+  draw();
+  requestAnimationFrame(battleLoop);
+}
+
+function update(dt) {
+  // 플레이어 이동
+  let move = 0;
+  if (keys['ArrowLeft'] || keys['a'] || keys['A']) move = -1;
+  if (keys['ArrowRight'] || keys['d'] || keys['D']) move = 1;
+  const pSpeed = (player.spd / 100) * 280 * (player.status.slow ? 0.7 : 1);
+  if (!player.status.freeze) {
+    player.x += move * pSpeed * dt;
+    player.x = Math.max(50, Math.min(W - 50, player.x));
+  }
+
+  // 적 AI
+  enemy.aiTimer -= dt;
+  if (enemy.aiTimer <= 0) {
+    enemy.aiDir = Math.random() > 0.5 ? 1 : -1;
+    enemy.aiTimer = 0.6 + Math.random() * 1.2;
+  }
+  if (Math.abs(enemy.x - player.x) > 50) {
+    enemy.aiDir = enemy.x < player.x ? 1 : -1;
+  }
+  const eSpeed = (enemy.spd / 100) * 220 * (enemy.status.slow ? 0.7 : 1);
+  if (!enemy.status.freeze) {
+    enemy.x += enemy.aiDir * eSpeed * dt;
+    enemy.x = Math.max(50, Math.min(W - 50, enemy.x));
+  }
+
+  // 자동 공격
+  if (!player.status.freeze) {
+    player.fireCD -= dt;
+    if (player.fireCD <= 0) {
+      firePattern(player, -1);
+      player.fireCD = 2.0;
+    }
+  }
+  if (!enemy.status.freeze) {
+    enemy.fireCD -= dt;
+    if (enemy.fireCD <= 0) {
+      firePattern(enemy, 1);
+      enemy.fireCD = 2.0;
+      if (!enemy.bombUsed && enemy.eng < enemy.maxEng * 0.55 && Math.random() < 0.35) {
+        useBomb(enemy);
+      }
+    }
+  }
+
+  // 총알 이동 및 충돌
+  for (let i = bullets.length - 1; i >= 0; i--) {
+    const b = bullets[i];
+    b.x += b.vx * dt;
+    b.y += b.vy * dt;
+
+    const target = b.owner === 'player' ? enemy : player;
+    if (Math.abs(b.y - target.y) < 48 && Math.abs(b.x - target.x) < 45) {
+      applyDamage(target, b.dmg);
+      bullets.splice(i, 1);
+      continue;
+    }
+    if (b.y < -30 || b.y > H + 30 || b.x < -30 || b.x > W + 30) {
+      bullets.splice(i, 1);
+    }
+  }
+
+  updateStatus(player, dt);
+  updateStatus(enemy, dt);
+
+  // 피격 얼굴 복귀
+  if (player.hitTimer > 0) {
+    player.hitTimer -= dt;
+    if (player.hitTimer <= 0) {
+      document.getElementById('player-face').src = playerChar.face_n;
+    }
+  }
+  if (enemy.hitTimer > 0) {
+    enemy.hitTimer -= dt;
+    if (enemy.hitTimer <= 0) {
+      document.getElementById('enemy-face').src = enemyChar.face_n;
+    }
+  }
+
+  // KO 체크
+  if (player.eng <= 0) {
+    player.eng = 0;
+    endBattle(false);
+  } else if (enemy.eng <= 0) {
+    enemy.eng = 0;
+    endBattle(true);
+  }
+}
+
+function firePattern(ent, dir) {
+  const baseDmg = Math.max(1, Math.floor(ent.char.Pwr / 10));
+  const speed = 320 * dir;
+  const type = ent.type;
+
+  if (type === 1001) {
+    for (let i = 0; i < 5; i++) {
+      setTimeout(() => {
+        if (!battleActive) return;
+        bullets.push({
+          x: ent.x, y: ent.y + (dir > 0 ? 40 : -40),
+          vx: 0, vy: speed,
+          dmg: baseDmg,
+          owner: dir < 0 ? 'player' : 'enemy',
+          color: dir < 0 ? '#4af' : '#f44'
+        });
+      }, i * 90);
+    }
+  } else if (type === 1002) {
+    [-1.1, 0, 1.1].forEach(ang => {
+      bullets.push({
+        x: ent.x, y: ent.y + (dir > 0 ? 40 : -40),
+        vx: ang * 90,
+        vy: speed * 0.95,
+        dmg: baseDmg,
+        owner: dir < 0 ? 'player' : 'enemy',
+        color: dir < 0 ? '#4af' : '#f44'
+      });
+    });
+  } else {
+    for (let k = 0; k < 2; k++) {
+      setTimeout(() => {
+        if (!battleActive) return;
+        [-0.6, 0.6].forEach(ang => {
+          bullets.push({
+            x: ent.x, y: ent.y + (dir > 0 ? 40 : -40),
+            vx: ang * 70,
+            vy: speed,
+            dmg: baseDmg,
+            owner: dir < 0 ? 'player' : 'enemy',
+            color: dir < 0 ? '#4af' : '#f44'
+          });
+        });
+      }, k * 180);
+    }
+  }
+}
+
+function useBomb(ent) {
+  if (ent.bombUsed || ent.status.freeze) return;
+  ent.bombUsed = true;
+  const target = ent === player ? enemy : player;
+  const type = ent.bomb;
+
+  if (type === 'fire') {
+    target.status.burn = 3.0;
+    addEffect(target.x, target.y, '🔥', 1.5);
+  } else if (type === 'wind') {
+    for (let i = 0; i < 10; i++) {
+      setTimeout(() => {
+        if (!battleActive) return;
+        const dir = ent === player ? -1 : 1;
+        bullets.push({
+          x: ent.x + (Math.random() - 0.5) * 30,
+          y: ent.y + (dir > 0 ? 30 : -30),
+          vx: (Math.random() - 0.5) * 40,
+          vy: 380 * dir,
+          dmg: 1.5,
+          owner: ent === player ? 'player' : 'enemy',
+          color: '#aaf'
+        });
+      }, i * 60);
+    }
+  } else if (type === 'ice') {
+    target.status.freeze = 3.0;
+    addEffect(target.x, target.y, '❄️', 2.5);
+  } else if (type === 'dark') {
+    target.status.slow = 5.0;
+    target.status.curse = 5.0;
+    addEffect(target.x, target.y, '🌑', 2);
+  } else if (type === 'light') {
+    ent.status.heal = 5.0;
+    addEffect(ent.x, ent.y, '✨', 2);
+  }
+}
+
+function applyDamage(ent, dmg) {
+  ent.eng -= dmg;
+  if (ent.eng < 0) ent.eng = 0;
+  ent.hitTimer = 0.28;
+  if (ent === player) {
+    document.getElementById('player-face').src = playerChar.face_a;
+  } else {
+    document.getElementById('enemy-face').src = enemyChar.face_a;
+  }
+  updateHPBars();
+}
+
+function updateStatus(ent, dt) {
+  if (ent.status.burn > 0) {
+    ent.status.burn -= dt;
+    ent.eng = Math.max(0, ent.eng - 5 * dt);
+    updateHPBars();
+    if (ent.status.burn <= 0) delete ent.status.burn;
+  }
+  if (ent.status.freeze > 0) {
+    ent.status.freeze -= dt;
+    if (ent.status.freeze <= 0) delete ent.status.freeze;
+  }
+  if (ent.status.slow > 0) {
+    ent.status.slow -= dt;
+    if (ent.status.slow <= 0) delete ent.status.slow;
+  }
+  if (ent.status.curse > 0) {
+    ent.status.curse -= dt;
+    ent.eng = Math.max(0, ent.eng - 1 * dt);
+    updateHPBars();
+    if (ent.status.curse <= 0) delete ent.status.curse;
+  }
+  if (ent.status.heal > 0) {
+    ent.status.heal -= dt;
+    ent.eng = Math.min(ent.maxEng, ent.eng + 3 * dt);
+    updateHPBars();
+    if (ent.status.heal <= 0) delete ent.status.heal;
+  }
+}
+
+function addEffect(x, y, emoji, life) {
+  effects.push({ x, y, emoji, life, max: life });
+}
+
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+
+  // 중간선
+  ctx.strokeStyle = 'rgba(255,50,50,0.25)';
+  ctx.setLineDash([10, 8]);
+  ctx.beginPath();
+  ctx.moveTo(0, midY);
+  ctx.lineTo(W, midY);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  ctx.fillStyle = 'rgba(255,100,100,0.12)';
+  ctx.font = '14px sans-serif';
+  ctx.fillText('상대방 진영', 20, 28);
+  ctx.fillStyle = 'rgba(100,150,255,0.12)';
+  ctx.fillText('나의 진영', 20, H - 18);
+
+  // 캐릭터 (face 이미지)
+  drawEntity(player);
+  drawEntity(enemy);
+
+  // 총알
+  bullets.forEach(b => {
+    ctx.beginPath();
+    ctx.fillStyle = b.color;
+    ctx.arc(b.x, b.y, 6, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.fillStyle = '#fff';
+    ctx.arc(b.x, b.y, 2.5, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  // 이펙트
+  for (let i = effects.length - 1; i >= 0; i--) {
+    const e = effects[i];
+    e.life -= 0.016;
+    if (e.life <= 0) { effects.splice(i, 1); continue; }
+    ctx.globalAlpha = e.life / e.max;
+    ctx.font = '28px serif';
+    ctx.fillText(e.emoji, e.x - 14, e.y - 50);
+    ctx.globalAlpha = 1;
+  }
+
+  // 상태 시각 효과
+  if (player.status.freeze) {
+    ctx.fillStyle = 'rgba(100,200,255,0.22)';
+    ctx.beginPath();
+    ctx.arc(player.x, player.y, 55, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  if (enemy.status.freeze) {
+    ctx.fillStyle = 'rgba(100,200,255,0.22)';
+    ctx.beginPath();
+    ctx.arc(enemy.x, enemy.y, 55, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
+function drawEntity(ent) {
+  const img = (ent.hitTimer > 0) ? ent.char.img_a : ent.char.img_n;
+  const size = 92;
+
+  // 원형 클리핑으로 face 이미지 그리기
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(ent.x, ent.y, size / 2, 0, Math.PI * 2);
+  ctx.closePath();
+  ctx.clip();
+
+  if (img.complete && img.naturalWidth > 0) {
+    ctx.drawImage(img, ent.x - size / 2, ent.y - size / 2, size, size);
+  } else {
+    // 로딩 전 임시
+    ctx.fillStyle = ent === player ? '#4af' : '#f44';
+    ctx.fillRect(ent.x - size / 2, ent.y - size / 2, size, size);
+  }
+  ctx.restore();
+
+  // 테두리
+  ctx.beginPath();
+  ctx.strokeStyle = ent === player ? '#4af' : '#f44';
+  ctx.lineWidth = 3;
+  ctx.arc(ent.x, ent.y, size / 2 + 1, 0, Math.PI * 2);
+  ctx.stroke();
+
+  // 이름
+  ctx.fillStyle = '#ddd';
+  ctx.font = 'bold 13px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(ent.char.name, ent.x, ent.y + size / 2 + 18);
+  ctx.textAlign = 'left';
+}
+
+// ===================== END BATTLE =====================
+function endBattle(playerWin) {
+  battleActive = false;
+  clearInterval(timerInterval);
+  window.onkeydown = null;
+  window.onkeyup = null;
+
+  setTimeout(() => {
+    if (playerWin) {
+      defeated.add(enemyChar.id);
+
+      // 승리 화면
+      document.getElementById('vic-player').src = playerChar.face_n;
+      document.getElementById('vic-enemy').src = enemyChar.face_a;
+      document.getElementById('vic-txt').textContent = playerChar.win_txt;
+      showScreen('victory-screen');
+
+      setTimeout(() => {
+        // 남은 상대 확인
+        const remaining = characters.filter(x => x.id !== playerChar.id && !defeated.has(x.id));
+        if (remaining.length === 0) {
+          // 전부 클리어
+          showScreen('gameover-screen');
+          setTimeout(() => {
+            showScreen('title-screen');
+            defeated.clear();
+            playerChar = null;
+          }, 5000);
+        } else {
+          // 같은 플레이어 캐릭터로 다음 상대 자동 매칭
+          enemyChar = remaining[Math.floor(Math.random() * remaining.length)];
+          goToVS();   // VS → Battle 자동 진행
+        }
+      }, 3000);
+    } else {
+      // 패배
+      document.getElementById('fail-player').src = playerChar.face_a;
+      document.getElementById('fail-enemy').src = enemyChar.face_n;
+      document.getElementById('fail-txt').textContent = enemyChar.win_txt;
+      showScreen('fail-screen');
+
+      setTimeout(() => {
+        showScreen('gameover-screen');
+        setTimeout(() => {
+          showScreen('title-screen');
+          defeated.clear();
+          playerChar = null;
+        }, 5000);
+      }, 3000);
+    }
+  }, 500);
+}
+
+function endBattleByTime() {
+  if (player.eng >= enemy.eng) endBattle(true);
+  else endBattle(false);
+}
+</script>
+</body>
+</html>
