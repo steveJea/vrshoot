@@ -90,7 +90,7 @@
     transition: all 0.2s;
     position: relative;
   }
-  .char-card:hover:not(.defeated) {
+  .char-card:hover {
     border-color: #ff4444;
     transform: scale(1.05);
     box-shadow: 0 0 15px rgba(255,50,50,0.6);
@@ -99,22 +99,6 @@
     border-color: #ffcc00;
     box-shadow: 0 0 20px #ffcc00;
     animation: selectPulse 0.6s;
-  }
-  .char-card.defeated {
-    filter: grayscale(100%) brightness(0.4);
-    cursor: not-allowed;
-    border-color: #550000;
-  }
-  .char-card.defeated::after {
-    content: "DEFEATED";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) rotate(-15deg);
-    color: #ff2222;
-    font-weight: bold;
-    font-size: 0.9rem;
-    text-shadow: 0 0 5px #000;
   }
   .char-card img {
     width: 100%;
@@ -204,13 +188,6 @@
     background: linear-gradient(90deg, #ffcc00, #ffaa00);
     transition: width 0.15s;
   }
-  .hp-lost {
-    position: absolute;
-    right: 0;
-    top: 0;
-    height: 100%;
-    background: #aa0000;
-  }
   .timer {
     font-size: 2.2rem;
     font-weight: bold;
@@ -283,12 +260,376 @@
     letter-spacing: 8px;
     text-shadow: 0 0 30px #ff0000;
   }
+</style>
+</head>
+<body>
 
-  /* status icons */
-  .status-icon {
+<!-- TITLE -->
+<div id="title-screen" class="screen active">
+  <h1>VIOLENCE ROYALE</h1>
+  <div class="sub">THE BRUTAL CITY</div>
+  <div class="game-title">SHOOTING MASTERS</div>
+  <div class="start-msg">Press Any Key to START</div>
+</div>
+
+<!-- SELECT -->
+<div id="select-screen" class="screen">
+  <h2>Select Your Fighter</h2>
+  <div class="char-grid" id="char-grid"></div>
+</div>
+
+<!-- VS -->
+<div id="vs-screen" class="screen">
+  <div class="vs-container">
+    <div class="vs-char">
+      <img id="vs-player-img" src="" alt="">
+      <div class="name" id="vs-player-name"></div>
+    </div>
+    <div class="vs-text">VS</div>
+    <div class="vs-char">
+      <img id="vs-enemy-img" src="" alt="">
+      <div class="name" id="vs-enemy-name"></div>
+    </div>
+  </div>
+</div>
+
+<!-- BATTLE -->
+<div id="battle-screen" class="screen">
+  <div id="battle-ui">
+    <div class="hp-box">
+      <img id="player-face" src="" alt="">
+      <div class="hp-bar-wrap">
+        <div class="hp-bar" id="player-hp-bar"></div>
+      </div>
+    </div>
+    <div class="timer" id="timer">100</div>
+    <div class="hp-box" style="flex-direction: row-reverse;">
+      <img id="enemy-face" src="" alt="">
+      <div class="hp-bar-wrap">
+        <div class="hp-bar" id="enemy-hp-bar"></div>
+      </div>
+    </div>
+  </div>
+  <canvas id="battle-canvas"></canvas>
+  <div class="battle-info">← → 이동 | 자동공격 | Q : 특수공격 (1회)</div>
+</div>
+
+<!-- VICTORY -->
+<div id="victory-screen" class="screen result-screen">
+  <div class="result-title win">YOU WIN</div>
+  <div class="result-faces">
+    <img id="vic-player" src="" alt="">
+    <img id="vic-enemy" src="" alt="">
+  </div>
+  <div class="win-txt" id="vic-txt"></div>
+</div>
+
+<!-- FAIL -->
+<div id="fail-screen" class="screen result-screen">
+  <div class="result-title lose">YOU LOSE</div>
+  <div class="result-faces">
+    <img id="fail-player" src="" alt="">
+    <img id="fail-enemy" src="" alt="">
+  </div>
+  <div class="win-txt" id="fail-txt"></div>
+</div>
+
+<!-- GAME OVER -->
+<div id="gameover-screen" class="screen">
+  <h1>GAME OVER</h1>
+</div>
+
+<script>
+// ===================== DATA =====================
+const RAW = "https://raw.githubusercontent.com/steveJea/vrshoot/main/img/";
+const characters = [
+  {id:10001, name:"YURI",    Pwr:100, Eng:100, spd:100, type:1001, bomb:"dark",  face_a:RAW+"10001_fa.png", face_n:RAW+"10001_fn.png", SD_full:RAW+"10001_full.png", pf_img:RAW+"10001_pf.jpg", win_txt:"Death to the ugly and lowly!"},
+  {id:10002, name:"SEKANG",  Pwr:150, Eng:120, spd:30,  type:1002, bomb:"fire",  face_a:RAW+"10002_fa.png", face_n:RAW+"10002_fn.png", SD_full:RAW+"10002_full.png", pf_img:RAW+"10002_pf.jpg", win_txt:"Don't block my path!"},
+  {id:10003, name:"HOO",     Pwr:110, Eng:80,  spd:110, type:1003, bomb:"ice",   face_a:RAW+"10003_fa.png", face_n:RAW+"10003_fn.png", SD_full:RAW+"10003_full.png", pf_img:RAW+"10003_pf.jpg", win_txt:"You're going to really die if you keep doing that."},
+  {id:10004, name:"SAEM",    Pwr:60,  Eng:100, spd:140, type:1001, bomb:"ice",   face_a:RAW+"10004_fa.png", face_n:RAW+"10004_fn.png", SD_full:RAW+"10004_full.png", pf_img:RAW+"10004_pf.jpg", win_txt:"Oh my, you're really ugly."},
+  {id:10005, name:"H.K.",    Pwr:80,  Eng:80,  spd:140, type:1002, bomb:"dark",  face_a:RAW+"10005_fa.png", face_n:RAW+"10005_fn.png", SD_full:RAW+"10005_full.png", pf_img:RAW+"10005_pf.jpg", win_txt:"Hehe, want to play with me more?"},
+  {id:10006, name:"NAHYOEN", Pwr:90,  Eng:80,  spd:130, type:1003, bomb:"dark",  face_a:RAW+"10006_fa.png", face_n:RAW+"10006_fn.png", SD_full:RAW+"10006_full.png", pf_img:RAW+"10006_pf.jpg", win_txt:"It's such a waste of time wasted on someone like you."},
+  {id:10007, name:"JOONNKI", Pwr:90,  Eng:100, spd:110, type:1001, bomb:"wind",  face_a:RAW+"10007_fa.png", face_n:RAW+"10007_fn.png", SD_full:RAW+"10007_full.png", pf_img:RAW+"10007_pf.jpg", win_txt:"Hey... I really did win, right?"},
+  {id:10008, name:"SEONGHO", Pwr:120, Eng:100, spd:80,  type:1002, bomb:"dark",  face_a:RAW+"10008_fa.png", face_n:RAW+"10008_fn.png", SD_full:RAW+"10008_full.png", pf_img:RAW+"10008_pf.jpg", win_txt:"Receive the grace of the gods."},
+  {id:10009, name:"JINSEONG",Pwr:100, Eng:110, spd:90,  type:1003, bomb:"fire",  face_a:RAW+"10009_fa.png", face_n:RAW+"10009_fn.png", SD_full:RAW+"10009_full.png", pf_img:RAW+"10009_pf.jpg", win_txt:"Where should I cut you, first?"},
+  {id:10010, name:"JUNCHEOL",P수정 완료했습니다.
+
+### 변경 사항
+1. **전투 중 캐릭터 이미지**  
+   - 단순한 원 → 실제 `face_n` / `face_a` 이미지로 교체  
+   - 피격 시 `face_a`로 잠깐 변경 후 다시 `face_n`으로 복귀  
+   - 원형 클리핑 + 테두리로 깔끔하게 표시
+
+2. **플레이어 캐릭터 고정**  
+   - 처음에 한 번만 선택  
+   - 승리 후에도 같은 캐릭터를 계속 사용  
+   - 상대만 남은 캐릭터 중에서 랜덤으로 자동 선택되어 다음 전투 진행  
+   - 모든 상대를 쓰러트리거나 패배하면 Game Over
+
+아래 코드를 통째로 복사해서 `index.html`로 저장하세요.
+
+```html
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VIOLENCE ROYALE - SHOOTING MASTERS</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
+  body {
+    background: #0a0a0a;
+    color: #fff;
+    font-family: 'Segoe UI', 'Malgun Gothic', sans-serif;
+    overflow: hidden;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .screen {
+    display: none;
+    width: 100%;
+    max-width: 960px;
+    height: 100vh;
+    max-height: 720px;
+    position: relative;
+    background: #111;
+    border: 2px solid #333;
+  }
+  .screen.active { display: flex; flex-direction: column; }
+
+  /* ===== TITLE ===== */
+  #title-screen {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: linear-gradient(180deg, #1a0000 0%, #000 100%);
+  }
+  #title-screen h1 {
+    font-size: 3.2rem;
+    letter-spacing: 6px;
+    color: #ff2222;
+    text-shadow: 0 0 20px #ff0000, 0 0 40px #aa0000;
+    margin-bottom: 8px;
+  }
+  #title-screen .sub {
+    font-size: 1.4rem;
+    color: #aaa;
+    letter-spacing: 4px;
+    margin-bottom: 40px;
+  }
+  #title-screen .game-title {
+    font-size: 1.8rem;
+    color: #fff;
+    margin-bottom: 60px;
+  }
+  #title-screen .start-msg {
+    font-size: 1.1rem;
+    color: #ff6666;
+    animation: blink 1.2s infinite;
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  /* ===== SELECT ===== */
+  #select-screen {
+    background: #151515;
+    padding: 20px;
+  }
+  #select-screen h2 {
+    text-align: center;
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    color: #ff4444;
+    letter-spacing: 3px;
+  }
+  .char-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 12px;
+    flex: 1;
+  }
+  .char-card {
+    background: #222;
+    border: 3px solid #444;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .char-card:hover {
+    border-color: #ff4444;
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(255,50,50,0.6);
+  }
+  .char-card.selected {
+    border-color: #ffcc00;
+    box-shadow: 0 0 20px #ffcc00;
+    animation: selectPulse 0.6s;
+  }
+  .char-card img {
+    width: 100%;
+    height: 140px;
+    object-fit: cover;
+    display: block;
+  }
+  .char-card .name {
+    text-align: center;
+    padding: 6px 0;
+    font-size: 0.85rem;
+    background: #1a1a1a;
+  }
+  @keyframes selectPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.12); }
+    100% { transform: scale(1.05); }
+  }
+
+  /* ===== VS ===== */
+  #vs-screen {
+    justify-content: center;
+    align-items: center;
+    background: #0d0d0d;
+  }
+  .vs-container {
+    display: flex;
+    align-items: center;
+    gap: 60px;
+  }
+  .vs-char {
+    text-align: center;
+  }
+  .vs-char img {
+    width: 220px;
+    height: 280px;
+    object-fit: contain;
+  }
+  .vs-char .name {
+    margin-top: 15px;
+    font-size: 1.4rem;
+    letter-spacing: 2px;
+  }
+  .vs-text {
+    font-size: 3.5rem;
+    font-weight: bold;
+    color: #ff3333;
+    text-shadow: 0 0 30px #ff0000;
+  }
+
+  /* ===== BATTLE ===== */
+  #battle-screen {
+    background: #0a0a12;
+    flex-direction: column;
+  }
+  #battle-ui {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 20px;
+    background: #111;
+    border-bottom: 2px solid #333;
+    align-items: center;
+  }
+  .hp-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 280px;
+  }
+  .hp-box img {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 2px solid #555;
+    object-fit: cover;
+  }
+  .hp-bar-wrap {
+    flex: 1;
+    height: 18px;
+    background: #333;
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+  }
+  .hp-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #ffcc00, #ffaa00);
+    transition: width 0.15s;
+  }
+  .timer {
+    font-size: 2.2rem;
+    font-weight: bold;
+    color: #fff;
+    min-width: 80px;
+    text-align: center;
+    text-shadow: 0 0 10px #ff4444;
+  }
+  #battle-canvas {
+    flex: 1;
+    width: 100%;
+    background: linear-gradient(180deg, #1a1025 0%, #0a0a15 50%, #151020 100%);
+    display: block;
+  }
+  .battle-info {
     position: absolute;
-    font-size: 1.2rem;
-    pointer-events: none;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.85rem;
+    color: #888;
+  }
+
+  /* ===== RESULT ===== */
+  .result-screen {
+    justify-content: center;
+    align-items: center;
+    background: #0d0d0d;
+    text-align: center;
+  }
+  .result-title {
+    font-size: 3rem;
+    margin-bottom: 30px;
+    letter-spacing: 4px;
+  }
+  .result-title.win { color: #ffcc00; text-shadow: 0 0 20px #ffaa00; }
+  .result-title.lose { color: #ff3333; text-shadow: 0 0 20px #ff0000; }
+  .result-faces {
+    display: flex;
+    gap: 40px;
+    margin-bottom: 30px;
+    justify-content: center;
+  }
+  .result-faces img {
+    width: 180px;
+    height: 180px;
+    border-radius: 12px;
+    object-fit: cover;
+    border: 3px solid #444;
+  }
+  .win-txt {
+    font-size: 1.3rem;
+    color: #ddd;
+    max-width: 500px;
+    line-height: 1.5;
+    padding: 15px 25px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 8px;
+  }
+
+  /* ===== GAME OVER ===== */
+  #gameover-screen {
+    justify-content: center;
+    align-items: center;
+    background: #000;
+  }
+  #gameover-screen h1 {
+    font-size: 4rem;
+    color: #ff2222;
+    letter-spacing: 8px;
+    text-shadow: 0 0 30px #ff0000;
   }
 </style>
 </head>
@@ -387,9 +728,17 @@ const characters = [
   {id:10012, name:"MINSEOP", Pwr:90,  Eng:100, spd:110, type:1003, bomb:"wind",  face_a:RAW+"10012_fa.png", face_n:RAW+"10012_fn.png", SD_full:RAW+"10012_full.png", pf_img:RAW+"10012_pf.jpg", win_txt:"From now on, you are my slave."}
 ];
 
+// 이미지 미리 로드
+characters.forEach(c => {
+  c.img_n = new Image();
+  c.img_n.src = c.face_n;
+  c.img_a = new Image();
+  c.img_a.src = c.face_a;
+});
+
 // ===================== STATE =====================
 let defeated = new Set();
-let playerChar = null;
+let playerChar = null;   // 한 번 선택하면 게임오버까지 고정
 let enemyChar = null;
 let gameState = "title";
 
@@ -408,530 +757,28 @@ document.addEventListener('keydown', e => {
   }
 });
 
-// ===================== SELECT =====================
+// ===================== SELECT (최초 1회만) =====================
 function renderSelect() {
   const grid = document.getElementById('char-grid');
   grid.innerHTML = '';
   characters.forEach(c => {
     const card = document.createElement('div');
-    card.className = 'char-card' + (defeated.has(c.id) ? ' defeated' : '');
+    card.className = 'char-card';
     card.innerHTML = `<img src="${c.pf_img}" alt="${c.name}"><div class="name">${c.name}</div>`;
-    if (!defeated.has(c.id)) {
-      card.onclick = () => selectPlayer(c, card);
-    }
+    card.onclick = () => selectPlayer(c, card);
     grid.appendChild(card);
   });
 }
 
 function selectPlayer(c, card) {
-  playerChar = c;
+  playerChar = c;          // 여기서 고정
   card.classList.add('selected');
-  // random opponent (not defeated, not self)
-  const candidates = characters.filter(x => x.id !== c.id && !defeated.has(x.id));
-  if (candidates.length === 0) {
-    // all defeated
-    setTimeout(() => showScreen('gameover-screen'), 800);
-    setTimeout(() => { showScreen('title-screen'); defeated.clear(); }, 5000);
-    return;
-  }
+
+  // 첫 상대 랜덤 선택
+  const candidates = characters.filter(x => x.id !== c.id);
   enemyChar = candidates[Math.floor(Math.random() * candidates.length)];
-  
+
   setTimeout(() => {
-    // VS screen
-    document.getElementById('vs-player-img').src = playerChar.SD_full;
-    document.getElementById('vs-player-name').textContent = playerChar.name;
-    document.getElementById('vs-enemy-img').src = enemyChar.SD_full;
-    document.getElementById('vs-enemy-name').textContent = enemyChar.name;
-    showScreen('vs-screen');
-    
-    setTimeout(() => startBattle(), 2200);
+    goToVS();
   }, 700);
 }
-
-// ===================== BATTLE =====================
-const canvas = document.getElementById('battle-canvas');
-const ctx = canvas.getContext('2d');
-let W, H, midY;
-let player, enemy;
-let bullets = [];
-let effects = [];
-let keys = {};
-let timer = 100;
-let timerInterval = null;
-let lastTime = 0;
-let battleActive = false;
-
-function resizeCanvas() {
-  const rect = canvas.parentElement.getBoundingClientRect();
-  canvas.width = rect.width;
-  canvas.height = rect.height - 70;
-  W = canvas.width;
-  H = canvas.height;
-  midY = H * 0.48;
-}
-window.addEventListener('resize', () => {
-  if (gameState === 'battle') resizeCanvas();
-});
-
-function startBattle() {
-  showScreen('battle-screen');
-  resizeCanvas();
-  
-  // init entities
-  player = {
-    x: W/2, y: H - 90,
-    char: playerChar,
-    eng: playerChar.Eng,
-    maxEng: playerChar.Eng,
-    spd: playerChar.spd,
-    type: playerChar.type,
-    bomb: playerChar.bomb,
-    face: playerChar.face_n,
-    hitTimer: 0,
-    fireCD: 0,
-    bombUsed: false,
-    status: {}, // burn, freeze, slow, heal
-    vx: 0
-  };
-  enemy = {
-    x: W/2, y: 90,
-    char: enemyChar,
-    eng: enemyChar.Eng,
-    maxEng: enemyChar.Eng,
-    spd: enemyChar.spd,
-    type: enemyChar.type,
-    bomb: enemyChar.bomb,
-    face: enemyChar.face_n,
-    hitTimer: 0,
-    fireCD: 1.5,
-    bombUsed: false,
-    status: {},
-    vx: 0,
-    aiTimer: 0,
-    aiDir: 1
-  };
-  
-  bullets = [];
-  effects = [];
-  timer = 100;
-  battleActive = true;
-  
-  document.getElementById('player-face').src = player.face;
-  document.getElementById('enemy-face').src = enemy.face;
-  updateHPBars();
-  
-  // timer
-  clearInterval(timerInterval);
-  timerInterval = setInterval(() => {
-    if (!battleActive) return;
-    timer--;
-    document.getElementById('timer').textContent = timer;
-    if (timer <= 0) endBattleByTime();
-  }, 1000);
-  
-  lastTime = performance.now();
-  requestAnimationFrame(battleLoop);
-  
-  // keys
-  window.onkeydown = e => {
-    keys[e.key] = true;
-    if (e.key === 'q' || e.key === 'Q') useBomb(player);
-  };
-  window.onkeyup = e => { keys[e.key] = false; };
-}
-
-function updateHPBars() {
-  const pPct = Math.max(0, player.eng / player.maxEng * 100);
-  const ePct = Math.max(0, enemy.eng / enemy.maxEng * 100);
-  document.getElementById('player-hp-bar').style.width = pPct + '%';
-  document.getElementById('enemy-hp-bar').style.width = ePct + '%';
-}
-
-function battleLoop(now) {
-  if (!battleActive) return;
-  const dt = Math.min((now - lastTime) / 1000, 0.05);
-  lastTime = now;
-  
-  update(dt);
-  draw();
-  requestAnimationFrame(battleLoop);
-}
-
-function update(dt) {
-  // player move
-  let move = 0;
-  if (keys['ArrowLeft'] || keys['a']) move = -1;
-  if (keys['ArrowRight'] || keys['d']) move = 1;
-  const pSpeed = (player.spd / 100) * 280 * (player.status.slow ? 0.7 : 1);
-  player.x += move * pSpeed * dt;
-  player.x = Math.max(50, Math.min(W-50, player.x));
-  
-  // enemy AI
-  enemy.aiTimer -= dt;
-  if (enemy.aiTimer <= 0) {
-    enemy.aiDir = Math.random() > 0.5 ? 1 : -1;
-    enemy.aiTimer = 0.6 + Math.random() * 1.2;
-  }
-  // slightly chase player
-  if (Math.abs(enemy.x - player.x) > 40) {
-    enemy.aiDir = enemy.x < player.x ? 1 : -1;
-  }
-  const eSpeed = (enemy.spd / 100) * 220 * (enemy.status.slow ? 0.7 : 1) * (enemy.status.freeze ? 0 : 1);
-  enemy.x += enemy.aiDir * eSpeed * dt;
-  enemy.x = Math.max(50, Math.min(W-50, enemy.x));
-  
-  // auto fire
-  if (!player.status.freeze) {
-    player.fireCD -= dt;
-    if (player.fireCD <= 0) {
-      firePattern(player, -1);
-      player.fireCD = 2.0;
-    }
-  }
-  if (!enemy.status.freeze) {
-    enemy.fireCD -= dt;
-    if (enemy.fireCD <= 0) {
-      firePattern(enemy, 1);
-      enemy.fireCD = 2.0;
-      // AI bomb chance
-      if (!enemy.bombUsed && enemy.eng < enemy.maxEng * 0.55 && Math.random() < 0.35) {
-        useBomb(enemy);
-      }
-    }
-  }
-  
-  // bullets
-  for (let i = bullets.length-1; i >= 0; i--) {
-    const b = bullets[i];
-    b.x += b.vx * dt;
-    b.y += b.vy * dt;
-    
-    // hit check
-    const target = b.owner === 'player' ? enemy : player;
-    const dy = Math.abs(b.y - target.y);
-    const dx = Math.abs(b.x - target.x);
-    if (dy < 45 && dx < 40) {
-      applyDamage(target, b.dmg);
-      bullets.splice(i, 1);
-      continue;
-    }
-    // out of bounds
-    if (b.y < -20 || b.y > H+20 || b.x < -20 || b.x > W+20) {
-      bullets.splice(i, 1);
-    }
-  }
-  
-  // status effects
-  updateStatus(player, dt);
-  updateStatus(enemy, dt);
-  
-  // hit face timer
-  if (player.hitTimer > 0) {
-    player.hitTimer -= dt;
-    if (player.hitTimer <= 0) {
-      player.face = player.char.face_n;
-      document.getElementById('player-face').src = player.face;
-    }
-  }
-  if (enemy.hitTimer > 0) {
-    enemy.hitTimer -= dt;
-    if (enemy.hitTimer <= 0) {
-      enemy.face = enemy.char.face_n;
-      document.getElementById('enemy-face').src = enemy.face;
-    }
-  }
-  
-  // KO check
-  if (player.eng <= 0) {
-    player.eng = 0;
-    endBattle(false);
-  } else if (enemy.eng <= 0) {
-    enemy.eng = 0;
-    endBattle(true);
-  }
-}
-
-function firePattern(ent, dir) { // dir: -1 player(up), +1 enemy(down)
-  const baseDmg = Math.max(1, Math.floor(ent.char.Pwr / 10));
-  const speed = 320 * dir;
-  const type = ent.type;
-  
-  if (type === 1001) {
-    // 5 consecutive
-    for (let i = 0; i < 5; i++) {
-      setTimeout(() => {
-        if (!battleActive) return;
-        bullets.push({
-          x: ent.x, y: ent.y + (dir > 0 ? 30 : -30),
-          vx: 0, vy: speed,
-          dmg: baseDmg,
-          owner: dir < 0 ? 'player' : 'enemy',
-          color: dir < 0 ? '#4af' : '#f44'
-        });
-      }, i * 90);
-    }
-  } else if (type === 1002) {
-    // 3 spread
-    [-1.1, 0, 1.1].forEach(ang => {
-      bullets.push({
-        x: ent.x, y: ent.y + (dir > 0 ? 30 : -30),
-        vx: ang * 90 * Math.abs(dir),
-        vy: speed * 0.95,
-        dmg: baseDmg,
-        owner: dir < 0 ? 'player' : 'enemy',
-        color: dir < 0 ? '#4af' : '#f44'
-      });
-    });
-  } else { // 1003 : 2+2
-    for (let k = 0; k < 2; k++) {
-      setTimeout(() => {
-        if (!battleActive) return;
-        [-0.6, 0.6].forEach(ang => {
-          bullets.push({
-            x: ent.x, y: ent.y + (dir > 0 ? 30 : -30),
-            vx: ang * 70,
-            vy: speed,
-            dmg: baseDmg,
-            owner: dir < 0 ? 'player' : 'enemy',
-            color: dir < 0 ? '#4af' : '#f44'
-          });
-        });
-      }, k * 180);
-    }
-  }
-}
-
-function useBomb(ent) {
-  if (ent.bombUsed || ent.status.freeze) return;
-  ent.bombUsed = true;
-  const target = ent === player ? enemy : player;
-  const type = ent.bomb;
-  
-  if (type === 'fire') {
-    target.status.burn = 3.0;
-    addEffect(target.x, target.y, '🔥', 1.5);
-  } else if (type === 'wind') {
-    // 10 arrows
-    for (let i = 0; i < 10; i++) {
-      setTimeout(() => {
-        if (!battleActive) return;
-        const dir = ent === player ? -1 : 1;
-        bullets.push({
-          x: ent.x + (Math.random()-0.5)*30,
-          y: ent.y + (dir > 0 ? 20 : -20),
-          vx: (Math.random()-0.5)*40,
-          vy: 380 * dir,
-          dmg: 1.5,
-          owner: ent === player ? 'player' : 'enemy',
-          color: '#aaf'
-        });
-      }, i * 60);
-    }
-  } else if (type === 'ice') {
-    target.status.freeze = 3.0;
-    addEffect(target.x, target.y, '❄️', 2.5);
-  } else if (type === 'dark') {
-    target.status.slow = 5.0;
-    target.status.curse = 5.0;
-    addEffect(target.x, target.y, '🌑', 2);
-  } else if (type === 'light') {
-    ent.status.heal = 5.0;
-    addEffect(ent.x, ent.y, '✨', 2);
-  }
-}
-
-function applyDamage(ent, dmg) {
-  if (ent.status.freeze) dmg *= 1.1; // slightly more while frozen
-  ent.eng -= dmg;
-  if (ent.eng < 0) ent.eng = 0;
-  ent.hitTimer = 0.25;
-  ent.face = ent.char.face_a;
-  if (ent === player) document.getElementById('player-face').src = ent.face;
-  else document.getElementById('enemy-face').src = ent.face;
-  updateHPBars();
-}
-
-function updateStatus(ent, dt) {
-  if (ent.status.burn > 0) {
-    ent.status.burn -= dt;
-    if (Math.floor(ent.status.burn * 10) % 10 === 0) {
-      ent.eng = Math.max(0, ent.eng - 5 * dt * 3); // approx 5 per sec
-      updateHPBars();
-    }
-    if (ent.status.burn <= 0) delete ent.status.burn;
-  }
-  if (ent.status.freeze > 0) {
-    ent.status.freeze -= dt;
-    if (ent.status.freeze <= 0) delete ent.status.freeze;
-  }
-  if (ent.status.slow > 0) {
-    ent.status.slow -= dt;
-    if (ent.status.slow <= 0) delete ent.status.slow;
-  }
-  if (ent.status.curse > 0) {
-    ent.status.curse -= dt;
-    ent.eng = Math.max(0, ent.eng - 1 * dt);
-    updateHPBars();
-    if (ent.status.curse <= 0) delete ent.status.curse;
-  }
-  if (ent.status.heal > 0) {
-    ent.status.heal -= dt;
-    ent.eng = Math.min(ent.maxEng, ent.eng + 3 * dt);
-    updateHPBars();
-    if (ent.status.heal <= 0) delete ent.status.heal;
-  }
-}
-
-function addEffect(x, y, emoji, life) {
-  effects.push({x, y, emoji, life, max: life});
-}
-
-function draw() {
-  ctx.clearRect(0, 0, W, H);
-  
-  // midline
-  ctx.strokeStyle = 'rgba(255,50,50,0.25)';
-  ctx.setLineDash([10, 8]);
-  ctx.beginPath();
-  ctx.moveTo(0, midY);
-  ctx.lineTo(W, midY);
-  ctx.stroke();
-  ctx.setLineDash([]);
-  
-  // zone labels
-  ctx.fillStyle = 'rgba(255,100,100,0.15)';
-  ctx.font = '14px sans-serif';
-  ctx.fillText('상대방 진영', 20, 30);
-  ctx.fillStyle = 'rgba(100,150,255,0.15)';
-  ctx.fillText('나의 진영', 20, H - 20);
-  
-  // characters (simple circle + face image would be better, but for performance we use colored circles + status)
-  // Player
-  drawEntity(player, '#4af');
-  // Enemy
-  drawEntity(enemy, '#f44');
-  
-  // bullets
-  bullets.forEach(b => {
-    ctx.beginPath();
-    ctx.fillStyle = b.color;
-    ctx.arc(b.x, b.y, 6, 0, Math.PI*2);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.fillStyle = '#fff';
-    ctx.arc(b.x, b.y, 2.5, 0, Math.PI*2);
-    ctx.fill();
-  });
-  
-  // effects
-  for (let i = effects.length-1; i >= 0; i--) {
-    const e = effects[i];
-    e.life -= 0.016;
-    if (e.life <= 0) { effects.splice(i,1); continue; }
-    ctx.globalAlpha = e.life / e.max;
-    ctx.font = '28px serif';
-    ctx.fillText(e.emoji, e.x - 14, e.y - 40);
-    ctx.globalAlpha = 1;
-  }
-  
-  // freeze/slow visual
-  if (player.status.freeze) {
-    ctx.fillStyle = 'rgba(100,200,255,0.25)';
-    ctx.beginPath();
-    ctx.arc(player.x, player.y, 55, 0, Math.PI*2);
-    ctx.fill();
-  }
-  if (enemy.status.freeze) {
-    ctx.fillStyle = 'rgba(100,200,255,0.25)';
-    ctx.beginPath();
-    ctx.arc(enemy.x, enemy.y, 55, 0, Math.PI*2);
-    ctx.fill();
-  }
-}
-
-function drawEntity(ent, color) {
-  // body
-  ctx.beginPath();
-  ctx.fillStyle = color;
-  ctx.arc(ent.x, ent.y, 38, 0, Math.PI*2);
-  ctx.fill();
-  ctx.strokeStyle = '#fff';
-  ctx.lineWidth = 2;
-  ctx.stroke();
-  
-  // simple face indicator (circle)
-  ctx.beginPath();
-  ctx.fillStyle = ent.hitTimer > 0 ? '#f88' : '#fff';
-  ctx.arc(ent.x, ent.y - 5, 18, 0, Math.PI*2);
-  ctx.fill();
-  
-  // name
-  ctx.fillStyle = '#ddd';
-  ctx.font = 'bold 13px sans-serif';
-  ctx.textAlign = 'center';
-  ctx.fillText(ent.char.name, ent.x, ent.y + 55);
-  ctx.textAlign = 'left';
-}
-
-// ===================== END BATTLE =====================
-function endBattle(playerWin) {
-  battleActive = false;
-  clearInterval(timerInterval);
-  window.onkeydown = null;
-  window.onkeyup = null;
-  
-  setTimeout(() => {
-    if (playerWin) {
-      defeated.add(enemyChar.id);
-      // victory screen
-      document.getElementById('vic-player').src = playerChar.face_n;
-      document.getElementById('vic-enemy').src = enemyChar.face_a;
-      document.getElementById('vic-txt').textContent = playerChar.win_txt;
-      showScreen('victory-screen');
-      
-      setTimeout(() => {
-        if (defeated.size >= characters.length - 1) {
-          // all cleared
-          showScreen('gameover-screen');
-          setTimeout(() => {
-            showScreen('title-screen');
-            defeated.clear();
-          }, 5000);
-        } else {
-          showScreen('select-screen');
-          renderSelect();
-        }
-      }, 3000);
-    } else {
-      // lose
-      document.getElementById('fail-player').src = playerChar.face_a;
-      document.getElementById('fail-enemy').src = enemyChar.face_n;
-      document.getElementById('fail-txt').textContent = enemyChar.win_txt;
-      showScreen('fail-screen');
-      
-      setTimeout(() => {
-        showScreen('gameover-screen');
-        setTimeout(() => {
-          showScreen('title-screen');
-          defeated.clear();
-        }, 5000);
-      }, 3000);
-    }
-  }, 600);
-}
-
-function endBattleByTime() {
-  if (player.eng >= enemy.eng) endBattle(true);
-  else endBattle(false);
-}
-
-// preload some images
-characters.forEach(c => {
-  [c.pf_img, c.face_n, c.face_a, c.SD_full].forEach(src => {
-    const img = new Image();
-    img.src = src;
-  });
-});
-</script>
-</body>
-</html>
