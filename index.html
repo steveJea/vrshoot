@@ -9,6 +9,7 @@
 body{background:#1a1a1a;color:#fff;font-family:'Segoe UI','Malgun Gothic',sans-serif;overflow:hidden;height:100vh;display:flex;justify-content:center;align-items:center}
 .screen{display:none;width:100%;max-width:960px;height:100vh;max-height:720px;position:relative;background:#222;border:2px solid #444;overflow:hidden}
 .screen.active{display:flex;flex-direction:column}
+
 #title-screen{justify-content:center;align-items:center;text-align:center;background:url('https://raw.githubusercontent.com/steveJea/vrshoot/main/img/main.jpg') center/cover no-repeat}
 #title-screen::before{content:'';position:absolute;inset:0;background:rgba(0,0,0,.55)}
 #title-screen>*{position:relative;z-index:1}
@@ -17,63 +18,73 @@ body{background:#1a1a1a;color:#fff;font-family:'Segoe UI','Malgun Gothic',sans-s
 #title-screen .game-title{font-size:1.8rem;color:#fff;margin-bottom:60px}
 #title-screen .start-msg{font-size:1.1rem;color:#ff6666;animation:blink 1.2s infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-#select-screen{background:#2a2a2a;padding:20px}
-#select-screen h2{text-align:center;font-size:1.8rem;margin-bottom:20px;color:#ff4444;letter-spacing:3px}
-.char-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;flex:1;overflow-y:auto}
+
+#select-screen{background:#2a2a2a;padding:20px;flex-direction:row;gap:16px}
+#select-screen h2{position:absolute;top:14px;left:0;width:100%;text-align:center;font-size:1.7rem;color:#ff4444;letter-spacing:3px;z-index:10}
+.char-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;flex:1;margin-top:48px;overflow:hidden}
+.boss-area{width:160px;margin-top:48px;display:flex;flex-direction:column;gap:10px;overflow-y:auto}
 .char-card{background:#333;border:3px solid #555;border-radius:8px;overflow:hidden;cursor:pointer;transition:all .2s;position:relative}
-.char-card:hover{border-color:#ff4444;transform:scale(1.05);box-shadow:0 0 15px rgba(255,50,50,.6)}
-.char-card.selected{border-color:#ffcc00;box-shadow:0 0 20px #ffcc00;animation:selectPulse .6s}
-.char-card.boss-card{border-color:#ff00aa;box-shadow:0 0 12px #ff00aa}
-.char-card.boss-card:hover{border-color:#ff66cc;box-shadow:0 0 20px #ff00aa}
-.char-card img{width:100%;height:140px;object-fit:cover;display:block}
-.char-card .name{text-align:center;padding:6px 0;font-size:.85rem;background:#222}
+.char-card:hover{border-color:#ff4444;transform:scale(1.04);box-shadow:0 0 12px rgba(255,50,50,.55)}
+.char-card.selected{border-color:#ffcc00;box-shadow:0 0 16px #ffcc00}
+.char-card.boss-card{border-color:#ff00aa;box-shadow:0 0 10px #ff00aa}
+.char-card.boss-card:hover{border-color:#ff66cc;box-shadow:0 0 16px #ff00aa}
+.char-card img{width:100%;height:120px;object-fit:cover;display:block}
+.char-card .name{text-align:center;padding:5px 0;font-size:.8rem;background:#222}
 .char-card.boss-card .name{color:#ff66cc;font-weight:bold}
-@keyframes selectPulse{0%{transform:scale(1)}50%{transform:scale(1.12)}100%{transform:scale(1.05)}}
+
 #vs-screen{justify-content:center;align-items:center;background:#ffffff}
 .vs-container{display:flex;align-items:center;gap:40px}
 .vs-char{text-align:center}
 .vs-char img{width:220px;height:280px;object-fit:contain}
-.vs-char .name{margin-top:15px;font-size:1.4rem;letter-spacing:2px}
-.vs-text{font-size:3.5rem;font-weight:bold;color:#ff3333;text-shadow:0 0 30px #ff0000}
+.vs-char .name{margin-top:12px;font-size:1.3rem;letter-spacing:2px;color:#222}
+.vs-text{font-size:3.2rem;font-weight:bold;color:#ff3333;text-shadow:0 0 20px #ff0000}
 .boss-vs-img{max-width:80%;max-height:70%;object-fit:contain}
-.boss-vs-name{position:absolute;bottom:80px;left:50%;transform:translateX(-50%);font-size:2.5rem;color:#fff;text-shadow:0 0 15px #000,0 0 30px #ff0000;letter-spacing:4px;background:rgba(0,0,0,.5);padding:10px 30px;border-radius:8px}
+.boss-vs-name{position:absolute;bottom:70px;left:50%;transform:translateX(-50%);font-size:2.2rem;color:#fff;text-shadow:0 0 12px #000,0 0 24px #ff0000;letter-spacing:3px;background:rgba(0,0,0,.55);padding:8px 24px;border-radius:8px}
+
 #battle-screen{background:#d0d0d0;flex-direction:column}
-#battle-ui{display:flex;justify-content:space-between;padding:10px 20px;background:#333;border-bottom:2px solid #555;align-items:center;color:#fff}
-.hp-box{display:flex;align-items:center;gap:10px;width:280px}
-.hp-box img{width:48px;height:48px;border-radius:50%;border:2px solid #888;object-fit:cover}
-.hp-bar-wrap{flex:1;height:18px;background:#555;border-radius:4px;overflow:hidden;position:relative}
+#battle-ui{display:flex;justify-content:space-between;padding:10px 18px;background:#333;border-bottom:2px solid #555;align-items:center;color:#fff}
+.hp-box{display:flex;align-items:center;gap:10px;width:270px}
+.hp-box img{width:46px;height:46px;border-radius:50%;border:2px solid #888;object-fit:cover}
+.hp-bar-wrap{flex:1;height:16px;background:#555;border-radius:4px;overflow:hidden}
 .hp-bar{height:100%;background:linear-gradient(90deg,#ffcc00,#ff8800);transition:width .15s}
-.timer{font-size:2.2rem;font-weight:bold;color:#fff;min-width:80px;text-align:center;text-shadow:0 0 10px #ff4444}
+.timer{font-size:2rem;font-weight:bold;color:#fff;min-width:70px;text-align:center;text-shadow:0 0 8px #ff4444}
 #battle-canvas{flex:1;width:100%;display:block;background:linear-gradient(180deg,#e8e8e8 0%,#c8c8c8 50%,#b0b0b0 100%)}
-.battle-info{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);font-size:.85rem;color:#555}
+.battle-info{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-size:.8rem;color:#555}
+
 .result-screen{justify-content:center;align-items:center;background:#1a1a1a;text-align:center}
-.result-title{font-size:3rem;margin-bottom:30px;letter-spacing:4px}
-.result-title.win{color:#ffcc00;text-shadow:0 0 20px #ffaa00}
-.result-title.lose{color:#ff3333;text-shadow:0 0 20px #ff0000}
-.result-faces{display:flex;gap:40px;margin-bottom:30px;justify-content:center}
-.result-faces img{width:180px;height:180px;border-radius:12px;object-fit:cover;border:3px solid #555}
-.win-txt{font-size:1.3rem;color:#ddd;max-width:500px;line-height:1.5;padding:15px 25px;background:rgba(255,255,255,.05);border-radius:8px}
+.result-title{font-size:2.8rem;margin-bottom:24px;letter-spacing:4px}
+.result-title.win{color:#ffcc00;text-shadow:0 0 18px #ffaa00}
+.result-title.lose{color:#ff3333;text-shadow:0 0 18px #ff0000}
+.result-faces{display:flex;gap:36px;margin-bottom:24px;justify-content:center}
+.result-faces img{width:160px;height:160px;border-radius:10px;object-fit:cover;border:3px solid #555}
+.win-txt{font-size:1.2rem;color:#ddd;max-width:480px;line-height:1.5;padding:14px 22px;background:rgba(255,255,255,.05);border-radius:8px}
+
 #gameover-screen,#ending-screen{justify-content:center;align-items:center;background:#000;background-size:cover;background-position:center}
-#gameover-screen h1{font-size:4rem;color:#ff2222;letter-spacing:8px;text-shadow:0 0 30px #ff0000;position:relative;z-index:2}
-#ending-screen{flex-direction:column;padding:40px}
-#ending-img{max-width:90%;max-height:55%;object-fit:contain;margin-bottom:20px;border-radius:8px}
-#ending-txt{font-size:1.15rem;line-height:1.7;color:#eee;max-width:700px;text-align:left;background:rgba(0,0,0,.7);padding:20px 25px;border-radius:10px;min-height:120px;white-space:pre-wrap}
-#ending-hint{margin-top:20px;color:#aaa;font-size:.95rem}
+#gameover-screen h1{font-size:3.6rem;color:#ff2222;letter-spacing:8px;text-shadow:0 0 28px #ff0000;position:relative;z-index:2}
+#ending-screen{flex-direction:column;padding:36px}
+#ending-img{max-width:90%;max-height:52%;object-fit:contain;margin-bottom:18px;border-radius:8px}
+#ending-txt{font-size:1.1rem;line-height:1.65;color:#eee;max-width:680px;text-align:left;background:rgba(0,0,0,.7);padding:18px 22px;border-radius:10px;min-height:110px;white-space:pre-wrap}
+#ending-hint{margin-top:16px;color:#aaa;font-size:.9rem}
+
 .shake{animation:shake .4s}
 @keyframes shake{0%,100%{transform:translate(0,0)}10%,30%,50%,70%,90%{transform:translate(-6px,3px)}20%,40%,60%,80%{transform:translate(6px,-3px)}}
 </style>
 </head>
 <body>
+
 <div id="title-screen" class="screen active">
   <h1>VIOLENCE ROYALE</h1>
   <div class="sub">THE BRUTAL CITY</div>
   <div class="game-title">SHOOTING MASTERS</div>
   <div class="start-msg">Press Any Key to START</div>
 </div>
+
 <div id="select-screen" class="screen">
   <h2>Select Your Fighter</h2>
   <div class="char-grid" id="char-grid"></div>
+  <div class="boss-area" id="boss-area"></div>
 </div>
+
 <div id="vs-screen" class="screen">
   <div class="vs-container" id="vs-normal">
     <div class="vs-char"><img id="vs-player-img" src="" alt=""><div class="name" id="vs-player-name"></div></div>
@@ -85,6 +96,7 @@ body{background:#1a1a1a;color:#fff;font-family:'Segoe UI','Malgun Gothic',sans-s
     <div class="boss-vs-name" id="vs-boss-name"></div>
   </div>
 </div>
+
 <div id="battle-screen" class="screen">
   <div id="battle-ui">
     <div class="hp-box"><img id="player-face" src="" alt=""><div class="hp-bar-wrap"><div class="hp-bar" id="player-hp-bar"></div></div></div>
@@ -94,25 +106,30 @@ body{background:#1a1a1a;color:#fff;font-family:'Segoe UI','Malgun Gothic',sans-s
   <canvas id="battle-canvas"></canvas>
   <div class="battle-info">←→↑↓ / WASD 이동 | 자동공격 | Q : 특수공격 (1회)</div>
 </div>
+
 <div id="victory-screen" class="screen result-screen">
   <div class="result-title win">YOU WIN</div>
   <div class="result-faces"><img id="vic-player" src="" alt=""><img id="vic-enemy" src="" alt=""></div>
   <div class="win-txt" id="vic-txt"></div>
 </div>
+
 <div id="fail-screen" class="screen result-screen">
   <div class="result-title lose">YOU LOSE</div>
   <div class="result-faces"><img id="fail-player" src="" alt=""><img id="fail-enemy" src="" alt=""></div>
   <div class="win-txt" id="fail-txt"></div>
 </div>
+
 <div id="ending-screen" class="screen">
   <img id="ending-img" src="" alt="">
   <div id="ending-txt"></div>
   <div id="ending-hint">클릭하면 전체 텍스트가 표시됩니다</div>
 </div>
+
 <div id="gameover-screen" class="screen"><h1>GAME OVER</h1></div>
 
 <script>
 const RAW="https://raw.githubusercontent.com/steveJea/vrshoot/main/img/";
+
 const characters=[
 {id:10001,name:"YURI",Pwr:100,Eng:100,spd:100,type:1001,bomb:"dark",face_a:RAW+"10001_fa.png",face_n:RAW+"10001_fn.png",SD_full:RAW+"10001_full.png",pf_img:RAW+"10001_pf.jpg",win_txt:"Vile and hideous creature. Embrace your death.",lose_img:RAW+"10001_lose.jpg",win_img:RAW+"10001_end.jpg",f_txt:"Yuri killed Seongjin and sat upon the true throne of darkness.\nBut she, who had always been empty inside, set out in search of new prey.\nThe doors of Yuri's Castle finally opened—and within waits the lewd, cold Yuri."},
 {id:10002,name:"SEKANG",Pwr:150,Eng:120,spd:30,type:1002,bomb:"fire",face_a:RAW+"10002_fa.png",face_n:RAW+"10002_fn.png",SD_full:RAW+"10002_full.png",pf_img:RAW+"10002_pf.jpg",win_txt:"Don't block my path!",lose_img:RAW+"10002_lose.jpg",win_img:RAW+"10002_end.jpg",f_txt:"Sekang seized victory as a matter of course.\nHe continues to follow the trail of his vanished younger sister.\n“Seryoen… please, be safe!”"},
@@ -127,23 +144,25 @@ const characters=[
 {id:10011,name:"HYERI",Pwr:80,Eng:120,spd:100,type:1002,bomb:"light",face_a:RAW+"10011_fa.png",face_n:RAW+"10011_fn.png",SD_full:RAW+"10011_full.png",pf_img:RAW+"10011_pf.jpg",win_txt:"Does it hurt a lot? I'm sorry.",lose_img:RAW+"10011_lose.jpg",win_img:RAW+"10011_end.jpg",f_txt:"Hyeri won, yet she felt a strange emptiness.\n“Does it really have to end like this?”"},
 {id:10012,name:"MINSEOP",Pwr:90,Eng:100,spd:110,type:1003,bomb:"wind",face_a:RAW+"10012_fa.png",face_n:RAW+"10012_fn.png",SD_full:RAW+"10012_full.png",pf_img:RAW+"10012_pf.jpg",win_txt:"From now on, you are my slave.",lose_img:RAW+"10012_lose.jpg",win_img:RAW+"10012_end.jpg",f_txt:"Minseop claimed absolute victory.\nFrom now on, the city belongs to him."}
 ];
-const bosses = [
-  {id:10013, name:"NARI", Pwr:150, Eng:150, spd:150, type:1004, bomb:"demon",
-   face_a:RAW+"10013_fa.jpg", face_n:RAW+"10013_fn.jpg.jpg", SD_full:RAW+"10013_full.jpg", pf_img:RAW+"10013_pf.jpg",
-   boss_img:RAW+"boss_10013.jpg", win_txt:"The world is better off when you disappear.",
-   lose_img:RAW+"10013_lose.jpg", win_img:RAW+"10013_end.jpg",
-   f_txt:"It is empty. No one can stand against me. I am both light and darkness."},
-  {id:10014, name:"QRI", Pwr:150, Eng:500, spd:150, type:1004, bomb:"demon",
-   face_a:RAW+"10014_fa.jpg", face_n:RAW+"10014_fn.jpg.jpg", SD_full:RAW+"10014_full.jpg", pf_img:RAW+"10014_pf.jpg",
-   boss_img:RAW+"boss_10014.jpg", win_txt:"Slower than a turtle, weaker than a snail... Pathetic",
-   lose_img:RAW+"10014_lose.jpg", win_img:RAW+"10014_end.jpg",
-   f_txt:"I have proven that I am the strongest. Now I will call forth blood, and I will rule over blood. I will become the eternal Empress of Blood."},
-  {id:10015, name:"SEONGJIN", Pwr:1000, Eng:1000, spd:180, type:1005, bomb:"abyss",
-   face_a:RAW+"10015_fa.jpg", face_n:RAW+"10015_fn.jpg", SD_full:RAW+"10015_full.jpg", pf_img:RAW+"10015_pf.jpg",
-   boss_img:RAW+"boss_10015.jpg", win_txt:"What makes you better than an insect?",
-   lose_img:RAW+"10015_lose.jpg", win_img:RAW+"10015_end.jpg",
-   f_txt:"No one can replace me. I am a great existence. Even a god cannot stand against me. Simply put—everything begins because of me, and everything ends because of me."}
+
+const bosses=[
+{id:10013,name:"NARI",Pwr:150,Eng:150,spd:150,type:1004,bomb:"demon",
+ face_a:RAW+"10013_fa.jpg",face_n:RAW+"10013_fn.jpg.jpg",SD_full:RAW+"10013_full.jpg",pf_img:RAW+"10013_pf.jpg",
+ boss_img:RAW+"boss_10013.jpg",win_txt:"The world is better off when you disappear.",
+ lose_img:RAW+"10013_lose.jpg",win_img:RAW+"10013_end.jpg",
+ f_txt:"It is empty. No one can stand against me. I am both light and darkness."},
+{id:10014,name:"QRI",Pwr:150,Eng:500,spd:150,type:1004,bomb:"demon",
+ face_a:RAW+"10014_fa.jpg",face_n:RAW+"10014_fn.jpg.jpg",SD_full:RAW+"10014_full.jpg",pf_img:RAW+"10014_pf.jpg",
+ boss_img:RAW+"boss_10014.jpg",win_txt:"Slower than a turtle, weaker than a snail... Pathetic",
+ lose_img:RAW+"10014_lose.jpg",win_img:RAW+"10014_end.jpg",
+ f_txt:"I have proven that I am the strongest. Now I will call forth blood, and I will rule over blood. I will become the eternal Empress of Blood."},
+{id:10015,name:"SEONGJIN",Pwr:1000,Eng:1000,spd:180,type:1005,bomb:"abyss",
+ face_a:RAW+"10015_fa.jpg",face_n:RAW+"10015_fn.jpg",SD_full:RAW+"10015_full.jpg",pf_img:RAW+"10015_pf.jpg",
+ boss_img:RAW+"boss_10015.jpg",win_txt:"What makes you better than an insect?",
+ lose_img:RAW+"10015_lose.jpg",win_img:RAW+"10015_end.jpg",
+ f_txt:"No one can replace me. I am a great existence. Even a god cannot stand against me. Simply put—everything begins because of me, and everything ends because of me."}
 ];
+
 characters.forEach(c=>{c.img_n=new Image();c.img_n.src=c.face_n;c.img_a=new Image();c.img_a.src=c.face_a});
 bosses.forEach(c=>{c.img_n=new Image();c.img_n.src=c.face_n;c.img_a=new Image();c.img_a.src=c.face_a});
 
@@ -167,7 +186,10 @@ document.addEventListener('keydown',function(e){
 });
 
 function renderSelect(){
-  const grid=document.getElementById('char-grid');grid.innerHTML='';unlockedBosses.clear();
+  const grid=document.getElementById('char-grid');
+  grid.innerHTML='';
+  document.getElementById('boss-area').innerHTML='';
+  unlockedBosses.clear();
   characters.forEach(c=>{
     const card=document.createElement('div');card.className='char-card';
     card.innerHTML='<img src="'+c.pf_img+'" alt="'+c.name+'"><div class="name">'+c.name+'</div>';
@@ -176,20 +198,41 @@ function renderSelect(){
 }
 
 function addBossCard(boss){
-  if(unlockedBosses.has(boss.id))return;unlockedBosses.add(boss.id);
-  const grid=document.getElementById('char-grid');
-  const card=document.createElement('div');card.className='char-card boss-card';card.dataset.bossId=boss.id;
+  if(unlockedBosses.has(boss.id))return;
+  unlockedBosses.add(boss.id);
+  const area=document.getElementById('boss-area');
+  const card=document.createElement('div');
+  card.className='char-card boss-card';
+  card.dataset.bossId=boss.id;
   card.innerHTML='<img src="'+boss.pf_img+'" alt="'+boss.name+'"><div class="name">'+boss.name+'</div>';
-  card.onclick=function(){playerChar=boss;card.classList.add('selected');enemyChar=characters[Math.floor(Math.random()*characters.length)];isBossFight=false;setTimeout(goToVS,700)};
-  grid.appendChild(card);grid.scrollTop=grid.scrollHeight;
+  card.onclick=function(){
+    playerChar=boss;card.classList.add('selected');
+    enemyChar=characters[Math.floor(Math.random()*characters.length)];
+    isBossFight=false;setTimeout(goToVS,700);
+  };
+  area.appendChild(card);
 }
 
-function selectPlayer(c,card){playerChar=c;card.classList.add('selected');const candidates=characters.filter(x=>x.id!==c.id);enemyChar=candidates[Math.floor(Math.random()*candidates.length)];isBossFight=false;setTimeout(goToVS,700)}
+function selectPlayer(c,card){
+  playerChar=c;card.classList.add('selected');
+  const candidates=characters.filter(x=>x.id!==c.id);
+  enemyChar=candidates[Math.floor(Math.random()*candidates.length)];
+  isBossFight=false;setTimeout(goToVS,700);
+}
 
 function goToVS(){
   const normal=document.getElementById('vs-normal'),bossDiv=document.getElementById('vs-boss');
-  if(isBossFight){normal.style.display='none';bossDiv.style.display='flex';document.getElementById('vs-boss-img').src=enemyChar.boss_img;document.getElementById('vs-boss-name').textContent=enemyChar.name}
-  else{normal.style.display='flex';bossDiv.style.display='none';document.getElementById('vs-player-img').src=playerChar.SD_full||playerChar.pf_img;document.getElementById('vs-player-name').textContent=playerChar.name;document.getElementById('vs-enemy-img').src=enemyChar.SD_full||enemyChar.pf_img;document.getElementById('vs-enemy-name').textContent=enemyChar.name}
+  if(isBossFight){
+    normal.style.display='none';bossDiv.style.display='flex';
+    document.getElementById('vs-boss-img').src=enemyChar.boss_img;
+    document.getElementById('vs-boss-name').textContent=enemyChar.name;
+  }else{
+    normal.style.display='flex';bossDiv.style.display='none';
+    document.getElementById('vs-player-img').src=playerChar.SD_full||playerChar.pf_img;
+    document.getElementById('vs-player-name').textContent=playerChar.name;
+    document.getElementById('vs-enemy-img').src=enemyChar.SD_full||enemyChar.pf_img;
+    document.getElementById('vs-enemy-name').textContent=enemyChar.name;
+  }
   showScreen('vs-screen');setTimeout(startBattle,2200);
 }
 
