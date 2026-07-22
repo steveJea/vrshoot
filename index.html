@@ -1,330 +1,21 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VIOLENCE ROYALE - SHOOTING MASTERS</title>
-<style>
-  * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
-  body {
-    background: #1a1a1a;
-    color: #fff;
-    font-family: 'Segoe UI', 'Malgun Gothic', sans-serif;
-    overflow: hidden;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  .screen {
-    display: none;
-    width: 100%;
-    max-width: 960px;
-    height: 100vh;
-    max-height: 720px;
-    position: relative;
-    background: #222;
-    border: 2px solid #444;
-    overflow: hidden;
-  }
-  .screen.active { display: flex; flex-direction: column; }
+네, 정확히 그 부분이 문제입니다.
 
-  #title-screen {
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    background: url('https://raw.githubusercontent.com/steveJea/vrshoot/main/img/main.jpg') center/cover no-repeat;
-  }
-  #title-screen::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: rgba(0,0,0,0.55);
-  }
-  #title-screen > * { position: relative; z-index: 1; }
-  #title-screen h1 {
-    font-size: 3.2rem;
-    letter-spacing: 6px;
-    color: #ff2222;
-    text-shadow: 0 0 20px #ff0000, 0 0 40px #aa0000;
-    margin-bottom: 8px;
-  }
-  #title-screen .sub { font-size: 1.4rem; color: #ccc; letter-spacing: 4px; margin-bottom: 40px; }
-  #title-screen .game-title { font-size: 1.8rem; color: #fff; margin-bottom: 60px; }
-  #title-screen .start-msg { font-size: 1.1rem; color: #ff6666; animation: blink 1.2s infinite; }
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+복사할 때 **설명 글**이 JavaScript 코드 한가운데에 들어가 버렸습니다.
 
-  #select-screen { background: #2a2a2a; padding: 20px; }
-  #select-screen h2 { text-align: center; font-size: 1.8rem; margin-bottom: 20px; color: #ff4444; letter-spacing: 3px; }
-  .char-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; flex: 1; overflow-y: auto; }
-  .char-card {
-    background: #333; border: 3px solid #555; border-radius: 8px; overflow: hidden;
-    cursor: pointer; transition: all 0.2s; position: relative;
-  }
-  .char-card:hover { border-color: #ff4444; transform: scale(1.05); box-shadow: 0 0 15px rgba(255,50,50,0.6); }
-  .char-card.selected { border-color: #ffcc00; box-shadow: 0 0 20px #ffcc00; animation: selectPulse 0.6s; }
-  .char-card.boss-card { border-color: #ff00aa; box-shadow: 0 0 12px #ff00aa; }
-  .char-card.boss-card:hover { border-color: #ff66cc; box-shadow: 0 0 20px #ff00aa; }
-  .char-card img { width: 100%; height: 140px; object-fit: cover; display: block; }
-  .char-card .name { text-align: center; padding: 6px 0; font-size: 0.85rem; background: #222; }
-  .char-card.boss-card .name { color: #ff66cc; font-weight: bold; }
-  @keyframes selectPulse { 0%{transform:scale(1)} 50%{transform:scale(1.12)} 100%{transform:scale(1.05)} }
+```js
+if (cheatBuffer아래 코드를 **전부 복사**해서 `index.html` 파일로 저장하세요.
+```
 
-  #vs-screen { justify-content: center; align-items: center; background: #1a1a1a; }
-  .vs-container { display: flex; align-items: center; gap: 40px; }
-  .vs-char { text-align: center; }
-  .vs-char img { width: 220px; height: 280px; object-fit: contain; }
-  .vs-char .name { margin-top: 15px; font-size: 1.4rem; letter-spacing: 2px; }
-  .vs-text { font-size: 3.5rem; font-weight: bold; color: #ff3333; text-shadow: 0 0 30px #ff0000; }
-  .boss-vs-img { max-width: 80%; max-height: 70%; object-fit: contain; }
-  .boss-vs-name {
-    position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%);
-    font-size: 2.5rem; color: #fff; text-shadow: 0 0 15px #000, 0 0 30px #ff0000;
-    letter-spacing: 4px; background: rgba(0,0,0,0.5); padding: 10px 30px; border-radius: 8px;
-  }
+이런 식으로 한국어 문장이 코드 사이에 섞여 있어서 문법 오류가 난 겁니다.
 
-  #battle-screen { background: #d0d0d0; flex-direction: column; }
-  #battle-ui {
-    display: flex; justify-content: space-between; padding: 10px 20px;
-    background: #333; border-bottom: 2px solid #555; align-items: center; color: #fff;
-  }
-  .hp-box { display: flex; align-items: center; gap: 10px; width: 280px; }
-  .hp-box img { width: 48px; height: 48px; border-radius: 50%; border: 2px solid #888; object-fit: cover; }
-  .hp-bar-wrap { flex: 1; height: 18px; background: #555; border-radius: 4px; overflow: hidden; position: relative; }
-  .hp-bar { height: 100%; background: linear-gradient(90deg, #ffcc00, #ff8800); transition: width 0.15s; }
-  .timer { font-size: 2.2rem; font-weight: bold; color: #fff; min-width: 80px; text-align: center; text-shadow: 0 0 10px #ff4444; }
-  #battle-canvas { flex: 1; width: 100%; display: block; background: linear-gradient(180deg, #e8e8e8 0%, #c8c8c8 50%, #b0b0b0 100%); }
-  .battle-info { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); font-size: 0.85rem; color: #555; }
+---
 
-  .result-screen { justify-content: center; align-items: center; background: #1a1a1a; text-align: center; }
-  .result-title { font-size: 3rem; margin-bottom: 30px; letter-spacing: 4px; }
-  .result-title.win { color: #ffcc00; text-shadow: 0 0 20px #ffaa00; }
-  .result-title.lose { color: #ff3333; text-shadow: 0 0 20px #ff0000; }
-  .result-faces { display: flex; gap: 40px; margin-bottom: 30px; justify-content: center; }
-  .result-faces img { width: 180px; height: 180px; border-radius: 12px; object-fit: cover; border: 3px solid #555; }
-  .win-txt { font-size: 1.3rem; color: #ddd; max-width: 500px; line-height: 1.5; padding: 15px 25px; background: rgba(255,255,255,0.05); border-radius: 8px; }
+### 해결 방법
 
-  #gameover-screen, #ending-screen {
-    justify-content: center; align-items: center; background: #000;
-    background-size: cover; background-position: center;
-  }
-  #gameover-screen h1 { font-size: 4rem; color: #ff2222; letter-spacing: 8px; text-shadow: 0 0 30px #ff0000; position: relative; z-index: 2; }
-  #ending-screen { flex-direction: column; padding: 40px; }
-  #ending-img { max-width: 90%; max-height: 55%; object-fit: contain; margin-bottom: 20px; border-radius: 8px; }
-  #ending-txt {
-    font-size: 1.15rem; line-height: 1.7; color: #eee; max-width: 700px;
-    text-align: left; background: rgba(0,0,0,0.7); padding: 20px 25px; border-radius: 10px;
-    min-height: 120px; white-space: pre-wrap;
-  }
-  #ending-hint { margin-top: 20px; color: #aaa; font-size: 0.95rem; }
-
-  .shake { animation: shake 0.4s; }
-  @keyframes shake {
-    0%,100% { transform: translate(0,0); }
-    10%,30%,50%,70%,90% { transform: translate(-6px, 3px); }
-    20%,40%,60%,80% { transform: translate(6px, -3px); }
-  }
-</style>
-</head>
-<body>
-
-<div id="title-screen" class="screen active">
-  <h1>VIOLENCE ROYALE</h1>
-  <div class="sub">THE BRUTAL CITY</div>
-  <div class="game-title">SHOOTING MASTERS</div>
-  <div class="start-msg">Press Any Key to START</div>
-</div>
-
-<div id="select-screen" class="screen">
-  <h2>Select Your Fighter</h2>
-  <div class="char-grid" id="char-grid"></div>
-</div>
-
-<div id="vs-screen" class="screen">
-  <div class="vs-container" id="vs-normal">
-    <div class="vs-char">
-      <img id="vs-player-img" src="" alt="">
-      <div class="name" id="vs-player-name"></div>
-    </div>
-    <div class="vs-text">VS</div>
-    <div class="vs-char">
-      <img id="vs-enemy-img" src="" alt="">
-      <div class="name" id="vs-enemy-name"></div>
-    </div>
-  </div>
-  <div id="vs-boss" style="display:none; width:100%; height:100%; justify-content:center; align-items:center; position:relative;">
-    <img id="vs-boss-img" class="boss-vs-img" src="" alt="">
-    <div class="boss-vs-name" id="vs-boss-name"></div>
-  </div>
-</div>
-
-<div id="battle-screen" class="screen">
-  <div id="battle-ui">
-    <div class="hp-box">
-      <img id="player-face" src="" alt="">
-      <div class="hp-bar-wrap"><div class="hp-bar" id="player-hp-bar"></div></div>
-    </div>
-    <div class="timer" id="timer">30</div>
-    <div class="hp-box" style="flex-direction: row-reverse;">
-      <img id="enemy-face" src="" alt="">
-      <div class="hp-bar-wrap"><div class="hp-bar" id="enemy-hp-bar"></div></div>
-    </div>
-  </div>
-  <canvas id="battle-canvas"></canvas>
-  <div class="battle-info">←→↑↓ / WASD 이동 | 자동공격 | Q : 특수공격 (1회)</div>
-</div>
-
-<div id="victory-screen" class="screen result-screen">
-  <div class="result-title win">YOU WIN</div>
-  <div class="result-faces">
-    <img id="vic-player" src="" alt="">
-    <img id="vic-enemy" src="" alt="">
-  </div>
-  <div class="win-txt" id="vic-txt"></div>
-</div>
-
-<div id="fail-screen" class="screen result-screen">
-  <div class="result-title lose">YOU LOSE</div>
-  <div class="result-faces">
-    <img id="fail-player" src="" alt="">
-    <img id="fail-enemy" src="" alt="">
-  </div>
-  <div class="win-txt" id="fail-txt"></div>
-</div>
-
-<div id="ending-screen" class="screen">
-  <img id="ending-img" src="" alt="">
-  <div id="ending-txt"></div>
-  <div id="ending-hint">클릭하면 전체 텍스트가 표시됩니다</div>
-</div>
-
-<div id="gameover-screen" class="screen">
-  <h1>GAME OVER</h1>
-</div>
-
-<script>
-const RAW = "https://raw.githubusercontent.com/steveJea/vrshoot/main/img/";
-
-const characters = [
-  {id:10001, name:"YURI", Pwr:100, Eng:100, spd:100, type:1001, bomb:"dark",
-   face_a:RAW+"10001_fa.png", face_n:RAW+"10001_fn.png", SD_full:RAW+"10001_full.png", pf_img:RAW+"10001_pf.jpg",
-   win_txt:"Vile and hideous creature. Embrace your death.",
-   lose_img:RAW+"10001_lose.jpg", win_img:RAW+"10001_end.jpg",
-   f_txt:"Yuri killed Seongjin and sat upon the true throne of darkness.\nBut she, who had always been empty inside, set out in search of new prey.\nThe doors of Yuri's Castle finally opened—and within waits the lewd, cold Yuri."},
-  {id:10002, name:"SEKANG", Pwr:150, Eng:120, spd:30, type:1002, bomb:"fire",
-   face_a:RAW+"10002_fa.png", face_n:RAW+"10002_fn.png", SD_full:RAW+"10002_full.png", pf_img:RAW+"10002_pf.jpg",
-   win_txt:"Don't block my path!",
-   lose_img:RAW+"10002_lose.jpg", win_img:RAW+"10002_end.jpg",
-   f_txt:"Sekang seized victory as a matter of course.\nHe continues to follow the trail of his vanished younger sister.\n“Seryoen… please, be safe!”"},
-  {id:10003, name:"HOO", Pwr:110, Eng:80, spd:110, type:1003, bomb:"ice",
-   face_a:RAW+"10003_fa.png", face_n:RAW+"10003_fn.png", SD_full:RAW+"10003_full.png", pf_img:RAW+"10003_pf.jpg",
-   win_txt:"Mad about it? Still want more? Push it and you'll really die.",
-   lose_img:RAW+"10003_lose.jpg", win_img:RAW+"10003_end.jpg",
-   f_txt:"He had joined the game out of sheer boredom—and won it without much difficulty.\nToday, as always, he stands on the street smoking, watching the girls who pass by."},
-  {id:10004, name:"SAEM", Pwr:60, Eng:100, spd:140, type:1001, bomb:"ice",
-   face_a:RAW+"10004_fa.png", face_n:RAW+"10004_fn.png", SD_full:RAW+"10004_full.png", pf_img:RAW+"10004_pf.jpg",
-   win_txt:"Gross...you're so ugly. And you smell terrible.",
-   lose_img:RAW+"10004_lose.jpg", win_img:RAW+"10004_end.jpg",
-   f_txt:"Having claimed victory, Saem returned to school.\nCraving blood more and more, she was steadily descending into a blood-soaked demon."},
-  {id:10005, name:"H.K.", Pwr:80, Eng:80, spd:140, type:1002, bomb:"dark",
-   face_a:RAW+"10005_fa.png", face_n:RAW+"10005_fn.png", SD_full:RAW+"10005_full.png", pf_img:RAW+"10005_pf.jpg",
-   win_txt:"Hehehehehe... You fool. Still want to play with me?",
-   lose_img:RAW+"10005_lose.jpg", win_img:RAW+"10005_end.jpg",
-   f_txt:"H.K. won with ease.\nLicking his blood, she felt an orgasm.\nH.K. has now evolved into an even stronger, sharper beast."},
-  {id:10006, name:"NAHYOEN", Pwr:90, Eng:80, spd:130, type:1003, bomb:"dark",
-   face_a:RAW+"10006_fa.png", face_n:RAW+"10006_fn.png", SD_full:RAW+"10006_full.png", pf_img:RAW+"10006_pf.jpg",
-   win_txt:"What a waste of time... on trash like you.",
-   lose_img:RAW+"10006_lose.jpg", win_img:RAW+"10006_end.jpg",
-   f_txt:"Nahyoen barely managed to defeat Seongjin and returned home.\nHaving finally received recognition from her sister, she felt truly happy."},
-  {id:10007, name:"JOONKI", Pwr:90, Eng:100, spd:110, type:1001, bomb:"wind",
-   face_a:RAW+"10007_fa.png", face_n:RAW+"10007_fn.png", SD_full:RAW+"10007_full.png", pf_img:RAW+"10007_pf.jpg",
-   win_txt:"Yo, I actually won, didn't I? See ya!",
-   lose_img:RAW+"10007_lose.jpg", win_img:RAW+"10007_end.jpg",
-   f_txt:"Joonki claimed victory, yet he realized his training was still far from enough.\n“I will overcome any hardship and become the strongest in this city!”"},
-  {id:10008, name:"SEONGHO", Pwr:120, Eng:100, spd:80, type:1002, bomb:"dark",
-   face_a:RAW+"10008_fa.png", face_n:RAW+"10008_fn.png", SD_full:RAW+"10008_full.png", pf_img:RAW+"10008_pf.jpg",
-   win_txt:"In the name of God, I will take your life.",
-   lose_img:RAW+"10008_lose.jpg", win_img:RAW+"10008_end.jpg",
-   f_txt:"Seongho claimed victory in the name of God.\nHe continues his holy mission in the brutal city."},
-  {id:10009, name:"JINSEONG", Pwr:100, Eng:110, spd:90, type:1003, bomb:"fire",
-   face_a:RAW+"10009_fa.png", face_n:RAW+"10009_fn.png", SD_full:RAW+"10009_full.png", pf_img:RAW+"10009_pf.jpg",
-   win_txt:"Where should I cut you, first?",
-   lose_img:RAW+"10009_lose.jpg", win_img:RAW+"10009_end.jpg",
-   f_txt:"Jinseong won the battle.\nHe still seeks the next prey to cut."},
-  {id:10010, name:"JUNCHEOL", Pwr:80, Eng:70, spd:150, type:1001, bomb:"fire",
-   face_a:RAW+"10010_fa.png", face_n:RAW+"10010_fn.png", SD_full:RAW+"10010_full.png", pf_img:RAW+"10010_pf.jpg",
-   win_txt:"Don't mess with me!",
-   lose_img:RAW+"10010_lose.jpg", win_img:RAW+"10010_end.jpg",
-   f_txt:"Juncheol claimed victory.\nNo one dares to mess with him anymore."},
-  {id:10011, name:"HYERI", Pwr:80, Eng:120, spd:100, type:1002, bomb:"light",
-   face_a:RAW+"10011_fa.png", face_n:RAW+"10011_fn.png", SD_full:RAW+"10011_full.png", pf_img:RAW+"10011_pf.jpg",
-   win_txt:"Does it hurt a lot? I'm sorry.",
-   lose_img:RAW+"10011_lose.jpg", win_img:RAW+"10011_end.jpg",
-   f_txt:"Hyeri won, yet she felt a strange emptiness.\n“Does it really have to end like this?”"},
-  {id:10012, name:"MINSEOP", Pwr:90, Eng:100, spd:110, type:1003, bomb:"wind",
-   face_a:RAW+"10012_fa.png", face_n:RAW+"10012_fn.png", SD_full:RAW+"10012_full.png", pf_img:RAW+"10012_pf.jpg",
-   win_txt:"From now on, you are my slave.",
-   lose_img:RAW+"10012_lose.jpg", win_img:RAW+"10012_end.jpg",
-   f_txt:"Minseop claimed absolute victory.\nFrom now on, the city belongs to him."}
-];
-
-const bosses = [
-  {id:10013, name:"ABYSS LORD", Pwr:180, Eng:200, spd:90, type:1004, bomb:"demon",
-   face_a:RAW+"10013_fa.jpg", face_n:RAW+"10013_fn.jpg", SD_full:RAW+"10013_full.jpg", pf_img:RAW+"10013_pf.jpg",
-   boss_img:RAW+"boss_10013.jpg", win_txt:"You are nothing before the abyss.",
-   lose_img:RAW+"10013_lose.jpg", win_img:RAW+"10013_end.jpg",
-   f_txt:"The Abyss Lord claimed the throne of darkness."},
-  {id:10014, name:"BLOOD QUEEN", Pwr:200, Eng:220, spd:110, type:1005, bomb:"abyss",
-   face_a:RAW+"10014_fa.jpg", face_n:RAW+"10014_fn.jpg", SD_full:RAW+"10014_full.jpg", pf_img:RAW+"10014_pf.jpg",
-   boss_img:RAW+"boss_10014.jpg", win_txt:"Your blood will paint my throne.",
-   lose_img:RAW+"10014_lose.jpg", win_img:RAW+"10014_end.jpg",
-   f_txt:"The Blood Queen bathed the city in crimson."},
-  {id:10015, name:"TRUE KING", Pwr:250, Eng:300, spd:80, type:1005, bomb:"abyss",
-   face_a:RAW+"10015_fa.jpg", face_n:RAW+"10015_fn.jpg", SD_full:RAW+"10015_full.jpg", pf_img:RAW+"10015_pf.jpg",
-   boss_img:RAW+"boss_10015.jpg", win_txt:"The throne is mine alone.",
-   lose_img:RAW+"10015_lose.jpg", win_img:RAW+"10015_end.jpg",
-   f_txt:"The True King ascended and the city fell silent forever."}
-];
-
-characters.forEach(c => { c.img_n = new Image(); c.img_n.src = c.face_n; c.img_a = new Image(); c.img_a.src = c.face_a; });
-bosses.forEach(c => { c.img_n = new Image(); c.img_n.src = c.face_n; c.img_a = new Image(); c.img_a.src = c.face_a; });
-
-let defeated = new Set();
-let playerChar = null;
-let enemyChar = null;
-let bossIndex = 0;
-let isBossFight = false;
-let gameState = "title";
-let endingPhase = 0;
-
-// CHEAT SYSTEM
-let cheatBuffer = "";
-const CHEATS = {
-  "sexydynamite": 0,
-  "poweroverwhelming": 1,
-  "shinlimsurgery": 2
-};
-const unlockedBosses = new Set();
-
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  gameState = id.replace('-screen','');
-}
-
-document.addEventListener('keydown', function(e) {
-  if (gameState === 'title') {
-    showScreen('select-screen');
-    renderSelect();
-    return;
-  }
-
-  if (gameState === 'select') {
-    if (e.key.length === 1 && /[a-zA-Z]/.test(e.key)) {
-      cheatBuffer += e.key.toLowerCase();
-      if (cheatBuffer아래 코드를 **전부 복사**해서 `index.html` 파일로 저장하세요.
-
-(카운트다운 30초 + 치트코드 + 패배 시 플레이어 lose_img 반영 완료)
+1. 현재 `index.html` 파일 내용을 **전부 삭제**하세요.
+2. 아래 코드를 **처음부터 끝까지 전부** 다시 복사해서 붙여넣으세요.
+3. 복사할 때 이 메시지에 있는 설명 글은 포함하지 말고,  
+   `<!DOCTYPE html>` 부터 시작하는 코드만 복사하세요.
 
 ```html
 <!DOCTYPE html>
@@ -334,860 +25,333 @@ document.addEventListener('keydown', function(e) {
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VIOLENCE ROYALE - SHOOTING MASTERS</title>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
-  body {
-    background: #1a1a1a;
-    color: #fff;
-    font-family: 'Segoe UI', 'Malgun Gothic', sans-serif;
-    overflow: hidden;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  .screen {
-    display: none;
-    width: 100%;
-    max-width: 960px;
-    height: 100vh;
-    max-height: 720px;
-    position: relative;
-    background: #222;
-    border: 2px solid #444;
-    overflow: hidden;
-  }
-  .screen.active { display: flex; flex-direction: column; }
-
-  #title-screen {
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    background: url('https://raw.githubusercontent.com/steveJea/vrshoot/main/img/main.jpg') center/cover no-repeat;
-  }
-  #title-screen::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: rgba(0,0,0,0.55);
-  }
-  #title-screen > * { position: relative; z-index: 1; }
-  #title-screen h1 {
-    font-size: 3.2rem;
-    letter-spacing: 6px;
-    color: #ff2222;
-    text-shadow: 0 0 20px #ff0000, 0 0 40px #aa0000;
-    margin-bottom: 8px;
-  }
-  #title-screen .sub { font-size: 1.4rem; color: #ccc; letter-spacing: 4px; margin-bottom: 40px; }
-  #title-screen .game-title { font-size: 1.8rem; color: #fff; margin-bottom: 60px; }
-  #title-screen .start-msg { font-size: 1.1rem; color: #ff6666; animation: blink 1.2s infinite; }
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
-
-  #select-screen { background: #2a2a2a; padding: 20px; }
-  #select-screen h2 { text-align: center; font-size: 1.8rem; margin-bottom: 20px; color: #ff4444; letter-spacing: 3px; }
-  .char-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; flex: 1; overflow-y: auto; }
-  .char-card {
-    background: #333; border: 3px solid #555; border-radius: 8px; overflow: hidden;
-    cursor: pointer; transition: all 0.2s; position: relative;
-  }
-  .char-card:hover { border-color: #ff4444; transform: scale(1.05); box-shadow: 0 0 15px rgba(255,50,50,0.6); }
-  .char-card.selected { border-color: #ffcc00; box-shadow: 0 0 20px #ffcc00; animation: selectPulse 0.6s; }
-  .char-card.boss-card { border-color: #ff00aa; box-shadow: 0 0 12px #ff00aa; }
-  .char-card.boss-card:hover { border-color: #ff66cc; box-shadow: 0 0 20px #ff00aa; }
-  .char-card img { width: 100%; height: 140px; object-fit: cover; display: block; }
-  .char-card .name { text-align: center; padding: 6px 0; font-size: 0.85rem; background: #222; }
-  .char-card.boss-card .name { color: #ff66cc; font-weight: bold; }
-  @keyframes selectPulse { 0%{transform:scale(1)} 50%{transform:scale(1.12)} 100%{transform:scale(1.05)} }
-
-  #vs-screen { justify-content: center; align-items: center; background: #1a1a1a; }
-  .vs-container { display: flex; align-items: center; gap: 40px; }
-  .vs-char { text-align: center; }
-  .vs-char img { width: 220px; height: 280px; object-fit: contain; }
-  .vs-char .name { margin-top: 15px; font-size: 1.4rem; letter-spacing: 2px; }
-  .vs-text { font-size: 3.5rem; font-weight: bold; color: #ff3333; text-shadow: 0 0 30px #ff0000; }
-  .boss-vs-img { max-width: 80%; max-height: 70%; object-fit: contain; }
-  .boss-vs-name {
-    position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%);
-    font-size: 2.5rem; color: #fff; text-shadow: 0 0 15px #000, 0 0 30px #ff0000;
-    letter-spacing: 4px; background: rgba(0,0,0,0.5); padding: 10px 30px; border-radius: 8px;
-  }
-
-  #battle-screen { background: #d0d0d0; flex-direction: column; }
-  #battle-ui {
-    display: flex; justify-content: space-between; padding: 10px 20px;
-    background: #333; border-bottom: 2px solid #555; align-items: center; color: #fff;
-  }
-  .hp-box { display: flex; align-items: center; gap: 10px; width: 280px; }
-  .hp-box img { width: 48px; height: 48px; border-radius: 50%; border: 2px solid #888; object-fit: cover; }
-  .hp-bar-wrap { flex: 1; height: 18px; background: #555; border-radius: 4px; overflow: hidden; position: relative; }
-  .hp-bar { height: 100%; background: linear-gradient(90deg, #ffcc00, #ff8800); transition: width 0.15s; }
-  .timer { font-size: 2.2rem; font-weight: bold; color: #fff; min-width: 80px; text-align: center; text-shadow: 0 0 10px #ff4444; }
-  #battle-canvas { flex: 1; width: 100%; display: block; background: linear-gradient(180deg, #e8e8e8 0%, #c8c8c8 50%, #b0b0b0 100%); }
-  .battle-info { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); font-size: 0.85rem; color: #555; }
-
-  .result-screen { justify-content: center; align-items: center; background: #1a1a1a; text-align: center; }
-  .result-title { font-size: 3rem; margin-bottom: 30px; letter-spacing: 4px; }
-  .result-title.win { color: #ffcc00; text-shadow: 0 0 20px #ffaa00; }
-  .result-title.lose { color: #ff3333; text-shadow: 0 0 20px #ff0000; }
-  .result-faces { display: flex; gap: 40px; margin-bottom: 30px; justify-content: center; }
-  .result-faces img { width: 180px; height: 180px; border-radius: 12px; object-fit: cover; border: 3px solid #555; }
-  .win-txt { font-size: 1.3rem; color: #ddd; max-width: 500px; line-height: 1.5; padding: 15px 25px; background: rgba(255,255,255,0.05); border-radius: 8px; }
-
-  #gameover-screen, #ending-screen {
-    justify-content: center; align-items: center; background: #000;
-    background-size: cover; background-position: center;
-  }
-  #gameover-screen h1 { font-size: 4rem; color: #ff2222; letter-spacing: 8px; text-shadow: 0 0 30px #ff0000; position: relative; z-index: 2; }
-  #ending-screen { flex-direction: column; padding: 40px; }
-  #ending-img { max-width: 90%; max-height: 55%; object-fit: contain; margin-bottom: 20px; border-radius: 8px; }
-  #ending-txt {
-    font-size: 1.15rem; line-height: 1.7; color: #eee; max-width: 700px;
-    text-align: left; background: rgba(0,0,0,0.7); padding: 20px 25px; border-radius: 10px;
-    min-height: 120px; white-space: pre-wrap;
-  }
-  #ending-hint { margin-top: 20px; color: #aaa; font-size: 0.95rem; }
-
-  .shake { animation: shake 0.4s; }
-  @keyframes shake {
-    0%,100% { transform: translate(0,0); }
-    10%,30%,50%,70%,90% { transform: translate(-6px, 3px); }
-    20%,40%,60%,80% { transform: translate(6px, -3px); }
-  }
+*{margin:0;padding:0;box-sizing:border-box;user-select:none}
+body{background:#1a1a1a;color:#fff;font-family:'Segoe UI','Malgun Gothic',sans-serif;overflow:hidden;height:100vh;display:flex;justify-content:center;align-items:center}
+.screen{display:none;width:100%;max-width:960px;height:100vh;max-height:720px;position:relative;background:#222;border:2px solid #444;overflow:hidden}
+.screen.active{display:flex;flex-direction:column}
+#title-screen{justify-content:center;align-items:center;text-align:center;background:url('https://raw.githubusercontent.com/steveJea/vrshoot/main/img/main.jpg') center/cover no-repeat}
+#title-screen::before{content:'';position:absolute;inset:0;background:rgba(0,0,0,.55)}
+#title-screen>*{position:relative;z-index:1}
+#title-screen h1{font-size:3.2rem;letter-spacing:6px;color:#ff2222;text-shadow:0 0 20px #ff0000,0 0 40px #aa0000;margin-bottom:8px}
+#title-screen .sub{font-size:1.4rem;color:#ccc;letter-spacing:4px;margin-bottom:40px}
+#title-screen .game-title{font-size:1.8rem;color:#fff;margin-bottom:60px}
+#title-screen .start-msg{font-size:1.1rem;color:#ff6666;animation:blink 1.2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+#select-screen{background:#2a2a2a;padding:20px}
+#select-screen h2{text-align:center;font-size:1.8rem;margin-bottom:20px;color:#ff4444;letter-spacing:3px}
+.char-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;flex:1;overflow-y:auto}
+.char-card{background:#333;border:3px solid #555;border-radius:8px;overflow:hidden;cursor:pointer;transition:all .2s;position:relative}
+.char-card:hover{border-color:#ff4444;transform:scale(1.05);box-shadow:0 0 15px rgba(255,50,50,.6)}
+.char-card.selected{border-color:#ffcc00;box-shadow:0 0 20px #ffcc00;animation:selectPulse .6s}
+.char-card.boss-card{border-color:#ff00aa;box-shadow:0 0 12px #ff00aa}
+.char-card.boss-card:hover{border-color:#ff66cc;box-shadow:0 0 20px #ff00aa}
+.char-card img{width:100%;height:140px;object-fit:cover;display:block}
+.char-card .name{text-align:center;padding:6px 0;font-size:.85rem;background:#222}
+.char-card.boss-card .name{color:#ff66cc;font-weight:bold}
+@keyframes selectPulse{0%{transform:scale(1)}50%{transform:scale(1.12)}100%{transform:scale(1.05)}}
+#vs-screen{justify-content:center;align-items:center;background:#1a1a1a}
+.vs-container{display:flex;align-items:center;gap:40px}
+.vs-char{text-align:center}
+.vs-char img{width:220px;height:280px;object-fit:contain}
+.vs-char .name{margin-top:15px;font-size:1.4rem;letter-spacing:2px}
+.vs-text{font-size:3.5rem;font-weight:bold;color:#ff3333;text-shadow:0 0 30px #ff0000}
+.boss-vs-img{max-width:80%;max-height:70%;object-fit:contain}
+.boss-vs-name{position:absolute;bottom:80px;left:50%;transform:translateX(-50%);font-size:2.5rem;color:#fff;text-shadow:0 0 15px #000,0 0 30px #ff0000;letter-spacing:4px;background:rgba(0,0,0,.5);padding:10px 30px;border-radius:8px}
+#battle-screen{background:#d0d0d0;flex-direction:column}
+#battle-ui{display:flex;justify-content:space-between;padding:10px 20px;background:#333;border-bottom:2px solid #555;align-items:center;color:#fff}
+.hp-box{display:flex;align-items:center;gap:10px;width:280px}
+.hp-box img{width:48px;height:48px;border-radius:50%;border:2px solid #888;object-fit:cover}
+.hp-bar-wrap{flex:1;height:18px;background:#555;border-radius:4px;overflow:hidden;position:relative}
+.hp-bar{height:100%;background:linear-gradient(90deg,#ffcc00,#ff8800);transition:width .15s}
+.timer{font-size:2.2rem;font-weight:bold;color:#fff;min-width:80px;text-align:center;text-shadow:0 0 10px #ff4444}
+#battle-canvas{flex:1;width:100%;display:block;background:linear-gradient(180deg,#e8e8e8 0%,#c8c8c8 50%,#b0b0b0 100%)}
+.battle-info{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);font-size:.85rem;color:#555}
+.result-screen{justify-content:center;align-items:center;background:#1a1a1a;text-align:center}
+.result-title{font-size:3rem;margin-bottom:30px;letter-spacing:4px}
+.result-title.win{color:#ffcc00;text-shadow:0 0 20px #ffaa00}
+.result-title.lose{color:#ff3333;text-shadow:0 0 20px #ff0000}
+.result-faces{display:flex;gap:40px;margin-bottom:30px;justify-content:center}
+.result-faces img{width:180px;height:180px;border-radius:12px;object-fit:cover;border:3px solid #555}
+.win-txt{font-size:1.3rem;color:#ddd;max-width:500px;line-height:1.5;padding:15px 25px;background:rgba(255,255,255,.05);border-radius:8px}
+#gameover-screen,#ending-screen{justify-content:center;align-items:center;background:#000;background-size:cover;background-position:center}
+#gameover-screen h1{font-size:4rem;color:#ff2222;letter-spacing:8px;text-shadow:0 0 30px #ff0000;position:relative;z-index:2}
+#ending-screen{flex-direction:column;padding:40px}
+#ending-img{max-width:90%;max-height:55%;object-fit:contain;margin-bottom:20px;border-radius:8px}
+#ending-txt{font-size:1.15rem;line-height:1.7;color:#eee;max-width:700px;text-align:left;background:rgba(0,0,0,.7);padding:20px 25px;border-radius:10px;min-height:120px;white-space:pre-wrap}
+#ending-hint{margin-top:20px;color:#aaa;font-size:.95rem}
+.shake{animation:shake .4s}
+@keyframes shake{0%,100%{transform:translate(0,0)}10%,30%,50%,70%,90%{transform:translate(-6px,3px)}20%,40%,60%,80%{transform:translate(6px,-3px)}}
 </style>
 </head>
 <body>
-
 <div id="title-screen" class="screen active">
   <h1>VIOLENCE ROYALE</h1>
   <div class="sub">THE BRUTAL CITY</div>
   <div class="game-title">SHOOTING MASTERS</div>
   <div class="start-msg">Press Any Key to START</div>
 </div>
-
 <div id="select-screen" class="screen">
   <h2>Select Your Fighter</h2>
   <div class="char-grid" id="char-grid"></div>
 </div>
-
 <div id="vs-screen" class="screen">
   <div class="vs-container" id="vs-normal">
-    <div class="vs-char">
-      <img id="vs-player-img" src="" alt="">
-      <div class="name" id="vs-player-name"></div>
-    </div>
+    <div class="vs-char"><img id="vs-player-img" src="" alt=""><div class="name" id="vs-player-name"></div></div>
     <div class="vs-text">VS</div>
-    <div class="vs-char">
-      <img id="vs-enemy-img" src="" alt="">
-      <div class="name" id="vs-enemy-name"></div>
-    </div>
+    <div class="vs-char"><img id="vs-enemy-img" src="" alt=""><div class="name" id="vs-enemy-name"></div></div>
   </div>
-  <div id="vs-boss" style="display:none; width:100%; height:100%; justify-content:center; align-items:center; position:relative;">
+  <div id="vs-boss" style="display:none;width:100%;height:100%;justify-content:center;align-items:center;position:relative">
     <img id="vs-boss-img" class="boss-vs-img" src="" alt="">
     <div class="boss-vs-name" id="vs-boss-name"></div>
   </div>
 </div>
-
 <div id="battle-screen" class="screen">
   <div id="battle-ui">
-    <div class="hp-box">
-      <img id="player-face" src="" alt="">
-      <div class="hp-bar-wrap"><div class="hp-bar" id="player-hp-bar"></div></div>
-    </div>
+    <div class="hp-box"><img id="player-face" src="" alt=""><div class="hp-bar-wrap"><div class="hp-bar" id="player-hp-bar"></div></div></div>
     <div class="timer" id="timer">30</div>
-    <div class="hp-box" style="flex-direction: row-reverse;">
-      <img id="enemy-face" src="" alt="">
-      <div class="hp-bar-wrap"><div class="hp-bar" id="enemy-hp-bar"></div></div>
-    </div>
+    <div class="hp-box" style="flex-direction:row-reverse"><img id="enemy-face" src="" alt=""><div class="hp-bar-wrap"><div class="hp-bar" id="enemy-hp-bar"></div></div></div>
   </div>
   <canvas id="battle-canvas"></canvas>
   <div class="battle-info">←→↑↓ / WASD 이동 | 자동공격 | Q : 특수공격 (1회)</div>
 </div>
-
 <div id="victory-screen" class="screen result-screen">
   <div class="result-title win">YOU WIN</div>
-  <div class="result-faces">
-    <img id="vic-player" src="" alt="">
-    <img id="vic-enemy" src="" alt="">
-  </div>
+  <div class="result-faces"><img id="vic-player" src="" alt=""><img id="vic-enemy" src="" alt=""></div>
   <div class="win-txt" id="vic-txt"></div>
 </div>
-
 <div id="fail-screen" class="screen result-screen">
   <div class="result-title lose">YOU LOSE</div>
-  <div class="result-faces">
-    <img id="fail-player" src="" alt="">
-    <img id="fail-enemy" src="" alt="">
-  </div>
+  <div class="result-faces"><img id="fail-player" src="" alt=""><img id="fail-enemy" src="" alt=""></div>
   <div class="win-txt" id="fail-txt"></div>
 </div>
-
 <div id="ending-screen" class="screen">
   <img id="ending-img" src="" alt="">
   <div id="ending-txt"></div>
   <div id="ending-hint">클릭하면 전체 텍스트가 표시됩니다</div>
 </div>
-
-<div id="gameover-screen" class="screen">
-  <h1>GAME OVER</h1>
-</div>
+<div id="gameover-screen" class="screen"><h1>GAME OVER</h1></div>
 
 <script>
-const RAW = "https://raw.githubusercontent.com/steveJea/vrshoot/main/img/";
-
-const characters = [
-  {id:10001, name:"YURI", Pwr:100, Eng:100, spd:100, type:1001, bomb:"dark",
-   face_a:RAW+"10001_fa.png", face_n:RAW+"10001_fn.png", SD_full:RAW+"10001_full.png", pf_img:RAW+"10001_pf.jpg",
-   win_txt:"Vile and hideous creature. Embrace your death.",
-   lose_img:RAW+"10001_lose.jpg", win_img:RAW+"10001_end.jpg",
-   f_txt:"Yuri killed Seongjin and sat upon the true throne of darkness.\nBut she, who had always been empty inside, set out in search of new prey.\nThe doors of Yuri's Castle finally opened—and within waits the lewd, cold Yuri."},
-  {id:10002, name:"SEKANG", Pwr:150, Eng:120, spd:30, type:1002, bomb:"fire",
-   face_a:RAW+"10002_fa.png", face_n:RAW+"10002_fn.png", SD_full:RAW+"10002_full.png", pf_img:RAW+"10002_pf.jpg",
-   win_txt:"Don't block my path!",
-   lose_img:RAW+"10002_lose.jpg", win_img:RAW+"10002_end.jpg",
-   f_txt:"Sekang seized victory as a matter of course.\nHe continues to follow the trail of his vanished younger sister.\n“Seryoen… please, be safe!”"},
-  {id:10003, name:"HOO", Pwr:110, Eng:80, spd:110, type:1003, bomb:"ice",
-   face_a:RAW+"10003_fa.png", face_n:RAW+"10003_fn.png", SD_full:RAW+"10003_full.png", pf_img:RAW+"10003_pf.jpg",
-   win_txt:"Mad about it? Still want more? Push it and you'll really die.",
-   lose_img:RAW+"10003_lose.jpg", win_img:RAW+"10003_end.jpg",
-   f_txt:"He had joined the game out of sheer boredom—and won it without much difficulty.\nToday, as always, he stands on the street smoking, watching the girls who pass by."},
-  {id:10004, name:"SAEM", Pwr:60, Eng:100, spd:140, type:1001, bomb:"ice",
-   face_a:RAW+"10004_fa.png", face_n:RAW+"10004_fn.png", SD_full:RAW+"10004_full.png", pf_img:RAW+"10004_pf.jpg",
-   win_txt:"Gross...you're so ugly. And you smell terrible.",
-   lose_img:RAW+"10004_lose.jpg", win_img:RAW+"10004_end.jpg",
-   f_txt:"Having claimed victory, Saem returned to school.\nCraving blood more and more, she was steadily descending into a blood-soaked demon."},
-  {id:10005, name:"H.K.", Pwr:80, Eng:80, spd:140, type:1002, bomb:"dark",
-   face_a:RAW+"10005_fa.png", face_n:RAW+"10005_fn.png", SD_full:RAW+"10005_full.png", pf_img:RAW+"10005_pf.jpg",
-   win_txt:"Hehehehehe... You fool. Still want to play with me?",
-   lose_img:RAW+"10005_lose.jpg", win_img:RAW+"10005_end.jpg",
-   f_txt:"H.K. won with ease.\nLicking his blood, she felt an orgasm.\nH.K. has now evolved into an even stronger, sharper beast."},
-  {id:10006, name:"NAHYOEN", Pwr:90, Eng:80, spd:130, type:1003, bomb:"dark",
-   face_a:RAW+"10006_fa.png", face_n:RAW+"10006_fn.png", SD_full:RAW+"10006_full.png", pf_img:RAW+"10006_pf.jpg",
-   win_txt:"What a waste of time... on trash like you.",
-   lose_img:RAW+"10006_lose.jpg", win_img:RAW+"10006_end.jpg",
-   f_txt:"Nahyoen barely managed to defeat Seongjin and returned home.\nHaving finally received recognition from her sister, she felt truly happy."},
-  {id:10007, name:"JOONKI", Pwr:90, Eng:100, spd:110, type:1001, bomb:"wind",
-   face_a:RAW+"10007_fa.png", face_n:RAW+"10007_fn.png", SD_full:RAW+"10007_full.png", pf_img:RAW+"10007_pf.jpg",
-   win_txt:"Yo, I actually won, didn't I? See ya!",
-   lose_img:RAW+"10007_lose.jpg", win_img:RAW+"10007_end.jpg",
-   f_txt:"Joonki claimed victory, yet he realized his training was still far from enough.\n“I will overcome any hardship and become the strongest in this city!”"},
-  {id:10008, name:"SEONGHO", Pwr:120, Eng:100, spd:80, type:1002, bomb:"dark",
-   face_a:RAW+"10008_fa.png", face_n:RAW+"10008_fn.png", SD_full:RAW+"10008_full.png", pf_img:RAW+"10008_pf.jpg",
-   win_txt:"In the name of God, I will take your life.",
-   lose_img:RAW+"10008_lose.jpg", win_img:RAW+"10008_end.jpg",
-   f_txt:"Seongho claimed victory in the name of God.\nHe continues his holy mission in the brutal city."},
-  {id:10009, name:"JINSEONG", Pwr:100, Eng:110, spd:90, type:1003, bomb:"fire",
-   face_a:RAW+"10009_fa.png", face_n:RAW+"10009_fn.png", SD_full:RAW+"10009_full.png", pf_img:RAW+"10009_pf.jpg",
-   win_txt:"Where should I cut you, first?",
-   lose_img:RAW+"10009_lose.jpg", win_img:RAW+"10009_end.jpg",
-   f_txt:"Jinseong won the battle.\nHe still seeks the next prey to cut."},
-  {id:10010, name:"JUNCHEOL", Pwr:80, Eng:70, spd:150, type:1001, bomb:"fire",
-   face_a:RAW+"10010_fa.png", face_n:RAW+"10010_fn.png", SD_full:RAW+"10010_full.png", pf_img:RAW+"10010_pf.jpg",
-   win_txt:"Don't mess with me!",
-   lose_img:RAW+"10010_lose.jpg", win_img:RAW+"10010_end.jpg",
-   f_txt:"Juncheol claimed victory.\nNo one dares to mess with him anymore."},
-  {id:10011, name:"HYERI", Pwr:80, Eng:120, spd:100, type:1002, bomb:"light",
-   face_a:RAW+"10011_fa.png", face_n:RAW+"10011_fn.png", SD_full:RAW+"10011_full.png", pf_img:RAW+"10011_pf.jpg",
-   win_txt:"Does it hurt a lot? I'm sorry.",
-   lose_img:RAW+"10011_lose.jpg", win_img:RAW+"10011_end.jpg",
-   f_txt:"Hyeri won, yet she felt a strange emptiness.\n“Does it really have to end like this?”"},
-  {id:10012, name:"MINSEOP", Pwr:90, Eng:100, spd:110, type:1003, bomb:"wind",
-   face_a:RAW+"10012_fa.png", face_n:RAW+"10012_fn.png", SD_full:RAW+"10012_full.png", pf_img:RAW+"10012_pf.jpg",
-   win_txt:"From now on, you are my slave.",
-   lose_img:RAW+"10012_lose.jpg", win_img:RAW+"10012_end.jpg",
-   f_txt:"Minseop claimed absolute victory.\nFrom now on, the city belongs to him."}
+const RAW="https://raw.githubusercontent.com/steveJea/vrshoot/main/img/";
+const characters=[
+{id:10001,name:"YURI",Pwr:100,Eng:100,spd:100,type:1001,bomb:"dark",face_a:RAW+"10001_fa.png",face_n:RAW+"10001_fn.png",SD_full:RAW+"10001_full.png",pf_img:RAW+"10001_pf.jpg",win_txt:"Vile and hideous creature. Embrace your death.",lose_img:RAW+"10001_lose.jpg",win_img:RAW+"10001_end.jpg",f_txt:"Yuri killed Seongjin and sat upon the true throne of darkness.\nBut she, who had always been empty inside, set out in search of new prey.\nThe doors of Yuri's Castle finally opened—and within waits the lewd, cold Yuri."},
+{id:10002,name:"SEKANG",Pwr:150,Eng:120,spd:30,type:1002,bomb:"fire",face_a:RAW+"10002_fa.png",face_n:RAW+"10002_fn.png",SD_full:RAW+"10002_full.png",pf_img:RAW+"10002_pf.jpg",win_txt:"Don't block my path!",lose_img:RAW+"10002_lose.jpg",win_img:RAW+"10002_end.jpg",f_txt:"Sekang seized victory as a matter of course.\nHe continues to follow the trail of his vanished younger sister.\n“Seryoen… please, be safe!”"},
+{id:10003,name:"HOO",Pwr:110,Eng:80,spd:110,type:1003,bomb:"ice",face_a:RAW+"10003_fa.png",face_n:RAW+"10003_fn.png",SD_full:RAW+"10003_full.png",pf_img:RAW+"10003_pf.jpg",win_txt:"Mad about it? Still want more? Push it and you'll really die.",lose_img:RAW+"10003_lose.jpg",win_img:RAW+"10003_end.jpg",f_txt:"He had joined the game out of sheer boredom—and won it without much difficulty.\nToday, as always, he stands on the street smoking, watching the girls who pass by."},
+{id:10004,name:"SAEM",Pwr:60,Eng:100,spd:140,type:1001,bomb:"ice",face_a:RAW+"10004_fa.png",face_n:RAW+"10004_fn.png",SD_full:RAW+"10004_full.png",pf_img:RAW+"10004_pf.jpg",win_txt:"Gross...you're so ugly. And you smell terrible.",lose_img:RAW+"10004_lose.jpg",win_img:RAW+"10004_end.jpg",f_txt:"Having claimed victory, Saem returned to school.\nCraving blood more and more, she was steadily descending into a blood-soaked demon."},
+{id:10005,name:"H.K.",Pwr:80,Eng:80,spd:140,type:1002,bomb:"dark",face_a:RAW+"10005_fa.png",face_n:RAW+"10005_fn.png",SD_full:RAW+"10005_full.png",pf_img:RAW+"10005_pf.jpg",win_txt:"Hehehehehe... You fool. Still want to play with me?",lose_img:RAW+"10005_lose.jpg",win_img:RAW+"10005_end.jpg",f_txt:"H.K. won with ease.\nLicking his blood, she felt an orgasm.\nH.K. has now evolved into an even stronger, sharper beast."},
+{id:10006,name:"NAHYOEN",Pwr:90,Eng:80,spd:130,type:1003,bomb:"dark",face_a:RAW+"10006_fa.png",face_n:RAW+"10006_fn.png",SD_full:RAW+"10006_full.png",pf_img:RAW+"10006_pf.jpg",win_txt:"What a waste of time... on trash like you.",lose_img:RAW+"10006_lose.jpg",win_img:RAW+"10006_end.jpg",f_txt:"Nahyoen barely managed to defeat Seongjin and returned home.\nHaving finally received recognition from her sister, she felt truly happy."},
+{id:10007,name:"JOONKI",Pwr:90,Eng:100,spd:110,type:1001,bomb:"wind",face_a:RAW+"10007_fa.png",face_n:RAW+"10007_fn.png",SD_full:RAW+"10007_full.png",pf_img:RAW+"10007_pf.jpg",win_txt:"Yo, I actually won, didn't I? See ya!",lose_img:RAW+"10007_lose.jpg",win_img:RAW+"10007_end.jpg",f_txt:"Joonki claimed victory, yet he realized his training was still far from enough.\n“I will overcome any hardship and become the strongest in this city!”"},
+{id:10008,name:"SEONGHO",Pwr:120,Eng:100,spd:80,type:1002,bomb:"dark",face_a:RAW+"10008_fa.png",face_n:RAW+"10008_fn.png",SD_full:RAW+"10008_full.png",pf_img:RAW+"10008_pf.jpg",win_txt:"In the name of God, I will take your life.",lose_img:RAW+"10008_lose.jpg",win_img:RAW+"10008_end.jpg",f_txt:"Seongho claimed victory in the name of God.\nHe continues his holy mission in the brutal city."},
+{id:10009,name:"JINSEONG",Pwr:100,Eng:110,spd:90,type:1003,bomb:"fire",face_a:RAW+"10009_fa.png",face_n:RAW+"10009_fn.png",SD_full:RAW+"10009_full.png",pf_img:RAW+"10009_pf.jpg",win_txt:"Where should I cut you, first?",lose_img:RAW+"10009_lose.jpg",win_img:RAW+"10009_end.jpg",f_txt:"Jinseong won the battle.\nHe still seeks the next prey to cut."},
+{id:10010,name:"JUNCHEOL",Pwr:80,Eng:70,spd:150,type:1001,bomb:"fire",face_a:RAW+"10010_fa.png",face_n:RAW+"10010_fn.png",SD_full:RAW+"10010_full.png",pf_img:RAW+"10010_pf.jpg",win_txt:"Don't mess with me!",lose_img:RAW+"10010_lose.jpg",win_img:RAW+"10010_end.jpg",f_txt:"Juncheol claimed victory.\nNo one dares to mess with him anymore."},
+{id:10011,name:"HYERI",Pwr:80,Eng:120,spd:100,type:1002,bomb:"light",face_a:RAW+"10011_fa.png",face_n:RAW+"10011_fn.png",SD_full:RAW+"10011_full.png",pf_img:RAW+"10011_pf.jpg",win_txt:"Does it hurt a lot? I'm sorry.",lose_img:RAW+"10011_lose.jpg",win_img:RAW+"10011_end.jpg",f_txt:"Hyeri won, yet she felt a strange emptiness.\n“Does it really have to end like this?”"},
+{id:10012,name:"MINSEOP",Pwr:90,Eng:100,spd:110,type:1003,bomb:"wind",face_a:RAW+"10012_fa.png",face_n:RAW+"10012_fn.png",SD_full:RAW+"10012_full.png",pf_img:RAW+"10012_pf.jpg",win_txt:"From now on, you are my slave.",lose_img:RAW+"10012_lose.jpg",win_img:RAW+"10012_end.jpg",f_txt:"Minseop claimed absolute victory.\nFrom now on, the city belongs to him."}
 ];
-
-const bosses = [
-  {id:10013, name:"ABYSS LORD", Pwr:180, Eng:200, spd:90, type:1004, bomb:"demon",
-   face_a:RAW+"10013_fa.jpg", face_n:RAW+"10013_fn.jpg", SD_full:RAW+"10013_full.jpg", pf_img:RAW+"10013_pf.jpg",
-   boss_img:RAW+"boss_10013.jpg", win_txt:"You are nothing before the abyss.",
-   lose_img:RAW+"10013_lose.jpg", win_img:RAW+"10013_end.jpg",
-   f_txt:"The Abyss Lord claimed the throne of darkness."},
-  {id:10014, name:"BLOOD QUEEN", Pwr:200, Eng:220, spd:110, type:1005, bomb:"abyss",
-   face_a:RAW+"10014_fa.jpg", face_n:RAW+"10014_fn.jpg", SD_full:RAW+"10014_full.jpg", pf_img:RAW+"10014_pf.jpg",
-   boss_img:RAW+"boss_10014.jpg", win_txt:"Your blood will paint my throne.",
-   lose_img:RAW+"10014_lose.jpg", win_img:RAW+"10014_end.jpg",
-   f_txt:"The Blood Queen bathed the city in crimson."},
-  {id:10015, name:"TRUE KING", Pwr:250, Eng:300, spd:80, type:1005, bomb:"abyss",
-   face_a:RAW+"10015_fa.jpg", face_n:RAW+"10015_fn.jpg", SD_full:RAW+"10015_full.jpg", pf_img:RAW+"10015_pf.jpg",
-   boss_img:RAW+"boss_10015.jpg", win_txt:"The throne is mine alone.",
-   lose_img:RAW+"10015_lose.jpg", win_img:RAW+"10015_end.jpg",
-   f_txt:"The True King ascended and the city fell silent forever."}
+const bosses=[
+{id:10013,name:"ABYSS LORD",Pwr:180,Eng:200,spd:90,type:1004,bomb:"demon",face_a:RAW+"10013_fa.jpg",face_n:RAW+"10013_fn.jpg",SD_full:RAW+"10013_full.jpg",pf_img:RAW+"10013_pf.jpg",boss_img:RAW+"boss_10013.jpg",win_txt:"You are nothing before the abyss.",lose_img:RAW+"10013_lose.jpg",win_img:RAW+"10013_end.jpg",f_txt:"The Abyss Lord claimed the throne of darkness."},
+{id:10014,name:"BLOOD QUEEN",Pwr:200,Eng:220,spd:110,type:1005,bomb:"abyss",face_a:RAW+"10014_fa.jpg",face_n:RAW+"10014_fn.jpg",SD_full:RAW+"10014_full.jpg",pf_img:RAW+"10014_pf.jpg",boss_img:RAW+"boss_10014.jpg",win_txt:"Your blood will paint my throne.",lose_img:RAW+"10014_lose.jpg",win_img:RAW+"10014_end.jpg",f_txt:"The Blood Queen bathed the city in crimson."},
+{id:10015,name:"TRUE KING",Pwr:250,Eng:300,spd:80,type:1005,bomb:"abyss",face_a:RAW+"10015_fa.jpg",face_n:RAW+"10015_fn.jpg",SD_full:RAW+"10015_full.jpg",pf_img:RAW+"10015_pf.jpg",boss_img:RAW+"boss_10015.jpg",win_txt:"The throne is mine alone.",lose_img:RAW+"10015_lose.jpg",win_img:RAW+"10015_end.jpg",f_txt:"The True King ascended and the city fell silent forever."}
 ];
+characters.forEach(c=>{c.img_n=new Image();c.img_n.src=c.face_n;c.img_a=new Image();c.img_a.src=c.face_a});
+bosses.forEach(c=>{c.img_n=new Image();c.img_n.src=c.face_n;c.img_a=new Image();c.img_a.src=c.face_a});
 
-characters.forEach(c => { c.img_n = new Image(); c.img_n.src = c.face_n; c.img_a = new Image(); c.img_a.src = c.face_a; });
-bosses.forEach(c => { c.img_n = new Image(); c.img_n.src = c.face_n; c.img_a = new Image(); c.img_a.src = c.face_a; });
+let defeated=new Set(),playerChar=null,enemyChar=null,bossIndex=0,isBossFight=false,gameState="title",endingPhase=0;
+let cheatBuffer="",unlockedBosses=new Set();
+const CHEATS={"sexydynamite":0,"poweroverwhelming":1,"shinlimsurgery":2};
 
-let defeated = new Set();
-let playerChar = null;
-let enemyChar = null;
-let bossIndex = 0;
-let isBossFight = false;
-let gameState = "title";
-let endingPhase = 0;
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');gameState=id.replace('-screen','')}
 
-// CHEAT SYSTEM
-let cheatBuffer = "";
-const CHEATS = {
-  "sexydynamite": 0,
-  "poweroverwhelming": 1,
-  "shinlimsurgery": 2
-};
-const unlockedBosses = new Set();
-
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  gameState = id.replace('-screen','');
-}
-
-document.addEventListener('keydown', function(e) {
-  if (gameState === 'title') {
-    showScreen('select-screen');
-    renderSelect();
-    return;
-  }
-
-  if (gameState === 'select') {
-    if (e.key.length === 1 && /[a-zA-Z]/.test(e.key)) {
-      cheatBuffer += e.key.toLowerCase();
-      if (cheatBuffer.length > 25) cheatBuffer = cheatBuffer.slice(-25);
-
-      for (const code in CHEATS) {
-        if (cheatBuffer.endsWith(code)) {
-          const boss = bosses[CHEATS[code]];
-          addBossCard(boss);
-          cheatBuffer = "";
-          break;
-        }
+document.addEventListener('keydown',function(e){
+  if(gameState==='title'){showScreen('select-screen');renderSelect();return}
+  if(gameState==='select'){
+    if(e.key.length===1&&/[a-zA-Z]/.test(e.key)){
+      cheatBuffer+=e.key.toLowerCase();
+      if(cheatBuffer.length>25)cheatBuffer=cheatBuffer.slice(-25);
+      for(const code in CHEATS){
+        if(cheatBuffer.endsWith(code)){addBossCard(bosses[CHEATS[code]]);cheatBuffer="";break}
       }
     }
   }
 });
 
-function renderSelect() {
-  const grid = document.getElementById('char-grid');
-  grid.innerHTML = '';
-  unlockedBosses.clear();
-
-  characters.forEach(c => {
-    const card = document.createElement('div');
-    card.className = 'char-card';
-    card.innerHTML = '<img src="' + c.pf_img + '" alt="' + c.name + '"><div class="name">' + c.name + '</div>';
-    card.onclick = function() { selectPlayer(c, card); };
-    grid.appendChild(card);
+function renderSelect(){
+  const grid=document.getElementById('char-grid');grid.innerHTML='';unlockedBosses.clear();
+  characters.forEach(c=>{
+    const card=document.createElement('div');card.className='char-card';
+    card.innerHTML='<img src="'+c.pf_img+'" alt="'+c.name+'"><div class="name">'+c.name+'</div>';
+    card.onclick=function(){selectPlayer(c,card)};grid.appendChild(card);
   });
 }
 
-function addBossCard(boss) {
-  if (unlockedBosses.has(boss.id)) return;
-  unlockedBosses.add(boss.id);
-
-  const grid = document.getElementById('char-grid');
-  const card = document.createElement('div');
-  card.className = 'char-card boss-card';
-  card.dataset.bossId = boss.id;
-  card.innerHTML = '<img src="' + boss.pf_img + '" alt="' + boss.name + '"><div class="name">' + boss.name + '</div>';
-  card.onclick = function() {
-    playerChar = boss;
-    card.classList.add('selected');
-    const candidates = characters.slice();
-    enemyChar = candidates[Math.floor(Math.random() * candidates.length)];
-    isBossFight = false;
-    setTimeout(goToVS, 700);
-  };
-  grid.appendChild(card);
-  grid.scrollTop = grid.scrollHeight;
+function addBossCard(boss){
+  if(unlockedBosses.has(boss.id))return;unlockedBosses.add(boss.id);
+  const grid=document.getElementById('char-grid');
+  const card=document.createElement('div');card.className='char-card boss-card';card.dataset.bossId=boss.id;
+  card.innerHTML='<img src="'+boss.pf_img+'" alt="'+boss.name+'"><div class="name">'+boss.name+'</div>';
+  card.onclick=function(){playerChar=boss;card.classList.add('selected');enemyChar=characters[Math.floor(Math.random()*characters.length)];isBossFight=false;setTimeout(goToVS,700)};
+  grid.appendChild(card);grid.scrollTop=grid.scrollHeight;
 }
 
-function selectPlayer(c, card) {
-  playerChar = c;
-  card.classList.add('selected');
-  const candidates = characters.filter(x => x.id !== c.id);
-  enemyChar = candidates[Math.floor(Math.random() * candidates.length)];
-  isBossFight = false;
-  setTimeout(goToVS, 700);
+function selectPlayer(c,card){playerChar=c;card.classList.add('selected');const candidates=characters.filter(x=>x.id!==c.id);enemyChar=candidates[Math.floor(Math.random()*candidates.length)];isBossFight=false;setTimeout(goToVS,700)}
+
+function goToVS(){
+  const normal=document.getElementById('vs-normal'),bossDiv=document.getElementById('vs-boss');
+  if(isBossFight){normal.style.display='none';bossDiv.style.display='flex';document.getElementById('vs-boss-img').src=enemyChar.boss_img;document.getElementById('vs-boss-name').textContent=enemyChar.name}
+  else{normal.style.display='flex';bossDiv.style.display='none';document.getElementById('vs-player-img').src=playerChar.SD_full||playerChar.pf_img;document.getElementById('vs-player-name').textContent=playerChar.name;document.getElementById('vs-enemy-img').src=enemyChar.SD_full||enemyChar.pf_img;document.getElementById('vs-enemy-name').textContent=enemyChar.name}
+  showScreen('vs-screen');setTimeout(startBattle,2200);
 }
 
-function goToVS() {
-  const normal = document.getElementById('vs-normal');
-  const bossDiv = document.getElementById('vs-boss');
+const canvas=document.getElementById('battle-canvas'),ctx=canvas.getContext('2d');
+let W,H,midY,player,enemy,bullets=[],effects=[],particles=[],keys={},timer=30,timerInterval=null,lastTime=0,battleActive=false,shakeTime=0;
 
-  if (isBossFight) {
-    normal.style.display = 'none';
-    bossDiv.style.display = 'flex';
-    document.getElementById('vs-boss-img').src = enemyChar.boss_img;
-    document.getElementById('vs-boss-name').textContent = enemyChar.name;
-  } else {
-    normal.style.display = 'flex';
-    bossDiv.style.display = 'none';
-    document.getElementById('vs-player-img').src = playerChar.SD_full || playerChar.pf_img;
-    document.getElementById('vs-player-name').textContent = playerChar.name;
-    document.getElementById('vs-enemy-img').src = enemyChar.SD_full || enemyChar.pf_img;
-    document.getElementById('vs-enemy-name').textContent = enemyChar.name;
-  }
-  showScreen('vs-screen');
-  setTimeout(startBattle, 2200);
-}
+function resizeCanvas(){const rect=canvas.parentElement.getBoundingClientRect();canvas.width=rect.width;canvas.height=rect.height-70;W=canvas.width;H=canvas.height;midY=H*.48}
+window.addEventListener('resize',()=>{if(gameState==='battle')resizeCanvas()});
 
-const canvas = document.getElementById('battle-canvas');
-const ctx = canvas.getContext('2d');
-let W, H, midY;
-let player, enemy;
-let bullets = [];
-let effects = [];
-let particles = [];
-let keys = {};
-let timer = 30;
-let timerInterval = null;
-let lastTime = 0;
-let battleActive = false;
-let shakeTime = 0;
-
-function resizeCanvas() {
-  const rect = canvas.parentElement.getBoundingClientRect();
-  canvas.width = rect.width;
-  canvas.height = rect.height - 70;
-  W = canvas.width; H = canvas.height; midY = H * 0.48;
-}
-window.addEventListener('resize', () => { if (gameState === 'battle') resizeCanvas(); });
-
-function startBattle() {
-  showScreen('battle-screen');
-  resizeCanvas();
-
-  const pEng = playerChar.Eng * 10;
-  const eEng = enemyChar.Eng * 10;
-
-  player = {
-    x: W/2, y: H - 110, char: playerChar,
-    eng: pEng, maxEng: pEng, spd: playerChar.spd, type: playerChar.type, bomb: playerChar.bomb,
-    hitTimer: 0, fireCD: 0, bombUsed: false, status: {}, specialFlash: 0
-  };
-  enemy = {
-    x: W/2, y: 110, char: enemyChar,
-    eng: eEng, maxEng: eEng, spd: enemyChar.spd, type: enemyChar.type, bomb: enemyChar.bomb,
-    hitTimer: 0, fireCD: 1.2, bombUsed: false, status: {}, specialFlash: 0,
-    aiTimer: 0, aiDirX: 1, aiDirY: 0
-  };
-
-  bullets = []; effects = []; particles = [];
-  timer = 30; battleActive = true; shakeTime = 0;
-
-  document.getElementById('player-face').src = playerChar.face_n;
-  document.getElementById('enemy-face').src = enemyChar.face_n;
-  updateHPBars();
-  document.getElementById('timer').textContent = timer;
-
+function startBattle(){
+  showScreen('battle-screen');resizeCanvas();
+  const pEng=playerChar.Eng*10,eEng=enemyChar.Eng*10;
+  player={x:W/2,y:H-110,char:playerChar,eng:pEng,maxEng:pEng,spd:playerChar.spd,type:playerChar.type,bomb:playerChar.bomb,hitTimer:0,fireCD:0,bombUsed:false,status:{},specialFlash:0};
+  enemy={x:W/2,y:110,char:enemyChar,eng:eEng,maxEng:eEng,spd:enemyChar.spd,type:enemyChar.type,bomb:enemyChar.bomb,hitTimer:0,fireCD:1.2,bombUsed:false,status:{},specialFlash:0,aiTimer:0,aiDirX:1,aiDirY:0};
+  bullets=[];effects=[];particles=[];timer=30;battleActive=true;shakeTime=0;
+  document.getElementById('player-face').src=playerChar.face_n;document.getElementById('enemy-face').src=enemyChar.face_n;
+  updateHPBars();document.getElementById('timer').textContent=timer;
   clearInterval(timerInterval);
-  timerInterval = setInterval(() => {
-    if (!battleActive) return;
-    timer--;
-    document.getElementById('timer').textContent = timer;
-    if (timer <= 0) endBattleByTime();
-  }, 1000);
-
-  lastTime = performance.now();
-  requestAnimationFrame(battleLoop);
-
-  window.onkeydown = e => {
-    keys[e.key] = true;
-    if ((e.key === 'q' || e.key === 'Q') && !player.bombUsed) useBomb(player);
-  };
-  window.onkeyup = e => { keys[e.key] = false; };
+  timerInterval=setInterval(()=>{if(!battleActive)return;timer--;document.getElementById('timer').textContent=timer;if(timer<=0)endBattleByTime()},1000);
+  lastTime=performance.now();requestAnimationFrame(battleLoop);
+  window.onkeydown=e=>{keys[e.key]=true;if((e.key==='q'||e.key==='Q')&&!player.bombUsed)useBomb(player)};
+  window.onkeyup=e=>{keys[e.key]=false};
 }
 
-function updateHPBars() {
-  document.getElementById('player-hp-bar').style.width = Math.max(0, player.eng / player.maxEng * 100) + '%';
-  document.getElementById('enemy-hp-bar').style.width = Math.max(0, enemy.eng / enemy.maxEng * 100) + '%';
+function updateHPBars(){document.getElementById('player-hp-bar').style.width=Math.max(0,player.eng/player.maxEng*100)+'%';document.getElementById('enemy-hp-bar').style.width=Math.max(0,enemy.eng/enemy.maxEng*100)+'%'}
+
+function battleLoop(now){if(!battleActive)return;const dt=Math.min((now-lastTime)/1000,.05);lastTime=now;update(dt);draw();requestAnimationFrame(battleLoop)}
+
+function update(dt){
+  let mx=0,my=0;
+  if(keys['ArrowLeft']||keys['a']||keys['A'])mx=-1;if(keys['ArrowRight']||keys['d']||keys['D'])mx=1;
+  if(keys['ArrowUp']||keys['w']||keys['W'])my=-1;if(keys['ArrowDown']||keys['s']||keys['S'])my=1;
+  const pSpeed=(player.spd/100)*260*(player.status.slow?.65:1);
+  if(!player.status.freeze){player.x+=mx*pSpeed*dt;player.y+=my*pSpeed*dt;player.x=Math.max(50,Math.min(W-50,player.x));player.y=Math.max(midY+40,Math.min(H-60,player.y))}
+  enemy.aiTimer-=dt;let dodgeX=0,dodgeY=0;
+  for(const b of bullets){if(b.owner!=='player')continue;const dx=b.x-enemy.x,dy=b.y-enemy.y,dist=Math.sqrt(dx*dx+dy*dy);if(dist<180&&Math.abs(dx)<70){dodgeX+=dx>0?-1:1;dodgeY+=dy>0?-0.6:0.4}}
+  if(Math.abs(dodgeX)+Math.abs(dodgeY)>.3){enemy.aiDirX=dodgeX;enemy.aiDirY=dodgeY;enemy.aiTimer=.35}
+  else if(enemy.aiTimer<=0){enemy.aiDirX=(Math.random()-.5)*2;enemy.aiDirY=(Math.random()-.5)*1.2;enemy.aiTimer=.5+Math.random()*.9}
+  const eSpeed=(enemy.spd/100)*230*(enemy.status.slow?.65:1);
+  if(!enemy.status.freeze){const len=Math.sqrt(enemy.aiDirX*enemy.aiDirX+enemy.aiDirY*enemy.aiDirY)||1;enemy.x+=(enemy.aiDirX/len)*eSpeed*dt;enemy.y+=(enemy.aiDirY/len)*eSpeed*dt;enemy.x=Math.max(50,Math.min(W-50,enemy.x));enemy.y=Math.max(60,Math.min(midY-40,enemy.y))}
+  if(!player.status.freeze){player.fireCD-=dt;if(player.fireCD<=0){firePattern(player,-1);player.fireCD=1.9}}
+  if(!enemy.status.freeze){enemy.fireCD-=dt;if(enemy.fireCD<=0){firePattern(enemy,1);enemy.fireCD=1.8;if(!enemy.bombUsed&&enemy.eng<enemy.maxEng*.5&&Math.random()<.4)useBomb(enemy)}}
+  for(let i=bullets.length-1;i>=0;i--){const b=bullets[i];b.x+=b.vx*dt;b.y+=b.vy*dt;const target=b.owner==='player'?enemy:player;if(Math.abs(b.y-target.y)<50&&Math.abs(b.x-target.x)<48){applyDamage(target,b.dmg);spawnExplosion(b.x,b.y,b.owner==='player'?'#4af':'#f44');bullets.splice(i,1);continue}if(b.y<-40||b.y>H+40||b.x<-40||b.x>W+40)bullets.splice(i,1)}
+  updateStatus(player,dt);updateStatus(enemy,dt);
+  if(player.hitTimer>0){player.hitTimer-=dt;if(player.hitTimer<=0)document.getElementById('player-face').src=playerChar.face_n}
+  if(enemy.hitTimer>0){enemy.hitTimer-=dt;if(enemy.hitTimer<=0)document.getElementById('enemy-face').src=enemyChar.face_n}
+  if(player.specialFlash>0)player.specialFlash-=dt;if(enemy.specialFlash>0)enemy.specialFlash-=dt;if(shakeTime>0)shakeTime-=dt;
+  for(let i=particles.length-1;i>=0;i--){const p=particles[i];p.x+=p.vx*dt;p.y+=p.vy*dt;p.life-=dt;if(p.life<=0)particles.splice(i,1)}
+  if(player.eng<=0){player.eng=0;endBattle(false)}else if(enemy.eng<=0){enemy.eng=0;endBattle(true)}
 }
 
-function battleLoop(now) {
-  if (!battleActive) return;
-  const dt = Math.min((now - lastTime) / 1000, 0.05);
-  lastTime = now;
-  update(dt);
-  draw();
-  requestAnimationFrame(battleLoop);
+function firePattern(ent,dir){
+  const baseDmg=Math.max(1,Math.floor(ent.char.Pwr/10)),speed=340*dir,type=ent.type;
+  if(type===1001){for(let i=0;i<5;i++)setTimeout(()=>{if(!battleActive)return;bullets.push({x:ent.x,y:ent.y+(dir>0?45:-45),vx:0,vy:speed,dmg:baseDmg,owner:dir<0?'player':'enemy',color:dir<0?'#4af':'#f44'})},i*85)}
+  else if(type===1002){[-1.2,0,1.2].forEach(ang=>bullets.push({x:ent.x,y:ent.y+(dir>0?45:-45),vx:ang*95,vy:speed*.95,dmg:baseDmg,owner:dir<0?'player':'enemy',color:dir<0?'#4af':'#f44'}))}
+  else if(type===1003){for(let k=0;k<2;k++)setTimeout(()=>{if(!battleActive)return;[-.7,.7].forEach(ang=>bullets.push({x:ent.x,y:ent.y+(dir>0?45:-45),vx:ang*75,vy:speed,dmg:baseDmg,owner:dir<0?'player':'enemy',color:dir<0?'#4af':'#f44'}))},k*170)}
+  else if(type===1004){for(let i=0;i<5;i++)setTimeout(()=>{if(!battleActive)return;[-.9,0,.9].forEach(ang=>bullets.push({x:ent.x,y:ent.y+(dir>0?45:-45),vx:ang*80,vy:speed,dmg:baseDmg,owner:dir<0?'player':'enemy',color:dir<0?'#4af':'#f44'}))},i*100)}
+  else if(type===1005){for(let i=0;i<5;i++)setTimeout(()=>{if(!battleActive)return;[-1.4,-.7,0,.7,1.4].forEach(ang=>bullets.push({x:ent.x,y:ent.y+(dir>0?45:-45),vx:ang*70,vy:speed*.92,dmg:baseDmg,owner:dir<0?'player':'enemy',color:dir<0?'#4af':'#f44'}))},i*110)}
 }
 
-function update(dt) {
-  let mx = 0, my = 0;
-  if (keys['ArrowLeft'] || keys['a'] || keys['A']) mx = -1;
-  if (keys['ArrowRight'] || keys['d'] || keys['D']) mx = 1;
-  if (keys['ArrowUp'] || keys['w'] || keys['W']) my = -1;
-  if (keys['ArrowDown'] || keys['s'] || keys['S']) my = 1;
-  const pSpeed = (player.spd / 100) * 260 * (player.status.slow ? 0.65 : 1);
-  if (!player.status.freeze) {
-    player.x += mx * pSpeed * dt;
-    player.y += my * pSpeed * dt;
-    player.x = Math.max(50, Math.min(W-50, player.x));
-    player.y = Math.max(midY + 40, Math.min(H-60, player.y));
-  }
-
-  enemy.aiTimer -= dt;
-  let dodgeX = 0, dodgeY = 0;
-  for (const b of bullets) {
-    if (b.owner !== 'player') continue;
-    const dx = b.x - enemy.x;
-    const dy = b.y - enemy.y;
-    const dist = Math.sqrt(dx*dx + dy*dy);
-    if (dist < 180 && Math.abs(dx) < 70) {
-      dodgeX += dx > 0 ? -1 : 1;
-      dodgeY += dy > 0 ? -0.6 : 0.4;
-    }
-  }
-  if (Math.abs(dodgeX) + Math.abs(dodgeY) > 0.3) {
-    enemy.aiDirX = dodgeX;
-    enemy.aiDirY = dodgeY;
-    enemy.aiTimer = 0.35;
-  } else if (enemy.aiTimer <= 0) {
-    enemy.aiDirX = (Math.random() - 0.5) * 2;
-    enemy.aiDirY = (Math.random() - 0.5) * 1.2;
-    enemy.aiTimer = 0.5 + Math.random() * 0.9;
-  }
-  const eSpeed = (enemy.spd / 100) * 230 * (enemy.status.slow ? 0.65 : 1);
-  if (!enemy.status.freeze) {
-    const len = Math.sqrt(enemy.aiDirX*enemy.aiDirX + enemy.aiDirY*enemy.aiDirY) || 1;
-    enemy.x += (enemy.aiDirX / len) * eSpeed * dt;
-    enemy.y += (enemy.aiDirY / len) * eSpeed * dt;
-    enemy.x = Math.max(50, Math.min(W-50, enemy.x));
-    enemy.y = Math.max(60, Math.min(midY - 40, enemy.y));
-  }
-
-  if (!player.status.freeze) {
-    player.fireCD -= dt;
-    if (player.fireCD <= 0) { firePattern(player, -1); player.fireCD = 1.9; }
-  }
-  if (!enemy.status.freeze) {
-    enemy.fireCD -= dt;
-    if (enemy.fireCD <= 0) {
-      firePattern(enemy, 1);
-      enemy.fireCD = 1.8;
-      if (!enemy.bombUsed && enemy.eng < enemy.maxEng * 0.5 && Math.random() < 0.4) useBomb(enemy);
-    }
-  }
-
-  for (let i = bullets.length - 1; i >= 0; i--) {
-    const b = bullets[i];
-    b.x += b.vx * dt; b.y += b.vy * dt;
-    const target = b.owner === 'player' ? enemy : player;
-    if (Math.abs(b.y - target.y) < 50 && Math.abs(b.x - target.x) < 48) {
-      applyDamage(target, b.dmg);
-      spawnExplosion(b.x, b.y, b.owner === 'player' ? '#4af' : '#f44');
-      bullets.splice(i, 1);
-      continue;
-    }
-    if (b.y < -40 || b.y > H+40 || b.x < -40 || b.x > W+40) bullets.splice(i, 1);
-  }
-
-  updateStatus(player, dt);
-  updateStatus(enemy, dt);
-
-  if (player.hitTimer > 0) {
-    player.hitTimer -= dt;
-    if (player.hitTimer <= 0) document.getElementById('player-face').src = playerChar.face_n;
-  }
-  if (enemy.hitTimer > 0) {
-    enemy.hitTimer -= dt;
-    if (enemy.hitTimer <= 0) document.getElementById('enemy-face').src = enemyChar.face_n;
-  }
-
-  if (player.specialFlash > 0) player.specialFlash -= dt;
-  if (enemy.specialFlash > 0) enemy.specialFlash -= dt;
-  if (shakeTime > 0) shakeTime -= dt;
-
-  for (let i = particles.length-1; i>=0; i--) {
-    const p = particles[i];
-    p.x += p.vx * dt; p.y += p.vy * dt; p.life -= dt;
-    if (p.life <= 0) particles.splice(i,1);
-  }
-
-  if (player.eng <= 0) { player.eng = 0; endBattle(false); }
-  else if (enemy.eng <= 0) { enemy.eng = 0; endBattle(true); }
+function useBomb(ent){
+  if(ent.bombUsed||ent.status.freeze)return;ent.bombUsed=true;ent.specialFlash=1.2;
+  const target=ent===player?enemy:player,type=ent.bomb;
+  if(type==='fire'){target.status.burn=3;addEffect(target.x,target.y,'🔥',1.6)}
+  else if(type==='wind'){for(let i=0;i<10;i++)setTimeout(()=>{if(!battleActive)return;const d=ent===player?-1:1;bullets.push({x:ent.x+(Math.random()-.5)*40,y:ent.y+(d>0?35:-35),vx:(Math.random()-.5)*50,vy:400*d,dmg:1.5,owner:ent===player?'player':'enemy',color:'#aaf'})},i*55)}
+  else if(type==='ice'){target.status.freeze=3;addEffect(target.x,target.y,'❄️',2.5)}
+  else if(type==='dark'){target.status.slow=5;target.status.curse=5;addEffect(target.x,target.y,'🌑',2)}
+  else if(type==='light'){ent.status.heal=5;addEffect(ent.x,ent.y,'✨',2)}
+  else if(type==='demon'){const dmg=target.eng*.2;target.status.demon=5;target.status.demonDmg=dmg/5;addEffect(target.x,target.y,'😈',2.5)}
+  else if(type==='abyss'){const dmg=target.eng*.5;target.eng=Math.max(0,target.eng-dmg);updateHPBars();spawnBlackExplosion(target.x,target.y);addEffect(target.x,target.y,'💀',2)}
 }
 
-function firePattern(ent, dir) {
-  const baseDmg = Math.max(1, Math.floor(ent.char.Pwr / 10));
-  const speed = 340 * dir;
-  const type = ent.type;
-
-  if (type === 1001) {
-    for (let i=0;i<5;i++) setTimeout(() => { if(!battleActive)return; bullets.push({x:ent.x,y:ent.y+(dir>0?45:-45),vx:0,vy:speed,dmg:baseDmg,owner:dir<0?'player':'enemy',color:dir<0?'#4af':'#f44'}); }, i*85);
-  } else if (type === 1002) {
-    [-1.2,0,1.2].forEach(ang => bullets.push({x:ent.x,y:ent.y+(dir>0?45:-45),vx:ang*95,vy:speed*0.95,dmg:baseDmg,owner:dir<0?'player':'enemy',color:dir<0?'#4af':'#f44'}));
-  } else if (type === 1003) {
-    for (let k=0;k<2;k++) setTimeout(() => { if(!battleActive)return; [-0.7,0.7].forEach(ang => bullets.push({x:ent.x,y:ent.y+(dir>0?45:-45),vx:ang*75,vy:speed,dmg:baseDmg,owner:dir<0?'player':'enemy',color:dir<0?'#4af':'#f44'})); }, k*170);
-  } else if (type === 1004) {
-    for (let i=0;i<5;i++) setTimeout(() => { if(!battleActive)return; [-0.9,0,0.9].forEach(ang => bullets.push({x:ent.x,y:ent.y+(dir>0?45:-45),vx:ang*80,vy:speed,dmg:baseDmg,owner:dir<0?'player':'enemy',color:dir<0?'#4af':'#f44'})); }, i*100);
-  } else if (type === 1005) {
-    for (let i=0;i<5;i++) setTimeout(() => { if(!battleActive)return; [-1.4,-0.7,0,0.7,1.4].forEach(ang => bullets.push({x:ent.x,y:ent.y+(dir>0?45:-45),vx:ang*70,vy:speed*0.92,dmg:baseDmg,owner:dir<0?'player':'enemy',color:dir<0?'#4af':'#f44'})); }, i*110);
-  }
-}
-
-function useBomb(ent) {
-  if (ent.bombUsed || ent.status.freeze) return;
-  ent.bombUsed = true;
-  ent.specialFlash = 1.2;
-  const target = ent === player ? enemy : player;
-  const type = ent.bomb;
-
-  if (type === 'fire') { target.status.burn = 3.0; addEffect(target.x, target.y, '🔥', 1.6); }
-  else if (type === 'wind') {
-    for (let i=0;i<10;i++) setTimeout(() => { if(!battleActive)return; const d=ent===player?-1:1; bullets.push({x:ent.x+(Math.random()-0.5)*40,y:ent.y+(d>0?35:-35),vx:(Math.random()-0.5)*50,vy:400*d,dmg:1.5,owner:ent===player?'player':'enemy',color:'#aaf'}); }, i*55);
-  } else if (type === 'ice') { target.status.freeze = 3.0; addEffect(target.x, target.y, '❄️', 2.5); }
-  else if (type === 'dark') { target.status.slow = 5.0; target.status.curse = 5.0; addEffect(target.x, target.y, '🌑', 2); }
-  else if (type === 'light') { ent.status.heal = 5.0; addEffect(ent.x, ent.y, '✨', 2); }
-  else if (type === 'demon') {
-    const dmg = target.eng * 0.20;
-    target.status.demon = 5.0;
-    target.status.demonDmg = dmg / 5;
-    addEffect(target.x, target.y, '😈', 2.5);
-  } else if (type === 'abyss') {
-    const dmg = target.eng * 0.50;
-    target.eng = Math.max(0, target.eng - dmg);
-    updateHPBars();
-    spawnBlackExplosion(target.x, target.y);
-    addEffect(target.x, target.y, '💀', 2);
-  }
-}
-
-function applyDamage(ent, dmg) {
-  ent.eng -= dmg;
-  if (ent.eng < 0) ent.eng = 0;
-  ent.hitTimer = 0.28;
-  if (ent === player) {
-    document.getElementById('player-face').src = playerChar.face_a;
-    shakeTime = 0.4;
-    document.getElementById('battle-screen').classList.add('shake');
-    setTimeout(() => document.getElementById('battle-screen').classList.remove('shake'), 400);
-  } else {
-    document.getElementById('enemy-face').src = enemyChar.face_a;
-  }
+function applyDamage(ent,dmg){
+  ent.eng-=dmg;if(ent.eng<0)ent.eng=0;ent.hitTimer=.28;
+  if(ent===player){document.getElementById('player-face').src=playerChar.face_a;shakeTime=.4;document.getElementById('battle-screen').classList.add('shake');setTimeout(()=>document.getElementById('battle-screen').classList.remove('shake'),400)}
+  else document.getElementById('enemy-face').src=enemyChar.face_a;
   updateHPBars();
 }
 
-function updateStatus(ent, dt) {
-  if (ent.status.burn > 0) { ent.status.burn -= dt; ent.eng = Math.max(0, ent.eng - 5*dt); updateHPBars(); if (ent.status.burn<=0) delete ent.status.burn; }
-  if (ent.status.freeze > 0) { ent.status.freeze -= dt; if (ent.status.freeze<=0) delete ent.status.freeze; }
-  if (ent.status.slow > 0) { ent.status.slow -= dt; if (ent.status.slow<=0) delete ent.status.slow; }
-  if (ent.status.curse > 0) { ent.status.curse -= dt; ent.eng = Math.max(0, ent.eng - 1*dt); updateHPBars(); if (ent.status.curse<=0) delete ent.status.curse; }
-  if (ent.status.heal > 0) { ent.status.heal -= dt; ent.eng = Math.min(ent.maxEng, ent.eng + 3*dt); updateHPBars(); if (ent.status.heal<=0) delete ent.status.heal; }
-  if (ent.status.demon > 0) { ent.status.demon -= dt; ent.eng = Math.max(0, ent.eng - ent.status.demonDmg * dt); updateHPBars(); if (ent.status.demon<=0) { delete ent.status.demon; delete ent.status.demonDmg; } }
+function updateStatus(ent,dt){
+  if(ent.status.burn>0){ent.status.burn-=dt;ent.eng=Math.max(0,ent.eng-5*dt);updateHPBars();if(ent.status.burn<=0)delete ent.status.burn}
+  if(ent.status.freeze>0){ent.status.freeze-=dt;if(ent.status.freeze<=0)delete ent.status.freeze}
+  if(ent.status.slow>0){ent.status.slow-=dt;if(ent.status.slow<=0)delete ent.status.slow}
+  if(ent.status.curse>0){ent.status.curse-=dt;ent.eng=Math.max(0,ent.eng-1*dt);updateHPBars();if(ent.status.curse<=0)delete ent.status.curse}
+  if(ent.status.heal>0){ent.status.heal-=dt;ent.eng=Math.min(ent.maxEng,ent.eng+3*dt);updateHPBars();if(ent.status.heal<=0)delete ent.status.heal}
+  if(ent.status.demon>0){ent.status.demon-=dt;ent.eng=Math.max(0,ent.eng-ent.status.demonDmg*dt);updateHPBars();if(ent.status.demon<=0){delete ent.status.demon;delete ent.status.demonDmg}}
 }
 
-function addEffect(x, y, emoji, life) { effects.push({x,y,emoji,life,max:life}); }
-function spawnExplosion(x, y, color) {
-  for (let i=0;i<12;i++) {
-    const a = Math.random()*Math.PI*2;
-    const s = 80 + Math.random()*120;
-    particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:0.35+Math.random()*0.25,color,size:3+Math.random()*4});
-  }
-}
-function spawnBlackExplosion(x, y) {
-  for (let i=0;i<25;i++) {
-    const a = Math.random()*Math.PI*2;
-    const s = 100 + Math.random()*180;
-    particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:0.5+Math.random()*0.4,color:'#111',size:5+Math.random()*7});
-  }
-}
+function addEffect(x,y,emoji,life){effects.push({x,y,emoji,life,max:life})}
+function spawnExplosion(x,y,color){for(let i=0;i<12;i++){const a=Math.random()*Math.PI*2,s=80+Math.random()*120;particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:.35+Math.random()*.25,color,size:3+Math.random()*4})}}
+function spawnBlackExplosion(x,y){for(let i=0;i<25;i++){const a=Math.random()*Math.PI*2,s=100+Math.random()*180;particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:.5+Math.random()*.4,color:'#111',size:5+Math.random()*7})}}
 
-function draw() {
-  ctx.clearRect(0,0,W,H);
-  let ox = 0, oy = 0;
-  if (shakeTime > 0) {
-    ox = (Math.random()-0.5)*10;
-    oy = (Math.random()-0.5)*8;
-  }
-  ctx.save();
-  ctx.translate(ox, oy);
-
-  ctx.strokeStyle = 'rgba(180,50,50,0.35)';
-  ctx.setLineDash([10,8]);
-  ctx.beginPath(); ctx.moveTo(0,midY); ctx.lineTo(W,midY); ctx.stroke();
-  ctx.setLineDash([]);
-
-  ctx.fillStyle = 'rgba(150,50,50,0.15)'; ctx.font = '14px sans-serif';
-  ctx.fillText('상대방 진영', 20, 28);
-  ctx.fillStyle = 'rgba(50,80,150,0.15)';
-  ctx.fillText('나의 진영', 20, H-18);
-
-  drawEntity(player);
-  drawEntity(enemy);
-
-  bullets.forEach(b => {
-    ctx.beginPath(); ctx.fillStyle = b.color; ctx.arc(b.x,b.y,6,0,Math.PI*2); ctx.fill();
-    ctx.beginPath(); ctx.fillStyle = '#fff'; ctx.arc(b.x,b.y,2.5,0,Math.PI*2); ctx.fill();
-  });
-
-  particles.forEach(p => {
-    ctx.globalAlpha = Math.max(0, p.life*2);
-    ctx.beginPath(); ctx.fillStyle = p.color; ctx.arc(p.x,p.y,p.size,0,Math.PI*2); ctx.fill();
-  });
-  ctx.globalAlpha = 1;
-
-  effects.forEach((e,i) => {
-    e.life -= 0.016;
-    if (e.life <= 0) { effects.splice(i,1); return; }
-    ctx.globalAlpha = e.life / e.max;
-    ctx.font = '32px serif';
-    ctx.fillText(e.emoji, e.x-16, e.y-55);
-  });
-  ctx.globalAlpha = 1;
-
-  [player, enemy].forEach(ent => {
-    if (ent.specialFlash > 0) {
-      ctx.beginPath();
-      ctx.strokeStyle = `rgba(255,255,100,${ent.specialFlash})`;
-      ctx.lineWidth = 6;
-      ctx.arc(ent.x, ent.y, 60 + (1-ent.specialFlash)*30, 0, Math.PI*2);
-      ctx.stroke();
-      ctx.fillStyle = `rgba(255,200,50,${ent.specialFlash*0.25})`;
-      ctx.beginPath(); ctx.arc(ent.x, ent.y, 55, 0, Math.PI*2); ctx.fill();
-    }
-  });
-
-  if (player.status.freeze) { ctx.fillStyle='rgba(100,200,255,0.25)'; ctx.beginPath(); ctx.arc(player.x,player.y,55,0,Math.PI*2); ctx.fill(); }
-  if (enemy.status.freeze) { ctx.fillStyle='rgba(100,200,255,0.25)'; ctx.beginPath(); ctx.arc(enemy.x,enemy.y,55,0,Math.PI*2); ctx.fill(); }
-
+function draw(){
+  ctx.clearRect(0,0,W,H);let ox=0,oy=0;if(shakeTime>0){ox=(Math.random()-.5)*10;oy=(Math.random()-.5)*8}
+  ctx.save();ctx.translate(ox,oy);
+  ctx.strokeStyle='rgba(180,50,50,.35)';ctx.setLineDash([10,8]);ctx.beginPath();ctx.moveTo(0,midY);ctx.lineTo(W,midY);ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle='rgba(150,50,50,.15)';ctx.font='14px sans-serif';ctx.fillText('상대방 진영',20,28);ctx.fillStyle='rgba(50,80,150,.15)';ctx.fillText('나의 진영',20,H-18);
+  drawEntity(player);drawEntity(enemy);
+  bullets.forEach(b=>{ctx.beginPath();ctx.fillStyle=b.color;ctx.arc(b.x,b.y,6,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.fillStyle='#fff';ctx.arc(b.x,b.y,2.5,0,Math.PI*2);ctx.fill()});
+  particles.forEach(p=>{ctx.globalAlpha=Math.max(0,p.life*2);ctx.beginPath();ctx.fillStyle=p.color;ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fill()});ctx.globalAlpha=1;
+  effects.forEach((e,i)=>{e.life-=.016;if(e.life<=0){effects.splice(i,1);return}ctx.globalAlpha=e.life/e.max;ctx.font='32px serif';ctx.fillText(e.emoji,e.x-16,e.y-55)});ctx.globalAlpha=1;
+  [player,enemy].forEach(ent=>{if(ent.specialFlash>0){ctx.beginPath();ctx.strokeStyle=`rgba(255,255,100,${ent.specialFlash})`;ctx.lineWidth=6;ctx.arc(ent.x,ent.y,60+(1-ent.specialFlash)*30,0,Math.PI*2);ctx.stroke();ctx.fillStyle=`rgba(255,200,50,${ent.specialFlash*.25})`;ctx.beginPath();ctx.arc(ent.x,ent.y,55,0,Math.PI*2);ctx.fill()}});
+  if(player.status.freeze){ctx.fillStyle='rgba(100,200,255,.25)';ctx.beginPath();ctx.arc(player.x,player.y,55,0,Math.PI*2);ctx.fill()}
+  if(enemy.status.freeze){ctx.fillStyle='rgba(100,200,255,.25)';ctx.beginPath();ctx.arc(enemy.x,enemy.y,55,0,Math.PI*2);ctx.fill()}
   ctx.restore();
 }
 
-function drawEntity(ent) {
-  const img = (ent.hitTimer > 0) ? ent.char.img_a : ent.char.img_n;
-  const size = 92;
-  ctx.save();
-  ctx.beginPath(); ctx.arc(ent.x, ent.y, size/2, 0, Math.PI*2); ctx.closePath(); ctx.clip();
-  if (img.complete && img.naturalWidth > 0) {
-    ctx.drawImage(img, ent.x - size/2, ent.y - size/2, size, size);
-  } else {
-    ctx.fillStyle = ent === player ? '#4af' : '#f44';
-    ctx.fillRect(ent.x-size/2, ent.y-size/2, size, size);
-  }
+function drawEntity(ent){
+  const img=ent.hitTimer>0?ent.char.img_a:ent.char.img_n,size=92;
+  ctx.save();ctx.beginPath();ctx.arc(ent.x,ent.y,size/2,0,Math.PI*2);ctx.closePath();ctx.clip();
+  if(img.complete&&img.naturalWidth>0)ctx.drawImage(img,ent.x-size/2,ent.y-size/2,size,size);
+  else{ctx.fillStyle=ent===player?'#4af':'#f44';ctx.fillRect(ent.x-size/2,ent.y-size/2,size,size)}
   ctx.restore();
-
-  ctx.beginPath();
-  ctx.strokeStyle = ent === player ? '#4af' : '#f44';
-  ctx.lineWidth = 3;
-  ctx.arc(ent.x, ent.y, size/2 + 1, 0, Math.PI*2);
-  ctx.stroke();
-
-  ctx.fillStyle = '#222';
-  ctx.font = 'bold 13px sans-serif';
-  ctx.textAlign = 'center';
-  ctx.fillText(ent.char.name, ent.x, ent.y + size/2 + 18);
-  ctx.textAlign = 'left';
+  ctx.beginPath();ctx.strokeStyle=ent===player?'#4af':'#f44';ctx.lineWidth=3;ctx.arc(ent.x,ent.y,size/2+1,0,Math.PI*2);ctx.stroke();
+  ctx.fillStyle='#222';ctx.font='bold 13px sans-serif';ctx.textAlign='center';ctx.fillText(ent.char.name,ent.x,ent.y+size/2+18);ctx.textAlign='left';
 }
 
-function endBattle(playerWin) {
-  battleActive = false;
-  clearInterval(timerInterval);
-  window.onkeydown = null; window.onkeyup = null;
-
-  setTimeout(() => {
-    if (playerWin) {
-      if (!isBossFight) defeated.add(enemyChar.id);
-
-      document.getElementById('vic-player').src = playerChar.face_n;
-      document.getElementById('vic-enemy').src = enemyChar.face_a;
-      document.getElementById('vic-txt').textContent = playerChar.win_txt;
-      showScreen('victory-screen');
-
-      setTimeout(() => {
-        if (!isBossFight) {
-          const remaining = characters.filter(x => x.id !== playerChar.id && !defeated.has(x.id));
-          if (remaining.length === 0) {
-            bossIndex = 0;
-            isBossFight = true;
-            enemyChar = bosses[0];
-            goToVS();
-          } else {
-            enemyChar = remaining[Math.floor(Math.random() * remaining.length)];
-            goToVS();
-          }
-        } else {
-          bossIndex++;
-          if (bossIndex >= bosses.length) {
-            startEnding();
-          } else {
-            enemyChar = bosses[bossIndex];
-            goToVS();
-          }
-        }
-      }, 2800);
-    } else {
-      document.getElementById('fail-player').src = playerChar.face_a;
-      document.getElementById('fail-enemy').src = enemyChar.face_n;
-      document.getElementById('fail-txt').textContent = enemyChar.win_txt;
-      showScreen('fail-screen');
-
-      setTimeout(() => {
-        const go = document.getElementById('gameover-screen');
-        go.style.backgroundImage = `url('${playerChar.lose_img}')`;
-        go.style.backgroundSize = 'cover';
-        go.style.backgroundPosition = 'center';
-        showScreen('gameover-screen');
-        setTimeout(() => {
-          showScreen('title-screen');
-          defeated.clear(); playerChar = null; bossIndex = 0; isBossFight = false;
-          document.getElementById('gameover-screen').style.backgroundImage = '';
-        }, 5000);
-      }, 2800);
+function endBattle(playerWin){
+  battleActive=false;clearInterval(timerInterval);window.onkeydown=null;window.onkeyup=null;
+  setTimeout(()=>{
+    if(playerWin){
+      if(!isBossFight)defeated.add(enemyChar.id);
+      document.getElementById('vic-player').src=playerChar.face_n;document.getElementById('vic-enemy').src=enemyChar.face_a;document.getElementById('vic-txt').textContent=playerChar.win_txt;showScreen('victory-screen');
+      setTimeout(()=>{
+        if(!isBossFight){const remaining=characters.filter(x=>x.id!==playerChar.id&&!defeated.has(x.id));if(remaining.length===0){bossIndex=0;isBossFight=true;enemyChar=bosses[0];goToVS()}else{enemyChar=remaining[Math.floor(Math.random()*remaining.length)];goToVS()}}
+        else{bossIndex++;if(bossIndex>=bosses.length)startEnding();else{enemyChar=bosses[bossIndex];goToVS()}}
+      },2800);
+    }else{
+      document.getElementById('fail-player').src=playerChar.face_a;document.getElementById('fail-enemy').src=enemyChar.face_n;document.getElementById('fail-txt').textContent=enemyChar.win_txt;showScreen('fail-screen');
+      setTimeout(()=>{const go=document.getElementById('gameover-screen');go.style.backgroundImage=`url('${playerChar.lose_img}')`;go.style.backgroundSize='cover';go.style.backgroundPosition='center';showScreen('gameover-screen');
+        setTimeout(()=>{showScreen('title-screen');defeated.clear();playerChar=null;bossIndex=0;isBossFight=false;document.getElementById('gameover-screen').style.backgroundImage=''},5000)},2800);
     }
-  }, 500);
+  },500);
 }
 
-function endBattleByTime() {
-  if (player.eng >= enemy.eng) endBattle(true);
-  else endBattle(false);
+function endBattleByTime(){if(player.eng>=enemy.eng)endBattle(true);else endBattle(false)}
+
+let typingTimer=null,fullFtxt='',typedLen=0;
+function startEnding(){
+  endingPhase=0;fullFtxt=playerChar.f_txt||"Victory... The true ending begins.";typedLen=0;
+  document.getElementById('ending-img').src=playerChar.win_img;document.getElementById('ending-txt').textContent='';document.getElementById('ending-hint').textContent='클릭하면 전체 텍스트가 표시됩니다';showScreen('ending-screen');
+  typingTimer=setInterval(()=>{if(typedLen<fullFtxt.length){typedLen++;document.getElementById('ending-txt').textContent=fullFtxt.substring(0,typedLen)}else{clearInterval(typingTimer);document.getElementById('ending-hint').textContent='다시 클릭하면 GAME OVER';endingPhase=1}},28);
 }
 
-let typingTimer = null;
-let fullFtxt = '';
-let typedLen = 0;
-
-function startEnding() {
-  endingPhase = 0;
-  fullFtxt = playerChar.f_txt || "Victory... The true ending begins.";
-  typedLen = 0;
-  document.getElementById('ending-img').src = playerChar.win_img;
-  document.getElementById('ending-txt').textContent = '';
-  document.getElementById('ending-hint').textContent = '클릭하면 전체 텍스트가 표시됩니다';
-  showScreen('ending-screen');
-
-  typingTimer = setInterval(() => {
-    if (typedLen < fullFtxt.length) {
-      typedLen++;
-      document.getElementById('ending-txt').textContent = fullFtxt.substring(0, typedLen);
-    } else {
-      clearInterval(typingTimer);
-      document.getElementById('ending-hint').textContent = '다시 클릭하면 GAME OVER';
-      endingPhase = 1;
-    }
-  }, 28);
-}
-
-document.getElementById('ending-screen').addEventListener('click', () => {
-  if (gameState !== 'ending') return;
-  if (endingPhase === 0) {
-    clearInterval(typingTimer);
-    document.getElementById('ending-txt').textContent = fullFtxt;
-    document.getElementById('ending-hint').textContent = '다시 클릭하면 GAME OVER';
-    endingPhase = 1;
-  } else if (endingPhase === 1) {
-    const go = document.getElementById('gameover-screen');
-    go.style.backgroundImage = `url('${playerChar.win_img}')`;
-    go.style.backgroundSize = 'cover';
-    go.style.backgroundPosition = 'center';
-    showScreen('gameover-screen');
-    endingPhase = 2;
-    setTimeout(() => {
-      showScreen('title-screen');
-      defeated.clear(); playerChar = null; bossIndex = 0; isBossFight = false;
-      document.getElementById('gameover-screen').style.backgroundImage = '';
-    }, 6000);
-  }
+document.getElementById('ending-screen').addEventListener('click',()=>{
+  if(gameState!=='ending')return;
+  if(endingPhase===0){clearInterval(typingTimer);document.getElementById('ending-txt').textContent=fullFtxt;document.getElementById('ending-hint').textContent='다시 클릭하면 GAME OVER';endingPhase=1}
+  else if(endingPhase===1){const go=document.getElementById('gameover-screen');go.style.backgroundImage=`url('${playerChar.win_img}')`;go.style.backgroundSize='cover';go.style.backgroundPosition='center';showScreen('gameover-screen');endingPhase=2;
+    setTimeout(()=>{showScreen('title-screen');defeated.clear();playerChar=null;bossIndex=0;isBossFight=false;document.getElementById('gameover-screen').style.backgroundImage=''},6000)}
 });
 </script>
 </body>
 </html>
+```
+
+이 코드를 **통째로** 복사해서 기존 파일 내용을 완전히 지운 후 붙여넣으세요.  
+설명 글이 섞이지 않도록 주의해 주세요.
