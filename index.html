@@ -761,7 +761,7 @@ function endBattle(playerWin) {
 
       setTimeout(() => {
         const go = document.getElementById('gameover-screen');
-        go.style.backgroundImage = `url('${enemyChar.lose_img}')`;
+        go.style.backgroundImage = `url('${playerChar.lose_img}')`;
         go.style.backgroundSize = 'cover';
         go.style.backgroundPosition = 'center';
         showScreen('gameover-screen');
