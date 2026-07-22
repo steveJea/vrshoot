@@ -29,7 +29,6 @@
   }
   .screen.active { display: flex; flex-direction: column; }
 
-  /* TITLE */
   #title-screen {
     justify-content: center;
     align-items: center;
@@ -55,21 +54,22 @@
   #title-screen .start-msg { font-size: 1.1rem; color: #ff6666; animation: blink 1.2s infinite; }
   @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
-  /* SELECT */
   #select-screen { background: #2a2a2a; padding: 20px; }
   #select-screen h2 { text-align: center; font-size: 1.8rem; margin-bottom: 20px; color: #ff4444; letter-spacing: 3px; }
-  .char-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; flex: 1; }
+  .char-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; flex: 1; overflow-y: auto; }
   .char-card {
     background: #333; border: 3px solid #555; border-radius: 8px; overflow: hidden;
     cursor: pointer; transition: all 0.2s; position: relative;
   }
   .char-card:hover { border-color: #ff4444; transform: scale(1.05); box-shadow: 0 0 15px rgba(255,50,50,0.6); }
   .char-card.selected { border-color: #ffcc00; box-shadow: 0 0 20px #ffcc00; animation: selectPulse 0.6s; }
+  .char-card.boss-card { border-color: #ff00aa; box-shadow: 0 0 12px #ff00aa; }
+  .char-card.boss-card:hover { border-color: #ff66cc; box-shadow: 0 0 20px #ff00aa; }
   .char-card img { width: 100%; height: 140px; object-fit: cover; display: block; }
   .char-card .name { text-align: center; padding: 6px 0; font-size: 0.85rem; background: #222; }
+  .char-card.boss-card .name { color: #ff66cc; font-weight: bold; }
   @keyframes selectPulse { 0%{transform:scale(1)} 50%{transform:scale(1.12)} 100%{transform:scale(1.05)} }
 
-  /* VS */
   #vs-screen { justify-content: center; align-items: center; background: #1a1a1a; }
   .vs-container { display: flex; align-items: center; gap: 40px; }
   .vs-char { text-align: center; }
@@ -83,7 +83,6 @@
     letter-spacing: 4px; background: rgba(0,0,0,0.5); padding: 10px 30px; border-radius: 8px;
   }
 
-  /* BATTLE */
   #battle-screen { background: #d0d0d0; flex-direction: column; }
   #battle-ui {
     display: flex; justify-content: space-between; padding: 10px 20px;
@@ -97,7 +96,6 @@
   #battle-canvas { flex: 1; width: 100%; display: block; background: linear-gradient(180deg, #e8e8e8 0%, #c8c8c8 50%, #b0b0b0 100%); }
   .battle-info { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); font-size: 0.85rem; color: #555; }
 
-  /* RESULT / ENDING */
   .result-screen { justify-content: center; align-items: center; background: #1a1a1a; text-align: center; }
   .result-title { font-size: 3rem; margin-bottom: 30px; letter-spacing: 4px; }
   .result-title.win { color: #ffcc00; text-shadow: 0 0 20px #ffaa00; }
@@ -106,7 +104,6 @@
   .result-faces img { width: 180px; height: 180px; border-radius: 12px; object-fit: cover; border: 3px solid #555; }
   .win-txt { font-size: 1.3rem; color: #ddd; max-width: 500px; line-height: 1.5; padding: 15px 25px; background: rgba(255,255,255,0.05); border-radius: 8px; }
 
-  /* GAME OVER / ENDING */
   #gameover-screen, #ending-screen {
     justify-content: center; align-items: center; background: #000;
     background-size: cover; background-position: center;
@@ -121,7 +118,6 @@
   }
   #ending-hint { margin-top: 20px; color: #aaa; font-size: 0.95rem; }
 
-  /* Shake */
   .shake { animation: shake 0.4s; }
   @keyframes shake {
     0%,100% { transform: translate(0,0); }
@@ -168,7 +164,7 @@
       <img id="player-face" src="" alt="">
       <div class="hp-bar-wrap"><div class="hp-bar" id="player-hp-bar"></div></div>
     </div>
-    <div class="timer" id="timer">100</div>
+    <div class="timer" id="timer">30</div>
     <div class="hp-box" style="flex-direction: row-reverse;">
       <img id="enemy-face" src="" alt="">
       <div class="hp-bar-wrap"><div class="hp-bar" id="enemy-hp-bar"></div></div>
@@ -272,20 +268,22 @@ const characters = [
    f_txt:"Minseop claimed absolute victory.\nFrom now on, the city belongs to him."}
 ];
 
-// Boss characters (order: 10013 → 10014 → 10015)
 const bosses = [
   {id:10013, name:"ABYSS LORD", Pwr:180, Eng:200, spd:90, type:1004, bomb:"demon",
    face_a:RAW+"10013_fa.jpg", face_n:RAW+"10013_fn.jpg", SD_full:RAW+"10013_full.jpg", pf_img:RAW+"10013_pf.jpg",
    boss_img:RAW+"boss_10013.jpg", win_txt:"You are nothing before the abyss.",
-   lose_img:RAW+"10013_lose.jpg", win_img:RAW+"10013_end.jpg"},
+   lose_img:RAW+"10013_lose.jpg", win_img:RAW+"10013_end.jpg",
+   f_txt:"The Abyss Lord claimed the throne of darkness."},
   {id:10014, name:"BLOOD QUEEN", Pwr:200, Eng:220, spd:110, type:1005, bomb:"abyss",
    face_a:RAW+"10014_fa.jpg", face_n:RAW+"10014_fn.jpg", SD_full:RAW+"10014_full.jpg", pf_img:RAW+"10014_pf.jpg",
    boss_img:RAW+"boss_10014.jpg", win_txt:"Your blood will paint my throne.",
-   lose_img:RAW+"10014_lose.jpg", win_img:RAW+"10014_end.jpg"},
+   lose_img:RAW+"10014_lose.jpg", win_img:RAW+"10014_end.jpg",
+   f_txt:"The Blood Queen bathed the city in crimson."},
   {id:10015, name:"TRUE KING", Pwr:250, Eng:300, spd:80, type:1005, bomb:"abyss",
    face_a:RAW+"10015_fa.jpg", face_n:RAW+"10015_fn.jpg", SD_full:RAW+"10015_full.jpg", pf_img:RAW+"10015_pf.jpg",
    boss_img:RAW+"boss_10015.jpg", win_txt:"The throne is mine alone.",
-   lose_img:RAW+"10015_lose.jpg", win_img:RAW+"10015_end.jpg"}
+   lose_img:RAW+"10015_lose.jpg", win_img:RAW+"10015_end.jpg",
+   f_txt:"The True King ascended and the city fell silent forever."}
 ];
 
 characters.forEach(c => { c.img_n = new Image(); c.img_n.src = c.face_n; c.img_a = new Image(); c.img_a.src = c.face_a; });
@@ -294,10 +292,19 @@ bosses.forEach(c => { c.img_n = new Image(); c.img_n.src = c.face_n; c.img_a = n
 let defeated = new Set();
 let playerChar = null;
 let enemyChar = null;
-let bossIndex = 0; // 0,1,2 for the three bosses
+let bossIndex = 0;
 let isBossFight = false;
 let gameState = "title";
-let endingPhase = 0; // 0: typing, 1: full text, 2: gameover
+let endingPhase = 0;
+
+// CHEAT SYSTEM
+let cheatBuffer = "";
+const CHEATS = {
+  "sexydynamite": 0,
+  "poweroverwhelming": 1,
+  "shinlimsurgery": 2
+};
+const unlockedBosses = new Set();
 
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -309,12 +316,360 @@ document.addEventListener('keydown', function(e) {
   if (gameState === 'title') {
     showScreen('select-screen');
     renderSelect();
+    return;
+  }
+
+  if (gameState === 'select') {
+    if (e.key.length === 1 && /[a-zA-Z]/.test(e.key)) {
+      cheatBuffer += e.key.toLowerCase();
+      if (cheatBuffer아래 코드를 **전부 복사**해서 `index.html` 파일로 저장하세요.
+
+(카운트다운 30초 + 치트코드 + 패배 시 플레이어 lose_img 반영 완료)
+
+```html
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VIOLENCE ROYALE - SHOOTING MASTERS</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
+  body {
+    background: #1a1a1a;
+    color: #fff;
+    font-family: 'Segoe UI', 'Malgun Gothic', sans-serif;
+    overflow: hidden;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .screen {
+    display: none;
+    width: 100%;
+    max-width: 960px;
+    height: 100vh;
+    max-height: 720px;
+    position: relative;
+    background: #222;
+    border: 2px solid #444;
+    overflow: hidden;
+  }
+  .screen.active { display: flex; flex-direction: column; }
+
+  #title-screen {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: url('https://raw.githubusercontent.com/steveJea/vrshoot/main/img/main.jpg') center/cover no-repeat;
+  }
+  #title-screen::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+  }
+  #title-screen > * { position: relative; z-index: 1; }
+  #title-screen h1 {
+    font-size: 3.2rem;
+    letter-spacing: 6px;
+    color: #ff2222;
+    text-shadow: 0 0 20px #ff0000, 0 0 40px #aa0000;
+    margin-bottom: 8px;
+  }
+  #title-screen .sub { font-size: 1.4rem; color: #ccc; letter-spacing: 4px; margin-bottom: 40px; }
+  #title-screen .game-title { font-size: 1.8rem; color: #fff; margin-bottom: 60px; }
+  #title-screen .start-msg { font-size: 1.1rem; color: #ff6666; animation: blink 1.2s infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  #select-screen { background: #2a2a2a; padding: 20px; }
+  #select-screen h2 { text-align: center; font-size: 1.8rem; margin-bottom: 20px; color: #ff4444; letter-spacing: 3px; }
+  .char-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; flex: 1; overflow-y: auto; }
+  .char-card {
+    background: #333; border: 3px solid #555; border-radius: 8px; overflow: hidden;
+    cursor: pointer; transition: all 0.2s; position: relative;
+  }
+  .char-card:hover { border-color: #ff4444; transform: scale(1.05); box-shadow: 0 0 15px rgba(255,50,50,0.6); }
+  .char-card.selected { border-color: #ffcc00; box-shadow: 0 0 20px #ffcc00; animation: selectPulse 0.6s; }
+  .char-card.boss-card { border-color: #ff00aa; box-shadow: 0 0 12px #ff00aa; }
+  .char-card.boss-card:hover { border-color: #ff66cc; box-shadow: 0 0 20px #ff00aa; }
+  .char-card img { width: 100%; height: 140px; object-fit: cover; display: block; }
+  .char-card .name { text-align: center; padding: 6px 0; font-size: 0.85rem; background: #222; }
+  .char-card.boss-card .name { color: #ff66cc; font-weight: bold; }
+  @keyframes selectPulse { 0%{transform:scale(1)} 50%{transform:scale(1.12)} 100%{transform:scale(1.05)} }
+
+  #vs-screen { justify-content: center; align-items: center; background: #1a1a1a; }
+  .vs-container { display: flex; align-items: center; gap: 40px; }
+  .vs-char { text-align: center; }
+  .vs-char img { width: 220px; height: 280px; object-fit: contain; }
+  .vs-char .name { margin-top: 15px; font-size: 1.4rem; letter-spacing: 2px; }
+  .vs-text { font-size: 3.5rem; font-weight: bold; color: #ff3333; text-shadow: 0 0 30px #ff0000; }
+  .boss-vs-img { max-width: 80%; max-height: 70%; object-fit: contain; }
+  .boss-vs-name {
+    position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%);
+    font-size: 2.5rem; color: #fff; text-shadow: 0 0 15px #000, 0 0 30px #ff0000;
+    letter-spacing: 4px; background: rgba(0,0,0,0.5); padding: 10px 30px; border-radius: 8px;
+  }
+
+  #battle-screen { background: #d0d0d0; flex-direction: column; }
+  #battle-ui {
+    display: flex; justify-content: space-between; padding: 10px 20px;
+    background: #333; border-bottom: 2px solid #555; align-items: center; color: #fff;
+  }
+  .hp-box { display: flex; align-items: center; gap: 10px; width: 280px; }
+  .hp-box img { width: 48px; height: 48px; border-radius: 50%; border: 2px solid #888; object-fit: cover; }
+  .hp-bar-wrap { flex: 1; height: 18px; background: #555; border-radius: 4px; overflow: hidden; position: relative; }
+  .hp-bar { height: 100%; background: linear-gradient(90deg, #ffcc00, #ff8800); transition: width 0.15s; }
+  .timer { font-size: 2.2rem; font-weight: bold; color: #fff; min-width: 80px; text-align: center; text-shadow: 0 0 10px #ff4444; }
+  #battle-canvas { flex: 1; width: 100%; display: block; background: linear-gradient(180deg, #e8e8e8 0%, #c8c8c8 50%, #b0b0b0 100%); }
+  .battle-info { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); font-size: 0.85rem; color: #555; }
+
+  .result-screen { justify-content: center; align-items: center; background: #1a1a1a; text-align: center; }
+  .result-title { font-size: 3rem; margin-bottom: 30px; letter-spacing: 4px; }
+  .result-title.win { color: #ffcc00; text-shadow: 0 0 20px #ffaa00; }
+  .result-title.lose { color: #ff3333; text-shadow: 0 0 20px #ff0000; }
+  .result-faces { display: flex; gap: 40px; margin-bottom: 30px; justify-content: center; }
+  .result-faces img { width: 180px; height: 180px; border-radius: 12px; object-fit: cover; border: 3px solid #555; }
+  .win-txt { font-size: 1.3rem; color: #ddd; max-width: 500px; line-height: 1.5; padding: 15px 25px; background: rgba(255,255,255,0.05); border-radius: 8px; }
+
+  #gameover-screen, #ending-screen {
+    justify-content: center; align-items: center; background: #000;
+    background-size: cover; background-position: center;
+  }
+  #gameover-screen h1 { font-size: 4rem; color: #ff2222; letter-spacing: 8px; text-shadow: 0 0 30px #ff0000; position: relative; z-index: 2; }
+  #ending-screen { flex-direction: column; padding: 40px; }
+  #ending-img { max-width: 90%; max-height: 55%; object-fit: contain; margin-bottom: 20px; border-radius: 8px; }
+  #ending-txt {
+    font-size: 1.15rem; line-height: 1.7; color: #eee; max-width: 700px;
+    text-align: left; background: rgba(0,0,0,0.7); padding: 20px 25px; border-radius: 10px;
+    min-height: 120px; white-space: pre-wrap;
+  }
+  #ending-hint { margin-top: 20px; color: #aaa; font-size: 0.95rem; }
+
+  .shake { animation: shake 0.4s; }
+  @keyframes shake {
+    0%,100% { transform: translate(0,0); }
+    10%,30%,50%,70%,90% { transform: translate(-6px, 3px); }
+    20%,40%,60%,80% { transform: translate(6px, -3px); }
+  }
+</style>
+</head>
+<body>
+
+<div id="title-screen" class="screen active">
+  <h1>VIOLENCE ROYALE</h1>
+  <div class="sub">THE BRUTAL CITY</div>
+  <div class="game-title">SHOOTING MASTERS</div>
+  <div class="start-msg">Press Any Key to START</div>
+</div>
+
+<div id="select-screen" class="screen">
+  <h2>Select Your Fighter</h2>
+  <div class="char-grid" id="char-grid"></div>
+</div>
+
+<div id="vs-screen" class="screen">
+  <div class="vs-container" id="vs-normal">
+    <div class="vs-char">
+      <img id="vs-player-img" src="" alt="">
+      <div class="name" id="vs-player-name"></div>
+    </div>
+    <div class="vs-text">VS</div>
+    <div class="vs-char">
+      <img id="vs-enemy-img" src="" alt="">
+      <div class="name" id="vs-enemy-name"></div>
+    </div>
+  </div>
+  <div id="vs-boss" style="display:none; width:100%; height:100%; justify-content:center; align-items:center; position:relative;">
+    <img id="vs-boss-img" class="boss-vs-img" src="" alt="">
+    <div class="boss-vs-name" id="vs-boss-name"></div>
+  </div>
+</div>
+
+<div id="battle-screen" class="screen">
+  <div id="battle-ui">
+    <div class="hp-box">
+      <img id="player-face" src="" alt="">
+      <div class="hp-bar-wrap"><div class="hp-bar" id="player-hp-bar"></div></div>
+    </div>
+    <div class="timer" id="timer">30</div>
+    <div class="hp-box" style="flex-direction: row-reverse;">
+      <img id="enemy-face" src="" alt="">
+      <div class="hp-bar-wrap"><div class="hp-bar" id="enemy-hp-bar"></div></div>
+    </div>
+  </div>
+  <canvas id="battle-canvas"></canvas>
+  <div class="battle-info">←→↑↓ / WASD 이동 | 자동공격 | Q : 특수공격 (1회)</div>
+</div>
+
+<div id="victory-screen" class="screen result-screen">
+  <div class="result-title win">YOU WIN</div>
+  <div class="result-faces">
+    <img id="vic-player" src="" alt="">
+    <img id="vic-enemy" src="" alt="">
+  </div>
+  <div class="win-txt" id="vic-txt"></div>
+</div>
+
+<div id="fail-screen" class="screen result-screen">
+  <div class="result-title lose">YOU LOSE</div>
+  <div class="result-faces">
+    <img id="fail-player" src="" alt="">
+    <img id="fail-enemy" src="" alt="">
+  </div>
+  <div class="win-txt" id="fail-txt"></div>
+</div>
+
+<div id="ending-screen" class="screen">
+  <img id="ending-img" src="" alt="">
+  <div id="ending-txt"></div>
+  <div id="ending-hint">클릭하면 전체 텍스트가 표시됩니다</div>
+</div>
+
+<div id="gameover-screen" class="screen">
+  <h1>GAME OVER</h1>
+</div>
+
+<script>
+const RAW = "https://raw.githubusercontent.com/steveJea/vrshoot/main/img/";
+
+const characters = [
+  {id:10001, name:"YURI", Pwr:100, Eng:100, spd:100, type:1001, bomb:"dark",
+   face_a:RAW+"10001_fa.png", face_n:RAW+"10001_fn.png", SD_full:RAW+"10001_full.png", pf_img:RAW+"10001_pf.jpg",
+   win_txt:"Vile and hideous creature. Embrace your death.",
+   lose_img:RAW+"10001_lose.jpg", win_img:RAW+"10001_end.jpg",
+   f_txt:"Yuri killed Seongjin and sat upon the true throne of darkness.\nBut she, who had always been empty inside, set out in search of new prey.\nThe doors of Yuri's Castle finally opened—and within waits the lewd, cold Yuri."},
+  {id:10002, name:"SEKANG", Pwr:150, Eng:120, spd:30, type:1002, bomb:"fire",
+   face_a:RAW+"10002_fa.png", face_n:RAW+"10002_fn.png", SD_full:RAW+"10002_full.png", pf_img:RAW+"10002_pf.jpg",
+   win_txt:"Don't block my path!",
+   lose_img:RAW+"10002_lose.jpg", win_img:RAW+"10002_end.jpg",
+   f_txt:"Sekang seized victory as a matter of course.\nHe continues to follow the trail of his vanished younger sister.\n“Seryoen… please, be safe!”"},
+  {id:10003, name:"HOO", Pwr:110, Eng:80, spd:110, type:1003, bomb:"ice",
+   face_a:RAW+"10003_fa.png", face_n:RAW+"10003_fn.png", SD_full:RAW+"10003_full.png", pf_img:RAW+"10003_pf.jpg",
+   win_txt:"Mad about it? Still want more? Push it and you'll really die.",
+   lose_img:RAW+"10003_lose.jpg", win_img:RAW+"10003_end.jpg",
+   f_txt:"He had joined the game out of sheer boredom—and won it without much difficulty.\nToday, as always, he stands on the street smoking, watching the girls who pass by."},
+  {id:10004, name:"SAEM", Pwr:60, Eng:100, spd:140, type:1001, bomb:"ice",
+   face_a:RAW+"10004_fa.png", face_n:RAW+"10004_fn.png", SD_full:RAW+"10004_full.png", pf_img:RAW+"10004_pf.jpg",
+   win_txt:"Gross...you're so ugly. And you smell terrible.",
+   lose_img:RAW+"10004_lose.jpg", win_img:RAW+"10004_end.jpg",
+   f_txt:"Having claimed victory, Saem returned to school.\nCraving blood more and more, she was steadily descending into a blood-soaked demon."},
+  {id:10005, name:"H.K.", Pwr:80, Eng:80, spd:140, type:1002, bomb:"dark",
+   face_a:RAW+"10005_fa.png", face_n:RAW+"10005_fn.png", SD_full:RAW+"10005_full.png", pf_img:RAW+"10005_pf.jpg",
+   win_txt:"Hehehehehe... You fool. Still want to play with me?",
+   lose_img:RAW+"10005_lose.jpg", win_img:RAW+"10005_end.jpg",
+   f_txt:"H.K. won with ease.\nLicking his blood, she felt an orgasm.\nH.K. has now evolved into an even stronger, sharper beast."},
+  {id:10006, name:"NAHYOEN", Pwr:90, Eng:80, spd:130, type:1003, bomb:"dark",
+   face_a:RAW+"10006_fa.png", face_n:RAW+"10006_fn.png", SD_full:RAW+"10006_full.png", pf_img:RAW+"10006_pf.jpg",
+   win_txt:"What a waste of time... on trash like you.",
+   lose_img:RAW+"10006_lose.jpg", win_img:RAW+"10006_end.jpg",
+   f_txt:"Nahyoen barely managed to defeat Seongjin and returned home.\nHaving finally received recognition from her sister, she felt truly happy."},
+  {id:10007, name:"JOONKI", Pwr:90, Eng:100, spd:110, type:1001, bomb:"wind",
+   face_a:RAW+"10007_fa.png", face_n:RAW+"10007_fn.png", SD_full:RAW+"10007_full.png", pf_img:RAW+"10007_pf.jpg",
+   win_txt:"Yo, I actually won, didn't I? See ya!",
+   lose_img:RAW+"10007_lose.jpg", win_img:RAW+"10007_end.jpg",
+   f_txt:"Joonki claimed victory, yet he realized his training was still far from enough.\n“I will overcome any hardship and become the strongest in this city!”"},
+  {id:10008, name:"SEONGHO", Pwr:120, Eng:100, spd:80, type:1002, bomb:"dark",
+   face_a:RAW+"10008_fa.png", face_n:RAW+"10008_fn.png", SD_full:RAW+"10008_full.png", pf_img:RAW+"10008_pf.jpg",
+   win_txt:"In the name of God, I will take your life.",
+   lose_img:RAW+"10008_lose.jpg", win_img:RAW+"10008_end.jpg",
+   f_txt:"Seongho claimed victory in the name of God.\nHe continues his holy mission in the brutal city."},
+  {id:10009, name:"JINSEONG", Pwr:100, Eng:110, spd:90, type:1003, bomb:"fire",
+   face_a:RAW+"10009_fa.png", face_n:RAW+"10009_fn.png", SD_full:RAW+"10009_full.png", pf_img:RAW+"10009_pf.jpg",
+   win_txt:"Where should I cut you, first?",
+   lose_img:RAW+"10009_lose.jpg", win_img:RAW+"10009_end.jpg",
+   f_txt:"Jinseong won the battle.\nHe still seeks the next prey to cut."},
+  {id:10010, name:"JUNCHEOL", Pwr:80, Eng:70, spd:150, type:1001, bomb:"fire",
+   face_a:RAW+"10010_fa.png", face_n:RAW+"10010_fn.png", SD_full:RAW+"10010_full.png", pf_img:RAW+"10010_pf.jpg",
+   win_txt:"Don't mess with me!",
+   lose_img:RAW+"10010_lose.jpg", win_img:RAW+"10010_end.jpg",
+   f_txt:"Juncheol claimed victory.\nNo one dares to mess with him anymore."},
+  {id:10011, name:"HYERI", Pwr:80, Eng:120, spd:100, type:1002, bomb:"light",
+   face_a:RAW+"10011_fa.png", face_n:RAW+"10011_fn.png", SD_full:RAW+"10011_full.png", pf_img:RAW+"10011_pf.jpg",
+   win_txt:"Does it hurt a lot? I'm sorry.",
+   lose_img:RAW+"10011_lose.jpg", win_img:RAW+"10011_end.jpg",
+   f_txt:"Hyeri won, yet she felt a strange emptiness.\n“Does it really have to end like this?”"},
+  {id:10012, name:"MINSEOP", Pwr:90, Eng:100, spd:110, type:1003, bomb:"wind",
+   face_a:RAW+"10012_fa.png", face_n:RAW+"10012_fn.png", SD_full:RAW+"10012_full.png", pf_img:RAW+"10012_pf.jpg",
+   win_txt:"From now on, you are my slave.",
+   lose_img:RAW+"10012_lose.jpg", win_img:RAW+"10012_end.jpg",
+   f_txt:"Minseop claimed absolute victory.\nFrom now on, the city belongs to him."}
+];
+
+const bosses = [
+  {id:10013, name:"ABYSS LORD", Pwr:180, Eng:200, spd:90, type:1004, bomb:"demon",
+   face_a:RAW+"10013_fa.jpg", face_n:RAW+"10013_fn.jpg", SD_full:RAW+"10013_full.jpg", pf_img:RAW+"10013_pf.jpg",
+   boss_img:RAW+"boss_10013.jpg", win_txt:"You are nothing before the abyss.",
+   lose_img:RAW+"10013_lose.jpg", win_img:RAW+"10013_end.jpg",
+   f_txt:"The Abyss Lord claimed the throne of darkness."},
+  {id:10014, name:"BLOOD QUEEN", Pwr:200, Eng:220, spd:110, type:1005, bomb:"abyss",
+   face_a:RAW+"10014_fa.jpg", face_n:RAW+"10014_fn.jpg", SD_full:RAW+"10014_full.jpg", pf_img:RAW+"10014_pf.jpg",
+   boss_img:RAW+"boss_10014.jpg", win_txt:"Your blood will paint my throne.",
+   lose_img:RAW+"10014_lose.jpg", win_img:RAW+"10014_end.jpg",
+   f_txt:"The Blood Queen bathed the city in crimson."},
+  {id:10015, name:"TRUE KING", Pwr:250, Eng:300, spd:80, type:1005, bomb:"abyss",
+   face_a:RAW+"10015_fa.jpg", face_n:RAW+"10015_fn.jpg", SD_full:RAW+"10015_full.jpg", pf_img:RAW+"10015_pf.jpg",
+   boss_img:RAW+"boss_10015.jpg", win_txt:"The throne is mine alone.",
+   lose_img:RAW+"10015_lose.jpg", win_img:RAW+"10015_end.jpg",
+   f_txt:"The True King ascended and the city fell silent forever."}
+];
+
+characters.forEach(c => { c.img_n = new Image(); c.img_n.src = c.face_n; c.img_a = new Image(); c.img_a.src = c.face_a; });
+bosses.forEach(c => { c.img_n = new Image(); c.img_n.src = c.face_n; c.img_a = new Image(); c.img_a.src = c.face_a; });
+
+let defeated = new Set();
+let playerChar = null;
+let enemyChar = null;
+let bossIndex = 0;
+let isBossFight = false;
+let gameState = "title";
+let endingPhase = 0;
+
+// CHEAT SYSTEM
+let cheatBuffer = "";
+const CHEATS = {
+  "sexydynamite": 0,
+  "poweroverwhelming": 1,
+  "shinlimsurgery": 2
+};
+const unlockedBosses = new Set();
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  gameState = id.replace('-screen','');
+}
+
+document.addEventListener('keydown', function(e) {
+  if (gameState === 'title') {
+    showScreen('select-screen');
+    renderSelect();
+    return;
+  }
+
+  if (gameState === 'select') {
+    if (e.key.length === 1 && /[a-zA-Z]/.test(e.key)) {
+      cheatBuffer += e.key.toLowerCase();
+      if (cheatBuffer.length > 25) cheatBuffer = cheatBuffer.slice(-25);
+
+      for (const code in CHEATS) {
+        if (cheatBuffer.endsWith(code)) {
+          const boss = bosses[CHEATS[code]];
+          addBossCard(boss);
+          cheatBuffer = "";
+          break;
+        }
+      }
+    }
   }
 });
 
 function renderSelect() {
   const grid = document.getElementById('char-grid');
   grid.innerHTML = '';
+  unlockedBosses.clear();
+
   characters.forEach(c => {
     const card = document.createElement('div');
     card.className = 'char-card';
@@ -322,6 +677,27 @@ function renderSelect() {
     card.onclick = function() { selectPlayer(c, card); };
     grid.appendChild(card);
   });
+}
+
+function addBossCard(boss) {
+  if (unlockedBosses.has(boss.id)) return;
+  unlockedBosses.add(boss.id);
+
+  const grid = document.getElementById('char-grid');
+  const card = document.createElement('div');
+  card.className = 'char-card boss-card';
+  card.dataset.bossId = boss.id;
+  card.innerHTML = '<img src="' + boss.pf_img + '" alt="' + boss.name + '"><div class="name">' + boss.name + '</div>';
+  card.onclick = function() {
+    playerChar = boss;
+    card.classList.add('selected');
+    const candidates = characters.slice();
+    enemyChar = candidates[Math.floor(Math.random() * candidates.length)];
+    isBossFight = false;
+    setTimeout(goToVS, 700);
+  };
+  grid.appendChild(card);
+  grid.scrollTop = grid.scrollHeight;
 }
 
 function selectPlayer(c, card) {
@@ -336,6 +712,7 @@ function selectPlayer(c, card) {
 function goToVS() {
   const normal = document.getElementById('vs-normal');
   const bossDiv = document.getElementById('vs-boss');
+
   if (isBossFight) {
     normal.style.display = 'none';
     bossDiv.style.display = 'flex';
@@ -344,9 +721,9 @@ function goToVS() {
   } else {
     normal.style.display = 'flex';
     bossDiv.style.display = 'none';
-    document.getElementById('vs-player-img').src = playerChar.SD_full;
+    document.getElementById('vs-player-img').src = playerChar.SD_full || playerChar.pf_img;
     document.getElementById('vs-player-name').textContent = playerChar.name;
-    document.getElementById('vs-enemy-img').src = enemyChar.SD_full;
+    document.getElementById('vs-enemy-img').src = enemyChar.SD_full || enemyChar.pf_img;
     document.getElementById('vs-enemy-name').textContent = enemyChar.name;
   }
   showScreen('vs-screen');
@@ -361,7 +738,7 @@ let bullets = [];
 let effects = [];
 let particles = [];
 let keys = {};
-let timer = 100;
+let timer = 30;
 let timerInterval = null;
 let lastTime = 0;
 let battleActive = false;
@@ -395,7 +772,7 @@ function startBattle() {
   };
 
   bullets = []; effects = []; particles = [];
-  timer = 100; battleActive = true; shakeTime = 0;
+  timer = 30; battleActive = true; shakeTime = 0;
 
   document.getElementById('player-face').src = playerChar.face_n;
   document.getElementById('enemy-face').src = enemyChar.face_n;
@@ -435,7 +812,6 @@ function battleLoop(now) {
 }
 
 function update(dt) {
-  // Player 4-dir movement (bottom half only)
   let mx = 0, my = 0;
   if (keys['ArrowLeft'] || keys['a'] || keys['A']) mx = -1;
   if (keys['ArrowRight'] || keys['d'] || keys['D']) mx = 1;
@@ -449,7 +825,6 @@ function update(dt) {
     player.y = Math.max(midY + 40, Math.min(H-60, player.y));
   }
 
-  // Enemy AI - prioritize dodging player bullets
   enemy.aiTimer -= dt;
   let dodgeX = 0, dodgeY = 0;
   for (const b of bullets) {
@@ -480,7 +855,6 @@ function update(dt) {
     enemy.y = Math.max(60, Math.min(midY - 40, enemy.y));
   }
 
-  // Auto fire
   if (!player.status.freeze) {
     player.fireCD -= dt;
     if (player.fireCD <= 0) { firePattern(player, -1); player.fireCD = 1.9; }
@@ -494,7 +868,6 @@ function update(dt) {
     }
   }
 
-  // Bullets
   for (let i = bullets.length - 1; i >= 0; i--) {
     const b = bullets[i];
     b.x += b.vx * dt; b.y += b.vy * dt;
@@ -524,7 +897,6 @@ function update(dt) {
   if (enemy.specialFlash > 0) enemy.specialFlash -= dt;
   if (shakeTime > 0) shakeTime -= dt;
 
-  // Particles
   for (let i = particles.length-1; i>=0; i--) {
     const p = particles[i];
     p.x += p.vx * dt; p.y += p.vy * dt; p.life -= dt;
@@ -546,9 +918,9 @@ function firePattern(ent, dir) {
     [-1.2,0,1.2].forEach(ang => bullets.push({x:ent.x,y:ent.y+(dir>0?45:-45),vx:ang*95,vy:speed*0.95,dmg:baseDmg,owner:dir<0?'player':'enemy',color:dir<0?'#4af':'#f44'}));
   } else if (type === 1003) {
     for (let k=0;k<2;k++) setTimeout(() => { if(!battleActive)return; [-0.7,0.7].forEach(ang => bullets.push({x:ent.x,y:ent.y+(dir>0?45:-45),vx:ang*75,vy:speed,dmg:baseDmg,owner:dir<0?'player':'enemy',color:dir<0?'#4af':'#f44'})); }, k*170);
-  } else if (type === 1004) { // 3발씩 5연발
+  } else if (type === 1004) {
     for (let i=0;i<5;i++) setTimeout(() => { if(!battleActive)return; [-0.9,0,0.9].forEach(ang => bullets.push({x:ent.x,y:ent.y+(dir>0?45:-45),vx:ang*80,vy:speed,dmg:baseDmg,owner:dir<0?'player':'enemy',color:dir<0?'#4af':'#f44'})); }, i*100);
-  } else if (type === 1005) { // 5발씩 5연발
+  } else if (type === 1005) {
     for (let i=0;i<5;i++) setTimeout(() => { if(!battleActive)return; [-1.4,-0.7,0,0.7,1.4].forEach(ang => bullets.push({x:ent.x,y:ent.y+(dir>0?45:-45),vx:ang*70,vy:speed*0.92,dmg:baseDmg,owner:dir<0?'player':'enemy',color:dir<0?'#4af':'#f44'})); }, i*110);
   }
 }
@@ -567,13 +939,11 @@ function useBomb(ent) {
   else if (type === 'dark') { target.status.slow = 5.0; target.status.curse = 5.0; addEffect(target.x, target.y, '🌑', 2); }
   else if (type === 'light') { ent.status.heal = 5.0; addEffect(ent.x, ent.y, '✨', 2); }
   else if (type === 'demon') {
-    // 5초간 현재 HP의 20% 감소
     const dmg = target.eng * 0.20;
     target.status.demon = 5.0;
     target.status.demonDmg = dmg / 5;
     addEffect(target.x, target.y, '😈', 2.5);
   } else if (type === 'abyss') {
-    // 즉시 HP 50% 감소 + 검정 폭발
     const dmg = target.eng * 0.50;
     target.eng = Math.max(0, target.eng - dmg);
     updateHPBars();
@@ -624,8 +994,6 @@ function spawnBlackExplosion(x, y) {
 
 function draw() {
   ctx.clearRect(0,0,W,H);
-
-  // shake offset
   let ox = 0, oy = 0;
   if (shakeTime > 0) {
     ox = (Math.random()-0.5)*10;
@@ -634,7 +1002,6 @@ function draw() {
   ctx.save();
   ctx.translate(ox, oy);
 
-  // mid line
   ctx.strokeStyle = 'rgba(180,50,50,0.35)';
   ctx.setLineDash([10,8]);
   ctx.beginPath(); ctx.moveTo(0,midY); ctx.lineTo(W,midY); ctx.stroke();
@@ -668,7 +1035,6 @@ function draw() {
   });
   ctx.globalAlpha = 1;
 
-  // special flash (full character effect)
   [player, enemy].forEach(ent => {
     if (ent.specialFlash > 0) {
       ctx.beginPath();
@@ -731,7 +1097,6 @@ function endBattle(playerWin) {
         if (!isBossFight) {
           const remaining = characters.filter(x => x.id !== playerChar.id && !defeated.has(x.id));
           if (remaining.length === 0) {
-            // start boss sequence
             bossIndex = 0;
             isBossFight = true;
             enemyChar = bosses[0];
@@ -741,10 +1106,8 @@ function endBattle(playerWin) {
             goToVS();
           }
         } else {
-          // next boss or final ending
           bossIndex++;
           if (bossIndex >= bosses.length) {
-            // Final boss cleared → ending
             startEnding();
           } else {
             enemyChar = bosses[bossIndex];
@@ -753,7 +1116,6 @@ function endBattle(playerWin) {
         }
       }, 2800);
     } else {
-      // Lose
       document.getElementById('fail-player').src = playerChar.face_a;
       document.getElementById('fail-enemy').src = enemyChar.face_n;
       document.getElementById('fail-txt').textContent = enemyChar.win_txt;
@@ -780,7 +1142,6 @@ function endBattleByTime() {
   else endBattle(false);
 }
 
-// ===== FINAL ENDING =====
 let typingTimer = null;
 let fullFtxt = '';
 let typedLen = 0;
@@ -794,7 +1155,6 @@ function startEnding() {
   document.getElementById('ending-hint').textContent = '클릭하면 전체 텍스트가 표시됩니다';
   showScreen('ending-screen');
 
-  // typing effect (word by word-ish, char by char)
   typingTimer = setInterval(() => {
     if (typedLen < fullFtxt.length) {
       typedLen++;
@@ -810,13 +1170,11 @@ function startEnding() {
 document.getElementById('ending-screen').addEventListener('click', () => {
   if (gameState !== 'ending') return;
   if (endingPhase === 0) {
-    // show all text at once
     clearInterval(typingTimer);
     document.getElementById('ending-txt').textContent = fullFtxt;
     document.getElementById('ending-hint').textContent = '다시 클릭하면 GAME OVER';
     endingPhase = 1;
   } else if (endingPhase === 1) {
-    // go to game over with win_img as background
     const go = document.getElementById('gameover-screen');
     go.style.backgroundImage = `url('${playerChar.win_img}')`;
     go.style.backgroundSize = 'cover';
