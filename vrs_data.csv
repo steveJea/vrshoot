@@ -1,13 +1,80 @@
-id,name,Pwr,Eng,spd,type,bomb,face_a,face_n,SD_full,pf_img,win_txt
-10001,YURI,100,100,100,1001,dark,https://github.com/steveJea/vrshoot/blob/main/img/10001_fa.png,https://github.com/steveJea/vrshoot/blob/main/img/10001_fn.png,https://github.com/steveJea/vrshoot/blob/main/img/10001_full.png,https://github.com/steveJea/vrshoot/blob/main/img/10001_pf.jpg,Death to the ugly and lowly!
-10002,SEKANG,150,120,30,1002,fire,https://github.com/steveJea/vrshoot/blob/main/img/10002_fa.png,https://github.com/steveJea/vrshoot/blob/main/img/10002_fn.png,https://github.com/steveJea/vrshoot/blob/main/img/10002_full.png,https://github.com/steveJea/vrshoot/blob/main/img/10002_pf.jpg,Don't block my path!
-10003,HOO,110,80,110,1003,ice,https://github.com/steveJea/vrshoot/blob/main/img/10003_fa.png,https://github.com/steveJea/vrshoot/blob/main/img/10003_fn.png,https://github.com/steveJea/vrshoot/blob/main/img/10003_full.png,https://github.com/steveJea/vrshoot/blob/main/img/10003_pf.jpg,You're going to really die if you keep doing that.
-10004,SAEM,60,100,140,1001,ice,https://github.com/steveJea/vrshoot/blob/main/img/10004_fa.png,https://github.com/steveJea/vrshoot/blob/main/img/10004_fn.png,https://github.com/steveJea/vrshoot/blob/main/img/10004_full.png,https://github.com/steveJea/vrshoot/blob/main/img/10004_pf.jpg,"Oh my, you're really ugly."
-10005,H.K.,80,80,140,1002,dark,https://github.com/steveJea/vrshoot/blob/main/img/10005_fa.png,https://github.com/steveJea/vrshoot/blob/main/img/10005_fn.png,https://github.com/steveJea/vrshoot/blob/main/img/10005_full.png,https://github.com/steveJea/vrshoot/blob/main/img/10005_pf.jpg,"Hehe, want to play with me more?"
-10006,NAHYOEN,90,80,130,1003,dark,https://github.com/steveJea/vrshoot/blob/main/img/10006_fa.png,https://github.com/steveJea/vrshoot/blob/main/img/10006_fn.png,https://github.com/steveJea/vrshoot/blob/main/img/10006_full.png,https://github.com/steveJea/vrshoot/blob/main/img/10006_pf.jpg,It's such a waste of time wasted on someone like you.
-10007,JOONNKI,90,100,110,1001,wind,https://github.com/steveJea/vrshoot/blob/main/img/10007_fa.png,https://github.com/steveJea/vrshoot/blob/main/img/10007_fn.png,https://github.com/steveJea/vrshoot/blob/main/img/10007_full.png,https://github.com/steveJea/vrshoot/blob/main/img/10007_pf.jpg,"Hey... I really did win, right?"
-10008,SEONGHO,120,100,80,1002,dark,https://github.com/steveJea/vrshoot/blob/main/img/10008_fa.png,https://github.com/steveJea/vrshoot/blob/main/img/10008_fn.png,https://github.com/steveJea/vrshoot/blob/main/img/10008_full.png,https://github.com/steveJea/vrshoot/blob/main/img/10008_pf.jpg,Receive the grace of the gods.
-10009,JINSEONG,100,110,90,1003,fire,https://github.com/steveJea/vrshoot/blob/main/img/10009_fa.png,https://github.com/steveJea/vrshoot/blob/main/img/10009_fn.png,https://github.com/steveJea/vrshoot/blob/main/img/10009_full.png,https://github.com/steveJea/vrshoot/blob/main/img/10009_pf.jpg,"Where should I cut you, first?"
-10010,JUNCHEOL,80,70,150,1001,fire,https://github.com/steveJea/vrshoot/blob/main/img/10010_fa.png,https://github.com/steveJea/vrshoot/blob/main/img/10010_fn.png,https://github.com/steveJea/vrshoot/blob/main/img/10010_full.png,https://github.com/steveJea/vrshoot/blob/main/img/10010_pf.jpg,Don't mess with me!
-10011,HYERI,80,120,100,1002,light,https://github.com/steveJea/vrshoot/blob/main/img/10011_fa.png,https://github.com/steveJea/vrshoot/blob/main/img/10011_fn.png,https://github.com/steveJea/vrshoot/blob/main/img/10011_full.png,https://github.com/steveJea/vrshoot/blob/main/img/10011_pf.jpg,Does it hurt a lot? I'm sorry.
-10012,MINSEOP,90,100,110,1003,wind,https://github.com/steveJea/vrshoot/blob/main/img/10012_fa.png,https://github.com/steveJea/vrshoot/blob/main/img/10012_fn.png,https://github.com/steveJea/vrshoot/blob/main/img/10012_full.png,https://github.com/steveJea/vrshoot/blob/main/img/10012_pf.jpg,"From now on, you are my slave."
+id,name,Pwr,Eng,spd,type,bomb,face_a,face_n,SD_full,pf_img,win_txt,lose_img,win_img,boss_img,f_txt
+10001,YURI,100,100,100,1001,dark,https://github.com/steveJea/vrshoot/blob/main/img/10001_fa.png,https://github.com/steveJea/vrshoot/blob/main/img/10001_fn.png,https://github.com/steveJea/vrshoot/blob/main/img/10001_full.png,https://github.com/steveJea/vrshoot/blob/main/img/10001_pf.jpg,Vile and hideous creature. Embrace your death.,,,,"Yuri killed Seongjin and sat upon the true throne of darkness.
+But she, who had always been empty inside, set out in search of new prey.
+The doors of Yuri¡¯s Castle, forever tightly shut, finally opened?
+and within waits the lewd, cold Yuri, eternally starved for blood and carnal desire.
+Who can stop Yuri?"
+10002,SEKANG,150,120,30,1002,fire,https://github.com/steveJea/vrshoot/blob/main/img/10002_fa.png,https://github.com/steveJea/vrshoot/blob/main/img/10002_fn.png,https://github.com/steveJea/vrshoot/blob/main/img/10002_full.png,https://github.com/steveJea/vrshoot/blob/main/img/10002_pf.jpg,Don't block my path!,,,,"Sekang seized victory as a matter of course.
+He was certain he would finally learn the whereabouts of the missing Seryoen from Seongjin?
+yet he discovered nothing.
+Even today, he continues to follow the trail of his vanished younger sister.
+¡°Seryoen¡¦ please, be safe!¡±"
+10003,HOO,110,80,110,1003,ice,https://github.com/steveJea/vrshoot/blob/main/img/10003_fa.png,https://github.com/steveJea/vrshoot/blob/main/img/10003_fn.png,https://github.com/steveJea/vrshoot/blob/main/img/10003_full.png,https://github.com/steveJea/vrshoot/blob/main/img/10003_pf.jpg,Mad about it? Still want more? Push it and you'll really die.,,,,"He had joined the game out of sheer boredom?and won it without much difficulty.
+Today, as always, he stands on the street smoking a cigarette, watching the girls who pass by.
+¡®What should I play with tonight?¡¯
+Hoo was always bored and listless. He needed a new stimulus.
+Just then, a remarkably pretty girl walked by in the distance.
+He crushed out his cigarette and smiled a suggestive smile."
+10004,SAEM,60,100,140,1001,ice,https://github.com/steveJea/vrshoot/blob/main/img/10004_fa.png,https://github.com/steveJea/vrshoot/blob/main/img/10004_fn.png,https://github.com/steveJea/vrshoot/blob/main/img/10004_full.png,https://github.com/steveJea/vrshoot/blob/main/img/10004_pf.jpg,Gross...you're so ugly. And you smell terrible.,,,,"Having claimed victory without difficulty, Saem returned to school.
+She reigned from the queen¡¯s seat, tormenting the weak students as always?
+yet it no longer felt as fun as before.
+Was it because she had just finished a blood-splattering battle?
+She felt empty once more.
+¡®I need a bigger stimulus. I want to tear everything apart¡¦¡¯
+Craving blood more and more, she was steadily descending into a blood-soaked demon."
+10005,H.K.,80,80,140,1002,dark,https://github.com/steveJea/vrshoot/blob/main/img/10005_fa.png,https://github.com/steveJea/vrshoot/blob/main/img/10005_fn.png,https://github.com/steveJea/vrshoot/blob/main/img/10005_full.png,https://github.com/steveJea/vrshoot/blob/main/img/10005_pf.jpg,Hehehehehe... You fool. Still want to play with me? What shall we do?,,,,"H.K. won with ease.
+She stared at Seongjin¡¯s corpse and laughed for a long time.
+Licking his blood, she felt an orgasm.
+¡°Ah¡¦ this pleasure!!! It¡¯s so good!!!!¡±
+H.K., who goes berserk every night, has now evolved into an even stronger, sharper beast."
+10006,NAHYOEN,90,80,130,1003,dark,https://github.com/steveJea/vrshoot/blob/main/img/10006_fa.png,https://github.com/steveJea/vrshoot/blob/main/img/10006_fn.png,https://github.com/steveJea/vrshoot/blob/main/img/10006_full.png,https://github.com/steveJea/vrshoot/blob/main/img/10006_pf.jpg,What a waste of time... on trash like you.,,,,"Nahyoen barely managed to defeat Seongjin and returned home.
+Seeing her, her older sister Sinhyeon gently stroked her head.
+Having finally received recognition from her sister after so long, Nahyoen felt truly happy.
+Sinhyeon handed her a card and said,
+¡°Today, my pretty little sister can buy whatever she wants.¡±¡°Thank you, maam!¡±"
+10007,JOONKI,90,100,110,1001,wind,https://github.com/steveJea/vrshoot/blob/main/img/10007_fa.png,https://github.com/steveJea/vrshoot/blob/main/img/10007_fn.png,https://github.com/steveJea/vrshoot/blob/main/img/10007_full.png,https://github.com/steveJea/vrshoot/blob/main/img/10007_pf.jpg,"Yo, I actually won, didn't I? See ya!",,,,"Joonki claimed victory, yet he realized his training was still far from enough.
+He pushed himself even harder to grow stronger.
+¡®I will overcome any hardship and become the strongest in this city!¡¯
+Today, once again, he trains with everything he has."
+10008,SEONGHO,120,100,80,1002,dark,https://github.com/steveJea/vrshoot/blob/main/img/10008_fa.png,https://github.com/steveJea/vrshoot/blob/main/img/10008_fn.png,https://github.com/steveJea/vrshoot/blob/main/img/10008_full.png,https://github.com/steveJea/vrshoot/blob/main/img/10008_pf.jpg,"In the name of God, I will take your life. Any last words?",,,,"Seongho defeated Lucifer.
+He returned to the church and offered a prayer to God.
+¡°Lord¡¦ I have finally eliminated the demon.
+But I could not save Minseo¡¯s soul.¡±
+¡°Please grant me the strength to surely eliminate another demon?Changwon.¡±
+With tears streaming down his face, he prayed earnestly to God."
+10009,JINSEONG,100,110,90,1003,fire,https://github.com/steveJea/vrshoot/blob/main/img/10009_fa.png,https://github.com/steveJea/vrshoot/blob/main/img/10009_fn.png,https://github.com/steveJea/vrshoot/blob/main/img/10009_full.png,https://github.com/steveJea/vrshoot/blob/main/img/10009_pf.jpg,"I can slice you up real fine now, can't I?",,,,"Jinseong finished the battle and returned to the hideout.
+His older brother Oseong threw a big party.
+But there was only one thing he truly wanted.
+Drugs.
+At the thought of finally being able to get high after completing the long journey, he was extremely excited."
+10010,JUNCHEOL,80,70,150,1001,fire,https://github.com/steveJea/vrshoot/blob/main/img/10010_fa.png,https://github.com/steveJea/vrshoot/blob/main/img/10010_fn.png,https://github.com/steveJea/vrshoot/blob/main/img/10010_full.png,https://github.com/steveJea/vrshoot/blob/main/img/10010_pf.jpg,"This outcome shows the gap between us, baby.",,,,"Juncheol seized victory in the battle.
+His younger sister¡¯s whereabouts remained unknown, yet he could not simply stand still.
+He trained relentlessly to reclaim his place on the national team, and today is finally the final match.
+He will surely be selected as a national representative, win the gold medal, and then plead with the Unification President to help find his sister.¡°Jae-a! Please be alive! I will definitely save you!¡±"
+10011,HYERI,80,120,100,1002,light,https://github.com/steveJea/vrshoot/blob/main/img/10011_fa.png,https://github.com/steveJea/vrshoot/blob/main/img/10011_fn.png,https://github.com/steveJea/vrshoot/blob/main/img/10011_full.png,https://github.com/steveJea/vrshoot/blob/main/img/10011_pf.jpg,"Oh dear, was that painful? My bad!",,,,"Hyeri¡¯s daily life returned to peace.
+There were no more demons.
+She went outside for the first time in a long while. A clear sky, warm sunlight.
+Breathing in the scent of nature, she walked lightly down the path.
+¡®Now I can just enjoy a peaceful everyday life, right?¡¯ she thought.
+Just then, her smartphone rang.
+[MIDEUM]
+It was her beloved friend. She pressed the call button with a bright smile.
+¡°Mideum! What¡¯s up?¡±"
+10012,MINSEOP,90,100,110,1003,wind,https://github.com/steveJea/vrshoot/blob/main/img/10012_fa.png,https://github.com/steveJea/vrshoot/blob/main/img/10012_fn.png,https://github.com/steveJea/vrshoot/blob/main/img/10012_full.png,https://github.com/steveJea/vrshoot/blob/main/img/10012_pf.jpg,Women are for eating. Men are for killing.,,,,"Minseop killed Seongjin and took A eun and Ye eun as spoils of war.
+He toyed with them until they fainted, then sold them off to a remote island.
+They will never leave that island for the rest of their lives.
+Even though he won the battle, Minseop could not feel completely satisfied.
+Because he still had not taken revenge on Jian.
+¡°Jian¡¦ you fucking bitch¡¦ I will definitely kill you.¡±"
+10013,NARI,150,150,150,1004,demon,,,,,The world is better off when you disappear.,,,,"It is empty.
+No one can stand against me.
+I am both light and darkness."
+10014,QRI,150,500,150,1004,demon,,,,,"Slower than a turtle, weaker than a snail... Pathetic",,,,"I have proven that I am the strongest.
+Now I will call forth blood,
+and I will rule over blood.
+I will become the eternal Empress of Blood."
+10015,SEONGJIN,1000,1000,180,1005,abyss,,,,,What makes you better than an insect?,,,,"No one can replace me.
+I am a great existence.
+Even a god cannot stand against me.
+Simply put?everything begins because of me,
+and everything ends because of me."
