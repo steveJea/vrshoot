@@ -45,19 +45,20 @@ body{background:#1a1a1a;color:#fff;font-family:'Segoe UI','Malgun Gothic',sans-s
 #battle-ui{display:flex;justify-content:space-between;padding:10px 18px;background:#333;border-bottom:2px solid #555;align-items:center;color:#fff}
 .hp-box{display:flex;align-items:center;gap:10px;width:270px}
 .hp-box img{width:46px;height:46px;border-radius:50%;border:2px solid #888;object-fit:cover}
-.hp-bar-wrap{flex:1;height:16px;background:#555;border-radius:4px;overflow:hidden}
+.hp-bar-wrap{flex:1;height:16px;background:#555;border-radius:4px;overflow:hidden;position:relative}
 .hp-bar{height:100%;background:linear-gradient(90deg,#ffcc00,#ff8800);transition:width .15s}
+.hp-pct{position:absolute;right:4px;top:0;bottom:0;display:flex;align-items:center;font-size:11px;font-weight:bold;color:#fff;text-shadow:0 0 3px #000}
 .timer{font-size:2rem;font-weight:bold;color:#fff;min-width:70px;text-align:center;text-shadow:0 0 8px #ff4444}
 #battle-canvas{flex:1;width:100%;display:block;background:linear-gradient(180deg,#e8e8e8 0%,#c8c8c8 50%,#b0b0b0 100%)}
 .battle-info{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-size:.8rem;color:#555}
 
-.result-screen{justify-content:center;align-items:center;background:#1a1a1a;text-align:center}
+.result-screen{justify-content:center;align-items:center;background:#ffffff;text-align:center}
 .result-title{font-size:2.8rem;margin-bottom:24px;letter-spacing:4px}
 .result-title.win{color:#ffcc00;text-shadow:0 0 18px #ffaa00}
 .result-title.lose{color:#ff3333;text-shadow:0 0 18px #ff0000}
 .result-faces{display:flex;gap:36px;margin-bottom:24px;justify-content:center}
 .result-faces img{width:160px;height:160px;border-radius:10px;object-fit:cover;border:3px solid #555}
-.win-txt{font-size:1.2rem;color:#ddd;max-width:480px;line-height:1.5;padding:14px 22px;background:rgba(255,255,255,.05);border-radius:8px}
+.win-txt{font-size:1.2rem;color:#333;max-width:480px;line-height:1.5;padding:14px 22px;background:rgba(0,0,0,.06);border-radius:8px}
 
 #gameover-screen,#ending-screen{justify-content:center;align-items:center;background:#000;background-size:cover;background-position:center}
 #gameover-screen h1{font-size:3.6rem;color:#ff2222;letter-spacing:8px;text-shadow:0 0 28px #ff0000;position:relative;z-index:2}
@@ -99,12 +100,24 @@ body{background:#1a1a1a;color:#fff;font-family:'Segoe UI','Malgun Gothic',sans-s
 
 <div id="battle-screen" class="screen">
   <div id="battle-ui">
-    <div class="hp-box"><img id="player-face" src="" alt=""><div class="hp-bar-wrap"><div class="hp-bar" id="player-hp-bar"></div></div></div>
+    <div class="hp-box">
+      <img id="player-face" src="" alt="">
+      <div class="hp-bar-wrap">
+        <div class="hp-bar" id="player-hp-bar"></div>
+        <div class="hp-pct" id="player-hp-pct">100.0%</div>
+      </div>
+    </div>
     <div class="timer" id="timer">30</div>
-    <div class="hp-box" style="flex-direction:row-reverse"><img id="enemy-face" src="" alt=""><div class="hp-bar-wrap"><div class="hp-bar" id="enemy-hp-bar"></div></div></div>
+    <div class="hp-box" style="flex-direction:row-reverse">
+      <img id="enemy-face" src="" alt="">
+      <div class="hp-bar-wrap">
+        <div class="hp-bar" id="enemy-hp-bar"></div>
+        <div class="hp-pct" id="enemy-hp-pct">100.0%</div>
+      </div>
+    </div>
   </div>
   <canvas id="battle-canvas"></canvas>
-  <div class="battle-info">←→↑↓ / WASD 이동 | 자동공격 | Q : 특수공격 (1회)</div>
+  <div class="battle-info">←→↑↓ / WASD 이동 | SPACE : 공격 (2초 쿨타임) | Q : 특수공격 (1회)</div>
 </div>
 
 <div id="victory-screen" class="screen result-screen">
@@ -244,38 +257,80 @@ window.addEventListener('resize',()=>{if(gameState==='battle')resizeCanvas()});
 
 function startBattle(){
   showScreen('battle-screen');resizeCanvas();
-  const pEng=playerChar.Eng*10,eEng=enemyChar.Eng*10;
+  // HP = Eng 그대로 (1배수)
+  const pEng=playerChar.Eng, eEng=enemyChar.Eng;
   player={x:W/2,y:H-110,char:playerChar,eng:pEng,maxEng:pEng,spd:playerChar.spd,type:playerChar.type,bomb:playerChar.bomb,hitTimer:0,fireCD:0,bombUsed:false,status:{},specialFlash:0};
-  enemy={x:W/2,y:110,char:enemyChar,eng:eEng,maxEng:eEng,spd:enemyChar.spd,type:enemyChar.type,bomb:enemyChar.bomb,hitTimer:0,fireCD:1.2,bombUsed:false,status:{},specialFlash:0,aiTimer:0,aiDirX:1,aiDirY:0};
+  enemy={x:W/2,y:110,char:enemyChar,eng:eEng,maxEng:eEng,spd:enemyChar.spd,type:enemyChar.type,bomb:enemyChar.bomb,hitTimer:0,fireCD:1.5,bombUsed:false,status:{},specialFlash:0,aiTimer:0,aiDirX:1,aiDirY:0};
   bullets=[];effects=[];particles=[];timer=30;battleActive=true;shakeTime=0;
   document.getElementById('player-face').src=playerChar.face_n;document.getElementById('enemy-face').src=enemyChar.face_n;
   updateHPBars();document.getElementById('timer').textContent=timer;
   clearInterval(timerInterval);
   timerInterval=setInterval(()=>{if(!battleActive)return;timer--;document.getElementById('timer').textContent=timer;if(timer<=0)endBattleByTime()},1000);
   lastTime=performance.now();requestAnimationFrame(battleLoop);
-  window.onkeydown=e=>{keys[e.key]=true;if((e.key==='q'||e.key==='Q')&&!player.bombUsed)useBomb(player)};
+  window.onkeydown=e=>{
+    keys[e.key]=true;
+    if(e.key===' ' || e.key==='Spacebar'){
+      e.preventDefault();
+      if(player.fireCD<=0 && !player.status.freeze){
+        firePattern(player,-1);
+        player.fireCD=2.0; // 2초 쿨타임
+      }
+    }
+    if((e.key==='q'||e.key==='Q')&&!player.bombUsed)useBomb(player);
+  };
   window.onkeyup=e=>{keys[e.key]=false};
 }
 
-function updateHPBars(){document.getElementById('player-hp-bar').style.width=Math.max(0,player.eng/player.maxEng*100)+'%';document.getElementById('enemy-hp-bar').style.width=Math.max(0,enemy.eng/enemy.maxEng*100)+'%'}
+function updateHPBars(){
+  const pPct = Math.max(0, player.eng / player.maxEng * 100);
+  const ePct = Math.max(0, enemy.eng / enemy.maxEng * 100);
+  document.getElementById('player-hp-bar').style.width = pPct + '%';
+  document.getElementById('enemy-hp-bar').style.width = ePct + '%';
+  document.getElementById('player-hp-pct').textContent = pPct.toFixed(1) + '%';
+  document.getElementById('enemy-hp-pct').textContent = ePct.toFixed(1) + '%';
+}
 
 function battleLoop(now){if(!battleActive)return;const dt=Math.min((now-lastTime)/1000,.05);lastTime=now;update(dt);draw();requestAnimationFrame(battleLoop)}
 
 function update(dt){
+  // 이동
   let mx=0,my=0;
   if(keys['ArrowLeft']||keys['a']||keys['A'])mx=-1;if(keys['ArrowRight']||keys['d']||keys['D'])mx=1;
   if(keys['ArrowUp']||keys['w']||keys['W'])my=-1;if(keys['ArrowDown']||keys['s']||keys['S'])my=1;
   const pSpeed=(player.spd/100)*260*(player.status.slow?.65:1);
   if(!player.status.freeze){player.x+=mx*pSpeed*dt;player.y+=my*pSpeed*dt;player.x=Math.max(50,Math.min(W-50,player.x));player.y=Math.max(midY+40,Math.min(H-60,player.y))}
+
+  // 적 AI
   enemy.aiTimer-=dt;let dodgeX=0,dodgeY=0;
   for(const b of bullets){if(b.owner!=='player')continue;const dx=b.x-enemy.x,dy=b.y-enemy.y,dist=Math.sqrt(dx*dx+dy*dy);if(dist<180&&Math.abs(dx)<70){dodgeX+=dx>0?-1:1;dodgeY+=dy>0?-0.6:0.4}}
   if(Math.abs(dodgeX)+Math.abs(dodgeY)>.3){enemy.aiDirX=dodgeX;enemy.aiDirY=dodgeY;enemy.aiTimer=.35}
   else if(enemy.aiTimer<=0){enemy.aiDirX=(Math.random()-.5)*2;enemy.aiDirY=(Math.random()-.5)*1.2;enemy.aiTimer=.5+Math.random()*.9}
   const eSpeed=(enemy.spd/100)*230*(enemy.status.slow?.65:1);
   if(!enemy.status.freeze){const len=Math.sqrt(enemy.aiDirX*enemy.aiDirX+enemy.aiDirY*enemy.aiDirY)||1;enemy.x+=(enemy.aiDirX/len)*eSpeed*dt;enemy.y+=(enemy.aiDirY/len)*eSpeed*dt;enemy.x=Math.max(50,Math.min(W-50,enemy.x));enemy.y=Math.max(60,Math.min(midY-40,enemy.y))}
-  if(!player.status.freeze){player.fireCD-=dt;if(player.fireCD<=0){firePattern(player,-1);player.fireCD=1.9}}
-  if(!enemy.status.freeze){enemy.fireCD-=dt;if(enemy.fireCD<=0){firePattern(enemy,1);enemy.fireCD=1.8;if(!enemy.bombUsed&&enemy.eng<enemy.maxEng*.5&&Math.random()<.4)useBomb(enemy)}}
-  for(let i=bullets.length-1;i>=0;i--){const b=bullets[i];b.x+=b.vx*dt;b.y+=b.vy*dt;const target=b.owner==='player'?enemy:player;if(Math.abs(b.y-target.y)<50&&Math.abs(b.x-target.x)<48){applyDamage(target,b.dmg);spawnExplosion(b.x,b.y,b.owner==='player'?'#4af':'#f44');bullets.splice(i,1);continue}if(b.y<-40||b.y>H+40||b.x<-40||b.x>W+40)bullets.splice(i,1)}
+
+  // 쿨타임 감소
+  if(player.fireCD>0) player.fireCD-=dt;
+  if(enemy.fireCD>0) enemy.fireCD-=dt;
+
+  // 적 자동 공격 (2초 쿨타임)
+  if(!enemy.status.freeze && enemy.fireCD<=0){
+    firePattern(enemy,1);
+    enemy.fireCD=2.0;
+    if(!enemy.bombUsed&&enemy.eng<enemy.maxEng*.5&&Math.random()<.35)useBomb(enemy);
+  }
+
+  // 총알 이동 & 충돌
+  for(let i=bullets.length-1;i>=0;i--){
+    const b=bullets[i];b.x+=b.vx*dt;b.y+=b.vy*dt;
+    const target=b.owner==='player'?enemy:player;
+    if(Math.abs(b.y-target.y)<50&&Math.abs(b.x-target.x)<48){
+      applyDamage(target,b.dmg);
+      spawnExplosion(b.x,b.y,b.owner==='player'?'#4af':'#f44');
+      bullets.splice(i,1);continue;
+    }
+    if(b.y<-40||b.y>H+40||b.x<-40||b.x>W+40)bullets.splice(i,1);
+  }
+
   updateStatus(player,dt);updateStatus(enemy,dt);
   if(player.hitTimer>0){player.hitTimer-=dt;if(player.hitTimer<=0)document.getElementById('player-face').src=playerChar.face_n}
   if(enemy.hitTimer>0){enemy.hitTimer-=dt;if(enemy.hitTimer<=0)document.getElementById('enemy-face').src=enemyChar.face_n}
@@ -285,7 +340,9 @@ function update(dt){
 }
 
 function firePattern(ent,dir){
-  const baseDmg=Math.max(1,Math.floor(ent.char.Pwr/10)),speed=340*dir,type=ent.type;
+  // 데미지 = Pwr / 10
+  const baseDmg=Math.max(1, Math.floor(ent.char.Pwr / 10));
+  const speed=340*dir, type=ent.type;
   if(type===1001){for(let i=0;i<5;i++)setTimeout(()=>{if(!battleActive)return;bullets.push({x:ent.x,y:ent.y+(dir>0?45:-45),vx:0,vy:speed,dmg:baseDmg,owner:dir<0?'player':'enemy',color:dir<0?'#4af':'#f44'})},i*85)}
   else if(type===1002){[-1.2,0,1.2].forEach(ang=>bullets.push({x:ent.x,y:ent.y+(dir>0?45:-45),vx:ang*95,vy:speed*.95,dmg:baseDmg,owner:dir<0?'player':'enemy',color:dir<0?'#4af':'#f44'}))}
   else if(type===1003){for(let k=0;k<2;k++)setTimeout(()=>{if(!battleActive)return;[-.7,.7].forEach(ang=>bullets.push({x:ent.x,y:ent.y+(dir>0?45:-45),vx:ang*75,vy:speed,dmg:baseDmg,owner:dir<0?'player':'enemy',color:dir<0?'#4af':'#f44'}))},k*170)}
@@ -368,7 +425,13 @@ function endBattle(playerWin){
   },500);
 }
 
-function endBattleByTime(){if(player.eng>=enemy.eng)endBattle(true);else endBattle(false)}
+// 시간 종료 시 → 잔여 HP 비율이 높은 쪽이 승리
+function endBattleByTime(){
+  const pRatio = player.eng / player.maxEng;
+  const eRatio = enemy.eng / enemy.maxEng;
+  if(pRatio >= eRatio) endBattle(true);
+  else endBattle(false);
+}
 
 let typingTimer=null,fullFtxt='',typedLen=0;
 function startEnding(){
