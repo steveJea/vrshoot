@@ -469,29 +469,58 @@ function endBattleByTime(){
 }
 
 let typingTimer=null,fullFtxt='',typedLen=0;
-function startEnding(){
-  endingPhase=0;
-  fullFtxt=playerChar.f_txt||"Victory... The true ending begins.";
-  typedLen=0;
+function startEnding() {
+  endingPhase = 0;
+  fullFtxt = playerChar.f_txt || "Victory... The true ending begins.";
+  typedLen = 0;
 
   const media = playerChar.win_mp4 || playerChar.win_img;
   const isVideo = media && media.endsWith('.mp4');
   const old = document.getElementById('ending-img');
 
-  if(isVideo){
+  if (isVideo) {
     old.outerHTML = `<video id="ending-img" autoplay muted loop playsinline style="max-width:90%;max-height:52%;border-radius:8px;margin-bottom:18px;object-fit:contain"><source src="${media}" type="video/mp4"></video>`;
-  }else{
+  } else {
     old.outerHTML = `<img id="ending-img" src="${media}" style="max-width:90%;max-height:52%;object-fit:contain;margin-bottom:18px;border-radius:8px">`;
   }
 
-  document.getElementById('ending-txt').textContent='';
-  document.getElementById('ending-hint').textContent='클릭하면 전체 텍스트가 표시됩니다';
+  document.getElementById('ending-txt').textContent = '';
+  document.getElementById('ending-hint').textContent = '클릭하면 전체 텍스트가 표시됩니다';
   showScreen('ending-screen');
 
-  typingTimer=setInterval(()=>{
-    if(typedLen<fullFtxt.length){typedLen++;document.getElementById('ending-txt').textContent=fullFtxt.substring(0,typedLen)}
-    else{clearInterval(typingTimer);document.getElementById('ending-hint').textContent='다시 클릭하면 GAME OVER';endingPhase=1}
-  },28);
+  typingTimer = setInterval(() => {
+    if (typedLen < fullFtxt.length) {
+      typedLen++;
+      document.getElementById('ending-txt').textContent = fullFtxt.substring(0, typedLen);
+    } else {
+      clearInterval(typingTimer);
+      document.getElementById('ending-hint').textContent = '다시 클릭하면 GAME OVER';
+      endingPhase = 1;
+    }
+  }, 28);
+
+  // 9초 후 자동으로 Game Over로 이동
+  setTimeout(() => {
+    if (gameState === 'ending') {
+      clearInterval(typingTimer);
+      const go = document.getElementById('gameover-screen');
+      go.style.backgroundImage = `url('${playerChar.win_img}')`;
+      go.style.backgroundSize = 'cover';
+      go.style.backgroundPosition = 'center';
+      showScreen('gameover-screen');
+      endingPhase = 2;
+
+      setTimeout(() => {
+        showScreen('title-screen');
+        defeated.clear();
+        playerChar = null;
+        bossIndex = 0;
+        isBossFight = false;
+        document.getElementById('gameover-screen').style.backgroundImage = '';
+      }, 6000);
+    }
+  }, 9000);
+}
 }
 
 document.getElementById('ending-screen').addEventListener('click',()=>{
