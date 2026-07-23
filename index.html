@@ -4,10 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VIOLENCE ROYALE - SHOOTING MASTERS</title>
-  <!-- Favicon -->
-<link rel="icon" href="favicon.png" type="image/png">
-<link rel="apple-touch-icon" href="favicon.png">
-<link rel="shortcut icon" href="favicon.png" type="image/png">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;user-select:none}
 body{background:#1a1a1a;color:#fff;font-family:'Segoe UI','Malgun Gothic',sans-serif;overflow:hidden;height:100vh;display:flex;justify-content:center;align-items:center}
@@ -53,7 +49,7 @@ body{background:#1a1a1a;color:#fff;font-family:'Segoe UI','Malgun Gothic',sans-s
 .hp-bar{height:100%;background:linear-gradient(90deg,#ffcc00,#ff8800);transition:width .15s}
 .hp-pct{position:absolute;right:4px;top:0;bottom:0;display:flex;align-items:center;font-size:11px;font-weight:bold;color:#fff;text-shadow:0 0 3px #000}
 .timer{font-size:2rem;font-weight:bold;color:#fff;min-width:70px;text-align:center;text-shadow:0 0 8px #ff4444}
-#battle-canvas{flex:1;width:100%;display:block;background:linear-gradient(180deg,#e8e8e8 0%,#c8c8c8 50%,#b0b0b0 100%)}
+#battle-canvas{flex:1;width:100%;display:block;background-size:cover;background-position:center;background-repeat:no-repeat}
 .battle-info{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-size:.8rem;color:#555}
 
 .result-screen{justify-content:center;align-items:center;background:#ffffff;text-align:center}
@@ -73,15 +69,6 @@ body{background:#1a1a1a;color:#fff;font-family:'Segoe UI','Malgun Gothic',sans-s
 
 .shake{animation:shake .4s}
 @keyframes shake{0%,100%{transform:translate(0,0)}10%,30%,50%,70%,90%{transform:translate(-6px,3px)}20%,40%,60%,80%{transform:translate(6px,-3px)}}
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-NP3VPPBRKL"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-NP3VPPBRKL');
-</script>
 </style>
 </head>
 <body>
@@ -154,39 +141,87 @@ body{background:#1a1a1a;color:#fff;font-family:'Segoe UI','Malgun Gothic',sans-s
 <div id="gameover-screen" class="screen"><h1>GAME OVER</h1></div>
 
 <script>
-const RAW="https://raw.githubusercontent.com/steveJea/vrshoot/main/img/";
+const RAW = "https://raw.githubusercontent.com/steveJea/vrshoot/main/img/";
 
-const characters=[
-{id:10001,name:"YURI",Pwr:100,Eng:100,spd:100,type:1001,bomb:"dark",face_a:RAW+"10001_fa.png",face_n:RAW+"10001_fn.png",SD_full:RAW+"10001_full.png",pf_img:RAW+"10001_pf.jpg",win_txt:"Vile and hideous creature. Embrace your death.",lose_img:RAW+"10001_lose.jpg",win_img:RAW+"10001_end.jpg",f_txt:"Yuri killed Seongjin and sat upon the true throne of darkness.\nBut she, who had always been empty inside, set out in search of new prey.\nThe doors of Yuri's Castle finally opened—and within waits the lewd, cold Yuri."},
-{id:10002,name:"SEKANG",Pwr:150,Eng:120,spd:30,type:1002,bomb:"fire",face_a:RAW+"10002_fa.png",face_n:RAW+"10002_fn.png",SD_full:RAW+"10002_full.png",pf_img:RAW+"10002_pf.jpg",win_txt:"Don't block my path!",lose_img:RAW+"10002_lose.jpg",win_img:RAW+"10002_end.jpg",f_txt:"Sekang seized victory as a matter of course.\nHe continues to follow the trail of his vanished younger sister.\n“Seryoen… please, be safe!”"},
-{id:10003,name:"HOO",Pwr:110,Eng:80,spd:110,type:1003,bomb:"ice",face_a:RAW+"10003_fa.png",face_n:RAW+"10003_fn.png",SD_full:RAW+"10003_full.png",pf_img:RAW+"10003_pf.jpg",win_txt:"Mad about it? Still want more? Push it and you'll really die.",lose_img:RAW+"10003_lose.jpg",win_img:RAW+"10003_end.jpg",f_txt:"He had joined the game out of sheer boredom—and won it without much difficulty.\nToday, as always, he stands on the street smoking, watching the girls who pass by."},
-{id:10004,name:"SAEM",Pwr:60,Eng:100,spd:140,type:1001,bomb:"ice",face_a:RAW+"10004_fa.png",face_n:RAW+"10004_fn.png",SD_full:RAW+"10004_full.png",pf_img:RAW+"10004_pf.jpg",win_txt:"Gross...you're so ugly. And you smell terrible.",lose_img:RAW+"10004_lose.jpg",win_img:RAW+"10004_end.jpg",f_txt:"Having claimed victory, Saem returned to school.\nCraving blood more and more, she was steadily descending into a blood-soaked demon."},
-{id:10005,name:"H.K.",Pwr:80,Eng:80,spd:140,type:1002,bomb:"dark",face_a:RAW+"10005_fa.png",face_n:RAW+"10005_fn.png",SD_full:RAW+"10005_full.png",pf_img:RAW+"10005_pf.jpg",win_txt:"Hehehehehe... You fool. Still want to play with me?",lose_img:RAW+"10005_lose.jpg",win_img:RAW+"10005_end.jpg",f_txt:"H.K. won with ease.\nLicking his blood, she felt an orgasm.\nH.K. has now evolved into an even stronger, sharper beast."},
-{id:10006,name:"NAHYOEN",Pwr:90,Eng:80,spd:130,type:1003,bomb:"dark",face_a:RAW+"10006_fa.png",face_n:RAW+"10006_fn.png",SD_full:RAW+"10006_full.png",pf_img:RAW+"10006_pf.jpg",win_txt:"What a waste of time... on trash like you.",lose_img:RAW+"10006_lose.jpg",win_img:RAW+"10006_end.jpg",f_txt:"Nahyoen barely managed to defeat Seongjin and returned home.\nHaving finally received recognition from her sister, she felt truly happy."},
-{id:10007,name:"JOONKI",Pwr:90,Eng:100,spd:110,type:1001,bomb:"wind",face_a:RAW+"10007_fa.png",face_n:RAW+"10007_fn.png",SD_full:RAW+"10007_full.png",pf_img:RAW+"10007_pf.jpg",win_txt:"Yo, I actually won, didn't I? See ya!",lose_img:RAW+"10007_lose.jpg",win_img:RAW+"10007_end.jpg",f_txt:"Joonki claimed victory, yet he realized his training was still far from enough.\n“I will overcome any hardship and become the strongest in this city!”"},
-{id:10008,name:"SEONGHO",Pwr:120,Eng:100,spd:80,type:1002,bomb:"dark",face_a:RAW+"10008_fa.png",face_n:RAW+"10008_fn.png",SD_full:RAW+"10008_full.png",pf_img:RAW+"10008_pf.jpg",win_txt:"In the name of God, I will take your life.",lose_img:RAW+"10008_lose.jpg",win_img:RAW+"10008_end.jpg",f_txt:"Seongho claimed victory in the name of God.\nHe continues his holy mission in the brutal city."},
-{id:10009,name:"JINSEONG",Pwr:100,Eng:110,spd:90,type:1003,bomb:"fire",face_a:RAW+"10009_fa.png",face_n:RAW+"10009_fn.png",SD_full:RAW+"10009_full.png",pf_img:RAW+"10009_pf.jpg",win_txt:"Where should I cut you, first?",lose_img:RAW+"10009_lose.jpg",win_img:RAW+"10009_end.jpg",f_txt:"Jinseong won the battle.\nHe still seeks the next prey to cut."},
-{id:10010,name:"JUNCHEOL",Pwr:80,Eng:70,spd:150,type:1001,bomb:"fire",face_a:RAW+"10010_fa.png",face_n:RAW+"10010_fn.png",SD_full:RAW+"10010_full.png",pf_img:RAW+"10010_pf.jpg",win_txt:"Don't mess with me!",lose_img:RAW+"10010_lose.jpg",win_img:RAW+"10010_end.jpg",f_txt:"Juncheol claimed victory.\nNo one dares to mess with him anymore."},
-{id:10011,name:"HYERI",Pwr:80,Eng:120,spd:100,type:1002,bomb:"light",face_a:RAW+"10011_fa.png",face_n:RAW+"10011_fn.png",SD_full:RAW+"10011_full.png",pf_img:RAW+"10011_pf.jpg",win_txt:"Does it hurt a lot? I'm sorry.",lose_img:RAW+"10011_lose.jpg",win_img:RAW+"10011_end.jpg",f_txt:"Hyeri won, yet she felt a strange emptiness.\n“Does it really have to end like this?”"},
-{id:10012,name:"MINSEOP",Pwr:90,Eng:100,spd:110,type:1003,bomb:"wind",face_a:RAW+"10012_fa.png",face_n:RAW+"10012_fn.png",SD_full:RAW+"10012_full.png",pf_img:RAW+"10012_pf.jpg",win_txt:"From now on, you are my slave.",lose_img:RAW+"10012_lose.jpg",win_img:RAW+"10012_end.jpg",f_txt:"Minseop claimed absolute victory.\nFrom now on, the city belongs to him."}
+const characters = [
+  {id:10001,name:"YURI",Pwr:120,Eng:2000,spd:120,type:1001,bomb:"dark",
+   face_a:RAW+"10001_fa.png",face_n:RAW+"10001_fn.png",SD_full:RAW+"10001_full.png",pf_img:RAW+"10001_pf.jpg",
+   win_txt:"Vile and hideous creature. Embrace your death.",
+   lose_img:RAW+"10001_lose.jpg",win_img:RAW+"10001_end.jpg",win_mp4:RAW+"10001_end.mp4",bg_img:RAW+"10001_bg.jpg",
+   f_txt:"Yuri killed Seongjin and sat upon the true throne of darkness.\nBut she, who had always been empty inside, set out in search of new prey.\nThe doors of Yuri's Castle finally opened—and within waits the lewd, cold Yuri."},
+  {id:10002,name:"SEKANG",Pwr:150,Eng:2000,spd:75,type:1002,bomb:"fire",
+   face_a:RAW+"10002_fa.png",face_n:RAW+"10002_fn.png",SD_full:RAW+"10002_full.png",pf_img:RAW+"10002_pf.jpg",
+   win_txt:"Don't block my path!",
+   lose_img:RAW+"10002_lose.jpg",win_img:RAW+"10002_end.jpg",win_mp4:RAW+"10002_end.mp4",bg_img:RAW+"10002_bg.jpg",
+   f_txt:"Sekang seized victory as a matter of course.\nHe continues to follow the trail of his vanished younger sister.\n“Seryoen… please, be safe!”"},
+  {id:10003,name:"HOO",Pwr:130,Eng:1800,spd:105,type:1003,bomb:"ice",
+   face_a:RAW+"10003_fa.png",face_n:RAW+"10003_fn.png",SD_full:RAW+"10003_full.png",pf_img:RAW+"10003_pf.jpg",
+   win_txt:"Mad about it? Still want more? Push it and you'll really die.",
+   lose_img:RAW+"10003_lose.jpg",win_img:RAW+"10003_end.jpg",win_mp4:RAW+"10003_end.mp4",bg_img:RAW+"10003_bg.jpg",
+   f_txt:"He had joined the game out of sheer boredom—and won it without much difficulty.\nToday, as always, he stands on the street smoking, watching the girls who pass by."},
+  {id:10004,name:"SAEM",Pwr:100,Eng:1500,spd:150,type:1001,bomb:"ice",
+   face_a:RAW+"10004_fa.png",face_n:RAW+"10004_fn.png",SD_full:RAW+"10004_full.png",pf_img:RAW+"10004_pf.jpg",
+   win_txt:"Gross...you're so ugly. And you smell terrible.",
+   lose_img:RAW+"10004_lose.jpg",win_img:RAW+"10004_end.jpg",win_mp4:RAW+"10004_end.mp4",bg_img:RAW+"10004_bg.jpg",
+   f_txt:"Having claimed victory, Saem returned to school.\nCraving blood more and more, she was steadily descending into a blood-soaked demon."},
+  {id:10005,name:"H.K.",Pwr:100,Eng:1500,spd:150,type:1002,bomb:"dark",
+   face_a:RAW+"10005_fa.png",face_n:RAW+"10005_fn.png",SD_full:RAW+"10005_full.png",pf_img:RAW+"10005_pf.jpg",
+   win_txt:"Hehehehehe... You fool. Still want to play with me?",
+   lose_img:RAW+"10005_lose.jpg",win_img:RAW+"10005_end.jpg",win_mp4:RAW+"10005_end.mp4",bg_img:RAW+"10005_bg.jpg",
+   f_txt:"H.K. won with ease.\nLicking his blood, she felt an orgasm.\nH.K. has now evolved into an even stronger, sharper beast."},
+  {id:10006,name:"NAHYOEN",Pwr:100,Eng:1800,spd:150,type:1003,bomb:"dark",
+   face_a:RAW+"10006_fa.png",face_n:RAW+"10006_fn.png",SD_full:RAW+"10006_full.png",pf_img:RAW+"10006_pf.jpg",
+   win_txt:"What a waste of time... on trash like you.",
+   lose_img:RAW+"10006_lose.jpg",win_img:RAW+"10006_end.jpg",win_mp4:RAW+"10006_end.mp4",bg_img:RAW+"10006_bg.jpg",
+   f_txt:"Nahyoen barely managed to defeat Seongjin and returned home.\nHaving finally received recognition from her sister, she felt truly happy."},
+  {id:10007,name:"JOONKI",Pwr:100,Eng:1600,spd:150,type:1001,bomb:"wind",
+   face_a:RAW+"10007_fa.png",face_n:RAW+"10007_fn.png",SD_full:RAW+"10007_full.png",pf_img:RAW+"10007_pf.jpg",
+   win_txt:"Yo, I actually won, didn't I? See ya!",
+   lose_img:RAW+"10007_lose.jpg",win_img:RAW+"10007_end.jpg",win_mp4:RAW+"10007_end.mp4",bg_img:RAW+"10007_bg.jpg",
+   f_txt:"Joonki claimed victory, yet he realized his training was still far from enough.\n“I will overcome any hardship and become the strongest in this city!”"},
+  {id:10008,name:"SEONGHO",Pwr:120,Eng:1800,spd:100,type:1002,bomb:"dark",
+   face_a:RAW+"10008_fa.png",face_n:RAW+"10008_fn.png",SD_full:RAW+"10008_full.png",pf_img:RAW+"10008_pf.jpg",
+   win_txt:"In the name of God, I will take your life.",
+   lose_img:RAW+"10008_lose.jpg",win_img:RAW+"10008_end.jpg",win_mp4:RAW+"10008_end.mp4",bg_img:RAW+"10008_bg.jpg",
+   f_txt:"Seongho claimed victory in the name of God.\nHe continues his holy mission in the brutal city."},
+  {id:10009,name:"JINSEONG",Pwr:110,Eng:1700,spd:110,type:1003,bomb:"fire",
+   face_a:RAW+"10009_fa.png",face_n:RAW+"10009_fn.png",SD_full:RAW+"10009_full.png",pf_img:RAW+"10009_pf.jpg",
+   win_txt:"Where should I cut you, first?",
+   lose_img:RAW+"10009_lose.jpg",win_img:RAW+"10009_end.jpg",win_mp4:RAW+"10009_end.mp4",bg_img:RAW+"10009_bg.jpg",
+   f_txt:"Jinseong won the battle.\nHe still seeks the next prey to cut."},
+  {id:10010,name:"JUNCHEOL",Pwr:90,Eng:1400,spd:160,type:1001,bomb:"fire",
+   face_a:RAW+"10010_fa.png",face_n:RAW+"10010_fn.png",SD_full:RAW+"10010_full.png",pf_img:RAW+"10010_pf.jpg",
+   win_txt:"Don't mess with me!",
+   lose_img:RAW+"10010_lose.jpg",win_img:RAW+"10010_end.jpg",win_mp4:RAW+"10010_end.mp4",bg_img:RAW+"10010_bg.jpg",
+   f_txt:"Juncheol claimed victory.\nNo one dares to mess with him anymore."},
+  {id:10011,name:"HYERI",Pwr:90,Eng:1800,spd:130,type:1002,bomb:"light",
+   face_a:RAW+"10011_fa.png",face_n:RAW+"10011_fn.png",SD_full:RAW+"10011_full.png",pf_img:RAW+"10011_pf.jpg",
+   win_txt:"Does it hurt a lot? I'm sorry.",
+   lose_img:RAW+"10011_lose.jpg",win_img:RAW+"10011_end.jpg",win_mp4:RAW+"10011_end.mp4",bg_img:RAW+"10011_bg.jpg",
+   f_txt:"Hyeri won, yet she felt a strange emptiness.\n“Does it really have to end like this?”"},
+  {id:10012,name:"MINSEOP",Pwr:100,Eng:1600,spd:140,type:1003,bomb:"wind",
+   face_a:RAW+"10012_fa.png",face_n:RAW+"10012_fn.png",SD_full:RAW+"10012_full.png",pf_img:RAW+"10012_pf.jpg",
+   win_txt:"From now on, you are my slave.",
+   lose_img:RAW+"10012_lose.jpg",win_img:RAW+"10012_end.jpg",win_mp4:RAW+"10012_end.mp4",bg_img:RAW+"10012_bg.jpg",
+   f_txt:"Minseop claimed absolute victory.\nFrom now on, the city belongs to him."}
 ];
 
-const bosses=[
-{id:10013,name:"NARI",Pwr:150,Eng:150,spd:150,type:1004,bomb:"demon",
- face_a:RAW+"10013_fa.jpg",face_n:RAW+"10013_fn.jpg.jpg",SD_full:RAW+"10013_full.jpg",pf_img:RAW+"10013_pf.jpg",
- boss_img:RAW+"boss_10013.jpg",win_txt:"The world is better off when you disappear.",
- lose_img:RAW+"10013_lose.jpg",win_img:RAW+"10013_end.jpg",
- f_txt:"It is empty. No one can stand against me. I am both light and darkness."},
-{id:10014,name:"QRI",Pwr:150,Eng:500,spd:150,type:1004,bomb:"demon",
- face_a:RAW+"10014_fa.jpg",face_n:RAW+"10014_fn.jpg.jpg",SD_full:RAW+"10014_full.jpg",pf_img:RAW+"10014_pf.jpg",
- boss_img:RAW+"boss_10014.jpg",win_txt:"Slower than a turtle, weaker than a snail... Pathetic",
- lose_img:RAW+"10014_lose.jpg",win_img:RAW+"10014_end.jpg",
- f_txt:"I have proven that I am the strongest. Now I will call forth blood, and I will rule over blood. I will become the eternal Empress of Blood."},
-{id:10015,name:"SEONGJIN",Pwr:1000,Eng:1000,spd:180,type:1005,bomb:"abyss",
- face_a:RAW+"10015_fa.jpg",face_n:RAW+"10015_fn.jpg",SD_full:RAW+"10015_full.jpg",pf_img:RAW+"10015_pf.jpg",
- boss_img:RAW+"boss_10015.jpg",win_txt:"What makes you better than an insect?",
- lose_img:RAW+"10015_lose.jpg",win_img:RAW+"10015_end.jpg",
- f_txt:"No one can replace me. I am a great existence. Even a god cannot stand against me. Simply put—everything begins because of me, and everything ends because of me."}
+const bosses = [
+  {id:10013,name:"NARI",Pwr:150,Eng:2500,spd:150,type:1004,bomb:"demon",
+   face_a:RAW+"10013_fa.jpg",face_n:RAW+"10013_fn.jpg.jpg",SD_full:RAW+"10013_full.jpg",pf_img:RAW+"10013_pf.jpg",
+   boss_img:RAW+"boss_10013.jpg",win_txt:"The world is better off when you disappear.",
+   lose_img:RAW+"10013_lose.jpg",win_img:RAW+"10013_end.jpg",win_mp4:RAW+"10013_end.mp4",bg_img:RAW+"10013_bg.jpg",
+   f_txt:"It is empty. No one can stand against me. I am both light and darkness."},
+  {id:10014,name:"QRI",Pwr:150,Eng:3000,spd:150,type:1004,bomb:"demon",
+   face_a:RAW+"10014_fa.jpg",face_n:RAW+"10014_fn.jpg.jpg",SD_full:RAW+"10014_full.jpg",pf_img:RAW+"10014_pf.jpg",
+   boss_img:RAW+"boss_10014.jpg",win_txt:"Slower than a turtle, weaker than a snail... Pathetic",
+   lose_img:RAW+"10014_lose.jpg",win_img:RAW+"10014_end.jpg",win_mp4:RAW+"10014_end.mp4",bg_img:RAW+"10014_bg.jpg",
+   f_txt:"I have proven that I am the strongest. Now I will call forth blood, and I will rule over blood."},
+  {id:10015,name:"SEONGJIN",Pwr:200,Eng:4000,spd:160,type:1005,bomb:"abyss",
+   face_a:RAW+"10015_fa.jpg",face_n:RAW+"10015_fn.jpg",SD_full:RAW+"10015_full.jpg",pf_img:RAW+"10015_pf.jpg",
+   boss_img:RAW+"boss_10015.jpg",win_txt:"What makes you better than an insect?",
+   lose_img:RAW+"10015_lose.jpg",win_img:RAW+"10015_end.jpg",win_mp4:RAW+"10015_end.mp4",bg_img:RAW+"10015_bg.jpg",
+   f_txt:"No one can replace me. I am a great existence. Even a god cannot stand against me."}
 ];
 
 characters.forEach(c=>{c.img_n=new Image();c.img_n.src=c.face_n;c.img_a=new Image();c.img_a.src=c.face_a});
@@ -270,7 +305,17 @@ window.addEventListener('resize',()=>{if(gameState==='battle')resizeCanvas()});
 
 function startBattle(){
   showScreen('battle-screen');resizeCanvas();
-  // HP = Eng 그대로 (1배수)
+
+  // 스테이지 배경 적용
+  const bg = enemyChar.bg_img || '';
+  if(bg){
+    canvas.style.backgroundImage = `url('${bg}')`;
+    canvas.style.backgroundSize = 'cover';
+    canvas.style.backgroundPosition = 'center';
+  } else {
+    canvas.style.backgroundImage = 'none';
+  }
+
   const pEng=playerChar.Eng, eEng=enemyChar.Eng;
   player={x:W/2,y:H-110,char:playerChar,eng:pEng,maxEng:pEng,spd:playerChar.spd,type:playerChar.type,bomb:playerChar.bomb,hitTimer:0,fireCD:0,bombUsed:false,status:{},specialFlash:0};
   enemy={x:W/2,y:110,char:enemyChar,eng:eEng,maxEng:eEng,spd:enemyChar.spd,type:enemyChar.type,bomb:enemyChar.bomb,hitTimer:0,fireCD:1.5,bombUsed:false,status:{},specialFlash:0,aiTimer:0,aiDirX:1,aiDirY:0};
@@ -282,12 +327,9 @@ function startBattle(){
   lastTime=performance.now();requestAnimationFrame(battleLoop);
   window.onkeydown=e=>{
     keys[e.key]=true;
-    if(e.key===' ' || e.key==='Spacebar'){
+    if(e.key===' '||e.key==='Spacebar'){
       e.preventDefault();
-      if(player.fireCD<=0 && !player.status.freeze){
-        firePattern(player,-1);
-        player.fireCD=2.0; // 2초 쿨타임
-      }
+      if(player.fireCD<=0&&!player.status.freeze){firePattern(player,-1);player.fireCD=2.0}
     }
     if((e.key==='q'||e.key==='Q')&&!player.bombUsed)useBomb(player);
   };
@@ -295,55 +337,32 @@ function startBattle(){
 }
 
 function updateHPBars(){
-  const pPct = Math.max(0, player.eng / player.maxEng * 100);
-  const ePct = Math.max(0, enemy.eng / enemy.maxEng * 100);
-  document.getElementById('player-hp-bar').style.width = pPct + '%';
-  document.getElementById('enemy-hp-bar').style.width = ePct + '%';
-  document.getElementById('player-hp-pct').textContent = pPct.toFixed(1) + '%';
-  document.getElementById('enemy-hp-pct').textContent = ePct.toFixed(1) + '%';
+  const pPct=Math.max(0,player.eng/player.maxEng*100);
+  const ePct=Math.max(0,enemy.eng/enemy.maxEng*100);
+  document.getElementById('player-hp-bar').style.width=pPct+'%';
+  document.getElementById('enemy-hp-bar').style.width=ePct+'%';
+  document.getElementById('player-hp-pct').textContent=pPct.toFixed(1)+'%';
+  document.getElementById('enemy-hp-pct').textContent=ePct.toFixed(1)+'%';
 }
 
 function battleLoop(now){if(!battleActive)return;const dt=Math.min((now-lastTime)/1000,.05);lastTime=now;update(dt);draw();requestAnimationFrame(battleLoop)}
 
 function update(dt){
-  // 이동
   let mx=0,my=0;
   if(keys['ArrowLeft']||keys['a']||keys['A'])mx=-1;if(keys['ArrowRight']||keys['d']||keys['D'])mx=1;
   if(keys['ArrowUp']||keys['w']||keys['W'])my=-1;if(keys['ArrowDown']||keys['s']||keys['S'])my=1;
   const pSpeed=(player.spd/100)*260*(player.status.slow?.65:1);
   if(!player.status.freeze){player.x+=mx*pSpeed*dt;player.y+=my*pSpeed*dt;player.x=Math.max(50,Math.min(W-50,player.x));player.y=Math.max(midY+40,Math.min(H-60,player.y))}
-
-  // 적 AI
   enemy.aiTimer-=dt;let dodgeX=0,dodgeY=0;
   for(const b of bullets){if(b.owner!=='player')continue;const dx=b.x-enemy.x,dy=b.y-enemy.y,dist=Math.sqrt(dx*dx+dy*dy);if(dist<180&&Math.abs(dx)<70){dodgeX+=dx>0?-1:1;dodgeY+=dy>0?-0.6:0.4}}
   if(Math.abs(dodgeX)+Math.abs(dodgeY)>.3){enemy.aiDirX=dodgeX;enemy.aiDirY=dodgeY;enemy.aiTimer=.35}
   else if(enemy.aiTimer<=0){enemy.aiDirX=(Math.random()-.5)*2;enemy.aiDirY=(Math.random()-.5)*1.2;enemy.aiTimer=.5+Math.random()*.9}
   const eSpeed=(enemy.spd/100)*230*(enemy.status.slow?.65:1);
   if(!enemy.status.freeze){const len=Math.sqrt(enemy.aiDirX*enemy.aiDirX+enemy.aiDirY*enemy.aiDirY)||1;enemy.x+=(enemy.aiDirX/len)*eSpeed*dt;enemy.y+=(enemy.aiDirY/len)*eSpeed*dt;enemy.x=Math.max(50,Math.min(W-50,enemy.x));enemy.y=Math.max(60,Math.min(midY-40,enemy.y))}
-
-  // 쿨타임 감소
-  if(player.fireCD>0) player.fireCD-=dt;
-  if(enemy.fireCD>0) enemy.fireCD-=dt;
-
-  // 적 자동 공격 (2초 쿨타임)
-  if(!enemy.status.freeze && enemy.fireCD<=0){
-    firePattern(enemy,1);
-    enemy.fireCD=2.0;
-    if(!enemy.bombUsed&&enemy.eng<enemy.maxEng*.5&&Math.random()<.35)useBomb(enemy);
-  }
-
-  // 총알 이동 & 충돌
-  for(let i=bullets.length-1;i>=0;i--){
-    const b=bullets[i];b.x+=b.vx*dt;b.y+=b.vy*dt;
-    const target=b.owner==='player'?enemy:player;
-    if(Math.abs(b.y-target.y)<50&&Math.abs(b.x-target.x)<48){
-      applyDamage(target,b.dmg);
-      spawnExplosion(b.x,b.y,b.owner==='player'?'#4af':'#f44');
-      bullets.splice(i,1);continue;
-    }
-    if(b.y<-40||b.y>H+40||b.x<-40||b.x>W+40)bullets.splice(i,1);
-  }
-
+  if(player.fireCD>0)player.fireCD-=dt;
+  if(enemy.fireCD>0)enemy.fireCD-=dt;
+  if(!enemy.status.freeze&&enemy.fireCD<=0){firePattern(enemy,1);enemy.fireCD=2.0;if(!enemy.bombUsed&&enemy.eng<enemy.maxEng*.5&&Math.random()<.35)useBomb(enemy)}
+  for(let i=bullets.length-1;i>=0;i--){const b=bullets[i];b.x+=b.vx*dt;b.y+=b.vy*dt;const target=b.owner==='player'?enemy:player;if(Math.abs(b.y-target.y)<50&&Math.abs(b.x-target.x)<48){applyDamage(target,b.dmg);spawnExplosion(b.x,b.y,b.owner==='player'?'#4af':'#f44');bullets.splice(i,1);continue}if(b.y<-40||b.y>H+40||b.x<-40||b.x>W+40)bullets.splice(i,1)}
   updateStatus(player,dt);updateStatus(enemy,dt);
   if(player.hitTimer>0){player.hitTimer-=dt;if(player.hitTimer<=0)document.getElementById('player-face').src=playerChar.face_n}
   if(enemy.hitTimer>0){enemy.hitTimer-=dt;if(enemy.hitTimer<=0)document.getElementById('enemy-face').src=enemyChar.face_n}
@@ -353,9 +372,8 @@ function update(dt){
 }
 
 function firePattern(ent,dir){
-  // 데미지 = Pwr / 10
-  const baseDmg=Math.max(1, Math.floor(ent.char.Pwr / 10));
-  const speed=340*dir, type=ent.type;
+  const baseDmg=Math.max(1,Math.floor(ent.char.Pwr/10));
+  const speed=340*dir,type=ent.type;
   if(type===1001){for(let i=0;i<5;i++)setTimeout(()=>{if(!battleActive)return;bullets.push({x:ent.x,y:ent.y+(dir>0?45:-45),vx:0,vy:speed,dmg:baseDmg,owner:dir<0?'player':'enemy',color:dir<0?'#4af':'#f44'})},i*85)}
   else if(type===1002){[-1.2,0,1.2].forEach(ang=>bullets.push({x:ent.x,y:ent.y+(dir>0?45:-45),vx:ang*95,vy:speed*.95,dmg:baseDmg,owner:dir<0?'player':'enemy',color:dir<0?'#4af':'#f44'}))}
   else if(type===1003){for(let k=0;k<2;k++)setTimeout(()=>{if(!battleActive)return;[-.7,.7].forEach(ang=>bullets.push({x:ent.x,y:ent.y+(dir>0?45:-45),vx:ang*75,vy:speed,dmg:baseDmg,owner:dir<0?'player':'enemy',color:dir<0?'#4af':'#f44'}))},k*170)}
@@ -396,7 +414,8 @@ function spawnExplosion(x,y,color){for(let i=0;i<12;i++){const a=Math.random()*M
 function spawnBlackExplosion(x,y){for(let i=0;i<25;i++){const a=Math.random()*Math.PI*2,s=100+Math.random()*180;particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:.5+Math.random()*.4,color:'#111',size:5+Math.random()*7})}}
 
 function draw(){
-  ctx.clearRect(0,0,W,H);let ox=0,oy=0;if(shakeTime>0){ox=(Math.random()-.5)*10;oy=(Math.random()-.5)*8}
+  ctx.clearRect(0,0,W,H);
+  let ox=0,oy=0;if(shakeTime>0){ox=(Math.random()-.5)*10;oy=(Math.random()-.5)*8}
   ctx.save();ctx.translate(ox,oy);
   ctx.strokeStyle='rgba(180,50,50,.35)';ctx.setLineDash([10,8]);ctx.beginPath();ctx.moveTo(0,midY);ctx.lineTo(W,midY);ctx.stroke();ctx.setLineDash([]);
   ctx.fillStyle='rgba(150,50,50,.15)';ctx.font='14px sans-serif';ctx.fillText('상대방 진영',20,28);ctx.fillStyle='rgba(50,80,150,.15)';ctx.fillText('나의 진영',20,H-18);
@@ -432,36 +451,63 @@ function endBattle(playerWin){
       },2800);
     }else{
       document.getElementById('fail-player').src=playerChar.face_a;document.getElementById('fail-enemy').src=enemyChar.face_n;document.getElementById('fail-txt').textContent=enemyChar.win_txt;showScreen('fail-screen');
-      setTimeout(()=>{const go=document.getElementById('gameover-screen');go.style.backgroundImage=`url('${playerChar.lose_img}')`;go.style.backgroundSize='cover';go.style.backgroundPosition='center';showScreen('gameover-screen');
-        setTimeout(()=>{showScreen('title-screen');defeated.clear();playerChar=null;bossIndex=0;isBossFight=false;document.getElementById('gameover-screen').style.backgroundImage=''},5000)},2800);
+      setTimeout(()=>{
+        const go=document.getElementById('gameover-screen');
+        go.style.backgroundImage=`url('${playerChar.lose_img}')`;
+        go.style.backgroundSize='cover';go.style.backgroundPosition='center';
+        showScreen('gameover-screen');
+        setTimeout(()=>{showScreen('title-screen');defeated.clear();playerChar=null;bossIndex=0;isBossFight=false;document.getElementById('gameover-screen').style.backgroundImage=''},5000);
+      },2800);
     }
   },500);
 }
 
-// 시간 종료 시 → 잔여 HP 비율이 높은 쪽이 승리
 function endBattleByTime(){
-  const pRatio = player.eng / player.maxEng;
-  const eRatio = enemy.eng / enemy.maxEng;
-  if(pRatio >= eRatio) endBattle(true);
-  else endBattle(false);
+  const pRatio=player.eng/player.maxEng;
+  const eRatio=enemy.eng/enemy.maxEng;
+  if(pRatio>=eRatio)endBattle(true);else endBattle(false);
 }
 
 let typingTimer=null,fullFtxt='',typedLen=0;
 function startEnding(){
-  endingPhase=0;fullFtxt=playerChar.f_txt||"Victory... The true ending begins.";typedLen=0;
-  document.getElementById('ending-img').src=playerChar.win_img;document.getElementById('ending-txt').textContent='';document.getElementById('ending-hint').textContent='클릭하면 전체 텍스트가 표시됩니다';showScreen('ending-screen');
-  typingTimer=setInterval(()=>{if(typedLen<fullFtxt.length){typedLen++;document.getElementById('ending-txt').textContent=fullFtxt.substring(0,typedLen)}else{clearInterval(typingTimer);document.getElementById('ending-hint').textContent='다시 클릭하면 GAME OVER';endingPhase=1}},28);
+  endingPhase=0;
+  fullFtxt=playerChar.f_txt||"Victory... The true ending begins.";
+  typedLen=0;
+
+  const media = playerChar.win_mp4 || playerChar.win_img;
+  const isVideo = media && media.endsWith('.mp4');
+  const old = document.getElementById('ending-img');
+
+  if(isVideo){
+    old.outerHTML = `<video id="ending-img" autoplay muted loop playsinline style="max-width:90%;max-height:52%;border-radius:8px;margin-bottom:18px;object-fit:contain"><source src="${media}" type="video/mp4"></video>`;
+  }else{
+    old.outerHTML = `<img id="ending-img" src="${media}" style="max-width:90%;max-height:52%;object-fit:contain;margin-bottom:18px;border-radius:8px">`;
+  }
+
+  document.getElementById('ending-txt').textContent='';
+  document.getElementById('ending-hint').textContent='클릭하면 전체 텍스트가 표시됩니다';
+  showScreen('ending-screen');
+
+  typingTimer=setInterval(()=>{
+    if(typedLen<fullFtxt.length){typedLen++;document.getElementById('ending-txt').textContent=fullFtxt.substring(0,typedLen)}
+    else{clearInterval(typingTimer);document.getElementById('ending-hint').textContent='다시 클릭하면 GAME OVER';endingPhase=1}
+  },28);
 }
 
 document.getElementById('ending-screen').addEventListener('click',()=>{
   if(gameState!=='ending')return;
   if(endingPhase===0){clearInterval(typingTimer);document.getElementById('ending-txt').textContent=fullFtxt;document.getElementById('ending-hint').textContent='다시 클릭하면 GAME OVER';endingPhase=1}
-  else if(endingPhase===1){const go=document.getElementById('gameover-screen');go.style.backgroundImage=`url('${playerChar.win_img}')`;go.style.backgroundSize='cover';go.style.backgroundPosition='center';showScreen('gameover-screen');endingPhase=2;
-    setTimeout(()=>{showScreen('title-screen');defeated.clear();playerChar=null;bossIndex=0;isBossFight=false;document.getElementById('gameover-screen').style.backgroundImage=''},6000)}
+  else if(endingPhase===1){
+    const go=document.getElementById('gameover-screen');
+    go.style.backgroundImage=`url('${playerChar.win_img}')`;
+    go.style.backgroundSize='cover';go.style.backgroundPosition='center';
+    showScreen('gameover-screen');endingPhase=2;
+    setTimeout(()=>{showScreen('title-screen');defeated.clear();playerChar=null;bossIndex=0;isBossFight=false;document.getElementById('gameover-screen').style.backgroundImage=''},6000);
+  }
 });
 </script>
-  <script src="https://pl30480259.effectivecpmnetwork.com/7c/f9/c6/7cf9c69f97cf278625a4dafc7894ba12.js"></script>
-  <script src="https://pl30480260.effectivecpmnetwork.com/25/94/e7/2594e7121bf1dc1d5ac8fec4a977fab2.js"></script>
-</body>
 </body>
 </html>
+```
+
+이 코드를 통째로 복사해서 사용하시면 됩니다.
