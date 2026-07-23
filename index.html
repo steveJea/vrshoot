@@ -141,7 +141,8 @@ body{background:#1a1a1a;color:#fff;font-family:'Segoe UI','Malgun Gothic',sans-s
 <div id="gameover-screen" class="screen"><h1>GAME OVER</h1></div>
 
 <script>
-const RAW = "https://raw.githubusercontent.com/steveJea/vrshoot/main/img/";
+document.addEventListener('contextmenu', e => e.preventDefault());
+  const RAW = "https://raw.githubusercontent.com/steveJea/vrshoot/main/img/";
 
 const characters = [
   {id:10001,name:"YURI",Pwr:120,Eng:2000,spd:120,type:1001,bomb:"dark",
