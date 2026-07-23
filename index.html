@@ -522,7 +522,7 @@ function startEnding() {
   }, 9000);
 }
 }
-
+  }
 document.getElementById('ending-screen').addEventListener('click',()=>{
   if(gameState!=='ending')return;
   if(endingPhase===0){clearInterval(typingTimer);document.getElementById('ending-txt').textContent=fullFtxt;document.getElementById('ending-hint').textContent='다시 클릭하면 GAME OVER';endingPhase=1}
