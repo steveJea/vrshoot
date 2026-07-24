@@ -43,9 +43,12 @@ body{background:#1a1a1a;color:#fff;font-family:'Segoe UI','Malgun Gothic',sans-s
 .char-card.selected{border-color:#ffcc00;box-shadow:0 0 16px #ffcc00}
 .char-card.boss-card{border-color:#ff00aa;box-shadow:0 0 10px #ff00aa}
 .char-card.boss-card:hover{border-color:#ff66cc;box-shadow:0 0 16px #ff00aa}
+.char-card.hidden-card{border-color:#00ccff;box-shadow:0 0 10px #00ccff}
+.char-card.hidden-card:hover{border-color:#66eeff;box-shadow:0 0 16px #00ccff}
 .char-card img{width:100%;height:120px;object-fit:cover;display:block}
 .char-card .name{text-align:center;padding:5px 0;font-size:.8rem;background:#222}
 .char-card.boss-card .name{color:#ff66cc;font-weight:bold}
+.char-card.hidden-card .name{color:#66eeff;font-weight:bold}
 
 #vs-screen{justify-content:center;align-items:center;background:#ffffff}
 .vs-container{display:flex;align-items:center;gap:40px}
@@ -160,7 +163,7 @@ body{background:#1a1a1a;color:#fff;font-family:'Segoe UI','Malgun Gothic',sans-s
 
 <script>
 document.addEventListener('contextmenu', e => e.preventDefault());
-  const RAW = "https://raw.githubusercontent.com/steveJea/vrshoot/main/img/";
+const RAW = "https://raw.githubusercontent.com/steveJea/vrshoot/main/img/";
 
 const characters = [
   {id:10001,name:"YURI",Pwr:120,Eng:2000,spd:120,type:1001,bomb:"dark",
@@ -226,29 +229,44 @@ const characters = [
 ];
 
 const bosses = [
-  {id:10013,name:"NARI",Pwr:150,Eng:2500,spd:150,type:1004,bomb:"demon",
+  {id:10013,name:"NARI",Pwr:210,Eng:3000,spd:150,type:1004,bomb:"demon",pw:"poweroverwhelming",
    face_a:RAW+"10013_fa.jpg",face_n:RAW+"10013_fn.jpg.jpg",SD_full:RAW+"10013_full.jpg",pf_img:RAW+"10013_pf.jpg",
    boss_img:RAW+"boss_10013.jpg",win_txt:"The world is better off when you disappear.",
    lose_img:RAW+"10013_lose.jpg",win_img:RAW+"10013_end.jpg",win_mp4:RAW+"10013_end.mp4",bg_img:RAW+"10013_bg.jpg",
    f_txt:"It is empty. No one can stand against me. I am both light and darkness."},
-  {id:10014,name:"QRI",Pwr:150,Eng:3000,spd:150,type:1004,bomb:"demon",
+  {id:10014,name:"QRI",Pwr:250,Eng:4000,spd:150,type:1004,bomb:"demon",pw:"sexydynamite",
    face_a:RAW+"10014_fa.jpg",face_n:RAW+"10014_fn.jpg.jpg",SD_full:RAW+"10014_full.jpg",pf_img:RAW+"10014_pf.jpg",
    boss_img:RAW+"boss_10014.jpg",win_txt:"Slower than a turtle, weaker than a snail... Pathetic",
    lose_img:RAW+"10014_lose.jpg",win_img:RAW+"10014_end.jpg",win_mp4:RAW+"10014_end.mp4",bg_img:RAW+"10014_bg.jpg",
-   f_txt:"I have proven that I am the strongest. Now I will call forth blood, and I will rule over blood."},
-  {id:10015,name:"SEONGJIN",Pwr:200,Eng:4000,spd:160,type:1005,bomb:"abyss",
+   f_txt:"I have proven that I am the strongest. Now I will call forth blood, and I will rule over blood. I will become the eternal Empress of Blood."},
+  {id:10015,name:"SEONGJIN",Pwr:400,Eng:5000,spd:180,type:1005,bomb:"abyss",pw:"shinlimsurgery",
    face_a:RAW+"10015_fa.jpg",face_n:RAW+"10015_fn.jpg",SD_full:RAW+"10015_full.jpg",pf_img:RAW+"10015_pf.jpg",
    boss_img:RAW+"boss_10015.jpg",win_txt:"What makes you better than an insect?",
    lose_img:RAW+"10015_lose.jpg",win_img:RAW+"10015_end.jpg",win_mp4:RAW+"10015_end.mp4",bg_img:RAW+"10015_bg.jpg",
-   f_txt:"No one can replace me. I am a great existence. Even a god cannot stand against me."}
+   f_txt:"No one can replace me. I am a great existence. Even a god cannot stand against me. Simply put—everything begins because of me, and everything ends because of me."}
 ];
 
+const hiddenChars = [
+  {id:10016,name:"S.H.",Pwr:300,Eng:2500,spd:250,type:1004,bomb:"abyss",pw:"madplanner",isHidden:true,
+   face_a:RAW+"10016_fa.jpg",face_n:RAW+"10016_fn.jpg",SD_full:RAW+"10016_full.jpg",pf_img:RAW+"10016_pf.jpg",
+   win_txt:"The darkness of the abyss will erode you away.",
+   lose_img:RAW+"10016_lose.jpg",win_img:RAW+"10016_end.jpg",win_mp4:RAW+"10016_end.mp4",bg_img:RAW+"10001_bg.jpg",
+   f_txt:"The evil instinct has awakened in the new demon who put the previous one to sleep. Now there is no one left who can stop her. Having finished her preparations to bring this world to ruin, she will slowly begin to reveal herself. “I’m coming now. Let’s all have a wonderful time.”"},
+  {id:10017,name:"J.Y.",Pwr:500,Eng:1500,spd:200,type:1005,bomb:"abyss",pw:"yanuaegi",isHidden:true,
+   face_a:RAW+"10017_fa.jpg",face_n:RAW+"10017_fn.jpg",SD_full:RAW+"10017_full.jpg",pf_img:RAW+"10017_pf.jpg",
+   win_txt:"With that level of skill, maybe you should hit the books instead.",
+   lose_img:RAW+"10017_lose.jpg",win_img:RAW+"10017_end.jpg",win_mp4:RAW+"10017_end.mp4",bg_img:RAW+"10001_bg.jpg",
+   f_txt:"J.Y. defeated the incarnation of the devil. Yet far too many villains still remain in this world. Unable to turn away from the power granted by God, J.Y. continues to hunt down evil today—even with her fragile girl’s body. “Villains, wait. I will punish you with the power of light.”"}
+];
+
+// 모든 언락 가능 캐릭터 (보스 + 히든)
+const unlockables = [...bosses, ...hiddenChars];
+
 characters.forEach(c=>{c.img_n=new Image();c.img_n.src=c.face_n;c.img_a=new Image();c.img_a.src=c.face_a});
-bosses.forEach(c=>{c.img_n=new Image();c.img_n.src=c.face_n;c.img_a=new Image();c.img_a.src=c.face_a});
+unlockables.forEach(c=>{c.img_n=new Image();c.img_n.src=c.face_n;c.img_a=new Image();c.img_a.src=c.face_a});
 
 let defeated=new Set(),playerChar=null,enemyChar=null,bossIndex=0,isBossFight=false,gameState="title",endingPhase=0;
-let cheatBuffer="",unlockedBosses=new Set();
-const CHEATS={"sexydynamite":0,"poweroverwhelming":1,"shinlimsurgery":2};
+let cheatBuffer="",unlockedIds=new Set();
 
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');gameState=id.replace('-screen','')}
 
@@ -257,9 +275,13 @@ document.addEventListener('keydown',function(e){
   if(gameState==='select'){
     if(e.key.length===1&&/[a-zA-Z]/.test(e.key)){
       cheatBuffer+=e.key.toLowerCase();
-      if(cheatBuffer.length>25)cheatBuffer=cheatBuffer.slice(-25);
-      for(const code in CHEATS){
-        if(cheatBuffer.endsWith(code)){addBossCard(bosses[CHEATS[code]]);cheatBuffer="";break}
+      if(cheatBuffer.length>30)cheatBuffer=cheatBuffer.slice(-30);
+      for(const ch of unlockables){
+        if(ch.pw && cheatBuffer.endsWith(ch.pw)){
+          addUnlockCard(ch);
+          cheatBuffer="";
+          break;
+        }
       }
     }
   }
@@ -269,7 +291,7 @@ function renderSelect(){
   const grid=document.getElementById('char-grid');
   grid.innerHTML='';
   document.getElementById('boss-area').innerHTML='';
-  unlockedBosses.clear();
+  unlockedIds.clear();
   characters.forEach(c=>{
     const card=document.createElement('div');card.className='char-card';
     card.innerHTML='<img src="'+c.pf_img+'" alt="'+c.name+'"><div class="name">'+c.name+'</div>';
@@ -277,18 +299,23 @@ function renderSelect(){
   });
 }
 
-function addBossCard(boss){
-  if(unlockedBosses.has(boss.id))return;
-  unlockedBosses.add(boss.id);
+function addUnlockCard(ch){
+  if(unlockedIds.has(ch.id))return;
+  unlockedIds.add(ch.id);
   const area=document.getElementById('boss-area');
   const card=document.createElement('div');
-  card.className='char-card boss-card';
-  card.dataset.bossId=boss.id;
-  card.innerHTML='<img src="'+boss.pf_img+'" alt="'+boss.name+'"><div class="name">'+boss.name+'</div>';
-  card.onclick=function(){
-    playerChar=boss;card.classList.add('selected');
-    enemyChar=characters[Math.floor(Math.random()*characters.length)];
-    isBossFight=false;setTimeout(goToVS,700);
+  const isHidden = !!ch.isHidden;
+  card.className = 'char-card ' + (isHidden ? 'hidden-card' : 'boss-card');
+  card.dataset.id = ch.id;
+  card.innerHTML = '<img src="'+ch.pf_img+'" alt="'+ch.name+'"><div class="name">'+ch.name+'</div>';
+  card.onclick = function(){
+    playerChar = ch;
+    card.classList.add('selected');
+    // 히든/보스를 플레이어로 골랐을 때도 상대는 일반 캐릭터만
+    const candidates = characters.filter(x => x.id !== (playerChar.id||0));
+    enemyChar = candidates[Math.floor(Math.random()*candidates.length)];
+    isBossFight = false;
+    setTimeout(goToVS, 700);
   };
   area.appendChild(card);
 }
@@ -302,7 +329,8 @@ function selectPlayer(c,card){
 
 function goToVS(){
   const normal=document.getElementById('vs-normal'),bossDiv=document.getElementById('vs-boss');
-  if(isBossFight){
+  // 보스가 상대일 때만 보스 VS 화면
+  if(isBossFight && enemyChar.boss_img){
     normal.style.display='none';bossDiv.style.display='flex';
     document.getElementById('vs-boss-img').src=enemyChar.boss_img;
     document.getElementById('vs-boss-name').textContent=enemyChar.name;
@@ -325,7 +353,6 @@ window.addEventListener('resize',()=>{if(gameState==='battle')resizeCanvas()});
 function startBattle(){
   showScreen('battle-screen');resizeCanvas();
 
-  // 스테이지 배경 적용
   const bg = enemyChar.bg_img || '';
   if(bg){
     canvas.style.backgroundImage = `url('${bg}')`;
@@ -336,8 +363,8 @@ function startBattle(){
   }
 
   const pEng=playerChar.Eng, eEng=enemyChar.Eng;
-  player={x:W/2,y:H-110,char:playerChar,eng:pEng,maxEng:pEng,spd:playerChar.spd,type:playerChar.type,bomb:playerChar.bomb,hitTimer:0,fireCD:0,bombUsed:false,status:{},specialFlash:0};
-  enemy={x:W/2,y:110,char:enemyChar,eng:eEng,maxEng:eEng,spd:enemyChar.spd,type:enemyChar.type,bomb:enemyChar.bomb,hitTimer:0,fireCD:1.5,bombUsed:false,status:{},specialFlash:0,aiTimer:0,aiDirX:1,aiDirY:0};
+  player={x:W/2,y:H-110,char:playerChar,eng:pEng,maxEng:pEng,spd:playerChar.spd,type:playerChar.type,bomb:playerChar.bomb,hitTimer:0,fireCD:0,bombUsed:false,status:{},specialFlash:0,speedMul:1};
+  enemy={x:W/2,y:110,char:enemyChar,eng:eEng,maxEng:eEng,spd:enemyChar.spd,type:enemyChar.type,bomb:enemyChar.bomb,hitTimer:0,fireCD:1.5,bombUsed:false,status:{},specialFlash:0,aiTimer:0,aiDirX:1,aiDirY:0,speedMul:1};
   bullets=[];effects=[];particles=[];timer=30;battleActive=true;shakeTime=0;
   document.getElementById('player-face').src=playerChar.face_n;document.getElementById('enemy-face').src=enemyChar.face_n;
   updateHPBars();document.getElementById('timer').textContent=timer;
@@ -370,18 +397,43 @@ function update(dt){
   let mx=0,my=0;
   if(keys['ArrowLeft']||keys['a']||keys['A'])mx=-1;if(keys['ArrowRight']||keys['d']||keys['D'])mx=1;
   if(keys['ArrowUp']||keys['w']||keys['W'])my=-1;if(keys['ArrowDown']||keys['s']||keys['S'])my=1;
-  const pSpeed=(player.spd/100)*260*(player.status.slow?.65:1);
+  const pSpeed=(player.spd/100)*260*(player.speedMul||1)*(player.status.slow?0.2:1);
   if(!player.status.freeze){player.x+=mx*pSpeed*dt;player.y+=my*pSpeed*dt;player.x=Math.max(50,Math.min(W-50,player.x));player.y=Math.max(midY+40,Math.min(H-60,player.y))}
+
   enemy.aiTimer-=dt;let dodgeX=0,dodgeY=0;
   for(const b of bullets){if(b.owner!=='player')continue;const dx=b.x-enemy.x,dy=b.y-enemy.y,dist=Math.sqrt(dx*dx+dy*dy);if(dist<180&&Math.abs(dx)<70){dodgeX+=dx>0?-1:1;dodgeY+=dy>0?-0.6:0.4}}
   if(Math.abs(dodgeX)+Math.abs(dodgeY)>.3){enemy.aiDirX=dodgeX;enemy.aiDirY=dodgeY;enemy.aiTimer=.35}
   else if(enemy.aiTimer<=0){enemy.aiDirX=(Math.random()-.5)*2;enemy.aiDirY=(Math.random()-.5)*1.2;enemy.aiTimer=.5+Math.random()*.9}
-  const eSpeed=(enemy.spd/100)*230*(enemy.status.slow?.65:1);
+  const eSpeed=(enemy.spd/100)*230*(enemy.speedMul||1)*(enemy.status.slow?0.2:1);
   if(!enemy.status.freeze){const len=Math.sqrt(enemy.aiDirX*enemy.aiDirX+enemy.aiDirY*enemy.aiDirY)||1;enemy.x+=(enemy.aiDirX/len)*eSpeed*dt;enemy.y+=(enemy.aiDirY/len)*eSpeed*dt;enemy.x=Math.max(50,Math.min(W-50,enemy.x));enemy.y=Math.max(60,Math.min(midY-40,enemy.y))}
+
   if(player.fireCD>0)player.fireCD-=dt;
   if(enemy.fireCD>0)enemy.fireCD-=dt;
   if(!enemy.status.freeze&&enemy.fireCD<=0){firePattern(enemy,1);enemy.fireCD=2.0;if(!enemy.bombUsed&&enemy.eng<enemy.maxEng*.5&&Math.random()<.35)useBomb(enemy)}
-  for(let i=bullets.length-1;i>=0;i--){const b=bullets[i];b.x+=b.vx*dt;b.y+=b.vy*dt;const target=b.owner==='player'?enemy:player;if(Math.abs(b.y-target.y)<50&&Math.abs(b.x-target.x)<48){applyDamage(target,b.dmg);spawnExplosion(b.x,b.y,b.owner==='player'?'#4af':'#f44');bullets.splice(i,1);continue}if(b.y<-40||b.y>H+40||b.x<-40||b.x>W+40)bullets.splice(i,1)}
+
+  // 유도탄 처리
+  for(let i=bullets.length-1;i>=0;i--){
+    const b=bullets[i];
+    if(b.homing){
+      const target = b.owner==='player' ? enemy : player;
+      const dx = target.x - b.x, dy = target.y - b.y;
+      const dist = Math.sqrt(dx*dx+dy*dy)||1;
+      const speed = b.speed || 380;
+      b.vx = (dx/dist)*speed;
+      b.vy = (dy/dist)*speed;
+    }
+    b.x+=b.vx*dt;b.y+=b.vy*dt;
+    const target=b.owner==='player'?enemy:player;
+    if(Math.abs(b.y-target.y)<50&&Math.abs(b.x-target.x)<48){
+      applyDamage(target,b.dmg);
+      if(b.onHit) b.onHit(target);
+      spawnExplosion(b.x,b.y,b.owner==='player'?'#4af':'#f44');
+      bullets.splice(i,1);
+      continue;
+    }
+    if(b.y<-40||b.y>H+40||b.x<-40||b.x>W+40)bullets.splice(i,1);
+  }
+
   updateStatus(player,dt);updateStatus(enemy,dt);
   if(player.hitTimer>0){player.hitTimer-=dt;if(player.hitTimer<=0)document.getElementById('player-face').src=playerChar.face_n}
   if(enemy.hitTimer>0){enemy.hitTimer-=dt;if(enemy.hitTimer<=0)document.getElementById('enemy-face').src=enemyChar.face_n}
@@ -401,15 +453,87 @@ function firePattern(ent,dir){
 }
 
 function useBomb(ent){
-  if(ent.bombUsed||ent.status.freeze)return;ent.bombUsed=true;ent.specialFlash=1.2;
-  const target=ent===player?enemy:player,type=ent.bomb;
-  if(type==='fire'){target.status.burn=3;addEffect(target.x,target.y,'🔥',1.6)}
-  else if(type==='wind'){for(let i=0;i<10;i++)setTimeout(()=>{if(!battleActive)return;const d=ent===player?-1:1;bullets.push({x:ent.x+(Math.random()-.5)*40,y:ent.y+(d>0?35:-35),vx:(Math.random()-.5)*50,vy:400*d,dmg:1.5,owner:ent===player?'player':'enemy',color:'#aaf'})},i*55)}
-  else if(type==='ice'){target.status.freeze=3;addEffect(target.x,target.y,'❄️',2.5)}
-  else if(type==='dark'){target.status.slow=5;target.status.curse=5;addEffect(target.x,target.y,'🌑',2)}
-  else if(type==='light'){ent.status.heal=5;addEffect(ent.x,ent.y,'✨',2)}
-  else if(type==='demon'){const dmg=target.eng*.2;target.status.demon=5;target.status.demonDmg=dmg/5;addEffect(target.x,target.y,'😈',2.5)}
-  else if(type==='abyss'){const dmg=target.eng*.5;target.eng=Math.max(0,target.eng-dmg);updateHPBars();spawnBlackExplosion(target.x,target.y);addEffect(target.x,target.y,'💀',2)}
+  if(ent.bombUsed||ent.status.freeze)return;
+  ent.bombUsed=true;
+  ent.specialFlash=1.2;
+  const target = ent===player ? enemy : player;
+  const type = ent.bomb;
+  const isPlayer = ent===player;
+
+  if(type==='dark'){
+    // 3초간 매초 5% HP 감소 (총 15%), 3초간 속도 20% 감소
+    target.status.dark = 3;
+    target.status.darkDmg = target.maxEng * 0.05;
+    target.speedMul = 0.8;
+    addEffect(target.x, target.y, '🌑', 2.5);
+  }
+  else if(type==='fire'){
+    // 불 유도탄 3개, 각 Pwr 50, 적중 시 2초간 매초 1% HP 감소
+    for(let i=0;i<3;i++){
+      setTimeout(()=>{
+        if(!battleActive)return;
+        bullets.push({
+          x:ent.x, y:ent.y+(isPlayer?-40:40),
+          vx:0, vy:isPlayer?-300:300,
+          dmg:50, owner:isPlayer?'player':'enemy',
+          color:'#ff6600', homing:true, speed:420,
+          onHit:(t)=>{
+            t.status.burn = 2;
+            t.status.burnDmg = t.maxEng * 0.01;
+          }
+        });
+      }, i*120);
+    }
+    addEffect(ent.x, ent.y, '🔥', 1.5);
+  }
+  else if(type==='ice'){
+    // 즉시 빙결 3초 + 매초 1% HP 감소
+    target.status.freeze = 3;
+    target.status.iceDmg = target.maxEng * 0.01;
+    addEffect(target.x, target.y, '❄️', 2.8);
+  }
+  else if(type==='wind'){
+    // 바람 유도탄 10개, 각 Pwr 15, 적중 시 0.3초간 속도 80% 감소
+    for(let i=0;i<10;i++){
+      setTimeout(()=>{
+        if(!battleActive)return;
+        bullets.push({
+          x:ent.x+(Math.random()-0.5)*30, y:ent.y+(isPlayer?-35:35),
+          vx:(Math.random()-0.5)*40, vy:isPlayer?-280:280,
+          dmg:15, owner:isPlayer?'player':'enemy',
+          color:'#88ccff', homing:true, speed:400,
+          onHit:(t)=>{
+            t.status.windSlow = (t.status.windSlow||0) + 0.3;
+            t.speedMul = 0.2;
+          }
+        });
+      }, i*55);
+    }
+    addEffect(ent.x, ent.y, '💨', 1.8);
+  }
+  else if(type==='light'){
+    // 5초간 매초 2% 회복 + 속도 20% 상승
+    ent.status.heal = 5;
+    ent.status.healPct = 0.02;
+    ent.speedMul = 1.2;
+    addEffect(ent.x, ent.y, '✨', 2.5);
+  }
+  else if(type==='demon'){
+    // 5초간 매초 4% 감소 + 속도 40% 감소
+    target.status.demon = 5;
+    target.status.demonDmg = target.maxEng * 0.04;
+    target.speedMul = 0.6;
+    addEffect(target.x, target.y, '😈', 2.8);
+  }
+  else if(type==='abyss'){
+    // 즉시 40% 감소 + 3초 빙결
+    const dmg = target.maxEng * 0.40;
+    target.eng = Math.max(0, target.eng - dmg);
+    updateHPBars();
+    target.status.freeze = 3;
+    spawnBlackExplosion(target.x, target.y);
+    addEffect(target.x, target.y, '💀', 2.5);
+  }
 }
 
 function applyDamage(ent,dmg){
@@ -420,12 +544,51 @@ function applyDamage(ent,dmg){
 }
 
 function updateStatus(ent,dt){
-  if(ent.status.burn>0){ent.status.burn-=dt;ent.eng=Math.max(0,ent.eng-5*dt);updateHPBars();if(ent.status.burn<=0)delete ent.status.burn}
-  if(ent.status.freeze>0){ent.status.freeze-=dt;if(ent.status.freeze<=0)delete ent.status.freeze}
+  // dark DoT
+  if(ent.status.dark>0){
+    ent.status.dark-=dt;
+    ent.eng=Math.max(0,ent.eng-ent.status.darkDmg*dt);
+    updateHPBars();
+    if(ent.status.dark<=0){delete ent.status.dark;delete ent.status.darkDmg;ent.speedMul=1}
+  }
+  // burn (fire)
+  if(ent.status.burn>0){
+    ent.status.burn-=dt;
+    ent.eng=Math.max(0,ent.eng-(ent.status.burnDmg||0)*dt);
+    updateHPBars();
+    if(ent.status.burn<=0){delete ent.status.burn;delete ent.status.burnDmg}
+  }
+  // ice DoT
+  if(ent.status.iceDmg && ent.status.freeze>0){
+    ent.eng=Math.max(0,ent.eng-ent.status.iceDmg*dt);
+    updateHPBars();
+  }
+  // freeze
+  if(ent.status.freeze>0){
+    ent.status.freeze-=dt;
+    if(ent.status.freeze<=0){delete ent.status.freeze;delete ent.status.iceDmg}
+  }
+  // wind slow stack
+  if(ent.status.windSlow>0){
+    ent.status.windSlow-=dt;
+    if(ent.status.windSlow<=0){delete ent.status.windSlow;ent.speedMul=1}
+  }
+  // heal (light)
+  if(ent.status.heal>0){
+    ent.status.heal-=dt;
+    ent.eng=Math.min(ent.maxEng,ent.eng+(ent.status.healPct||0.02)*ent.maxEng*dt);
+    updateHPBars();
+    if(ent.status.heal<=0){delete ent.status.heal;delete ent.status.healPct;ent.speedMul=1}
+  }
+  // demon
+  if(ent.status.demon>0){
+    ent.status.demon-=dt;
+    ent.eng=Math.max(0,ent.eng-ent.status.demonDmg*dt);
+    updateHPBars();
+    if(ent.status.demon<=0){delete ent.status.demon;delete ent.status.demonDmg;ent.speedMul=1}
+  }
+  // generic slow (legacy)
   if(ent.status.slow>0){ent.status.slow-=dt;if(ent.status.slow<=0)delete ent.status.slow}
-  if(ent.status.curse>0){ent.status.curse-=dt;ent.eng=Math.max(0,ent.eng-1*dt);updateHPBars();if(ent.status.curse<=0)delete ent.status.curse}
-  if(ent.status.heal>0){ent.status.heal-=dt;ent.eng=Math.min(ent.maxEng,ent.eng+3*dt);updateHPBars();if(ent.status.heal<=0)delete ent.status.heal}
-  if(ent.status.demon>0){ent.status.demon-=dt;ent.eng=Math.max(0,ent.eng-ent.status.demonDmg*dt);updateHPBars();if(ent.status.demon<=0){delete ent.status.demon;delete ent.status.demonDmg}}
 }
 
 function addEffect(x,y,emoji,life){effects.push({x,y,emoji,life,max:life})}
@@ -439,7 +602,13 @@ function draw(){
   ctx.strokeStyle='rgba(180,50,50,.35)';ctx.setLineDash([10,8]);ctx.beginPath();ctx.moveTo(0,midY);ctx.lineTo(W,midY);ctx.stroke();ctx.setLineDash([]);
   ctx.fillStyle='rgba(150,50,50,.15)';ctx.font='14px sans-serif';ctx.fillText('상대방 진영',20,28);ctx.fillStyle='rgba(50,80,150,.15)';ctx.fillText('나의 진영',20,H-18);
   drawEntity(player);drawEntity(enemy);
-  bullets.forEach(b=>{ctx.beginPath();ctx.fillStyle=b.color;ctx.arc(b.x,b.y,6,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.fillStyle='#fff';ctx.arc(b.x,b.y,2.5,0,Math.PI*2);ctx.fill()});
+  bullets.forEach(b=>{
+    ctx.beginPath();
+    ctx.fillStyle=b.color;
+    const r = b.homing ? 8 : 6;
+    ctx.arc(b.x,b.y,r,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.fillStyle='#fff';ctx.arc(b.x,b.y,r*0.4,0,Math.PI*2);ctx.fill();
+  });
   particles.forEach(p=>{ctx.globalAlpha=Math.max(0,p.life*2);ctx.beginPath();ctx.fillStyle=p.color;ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fill()});ctx.globalAlpha=1;
   effects.forEach((e,i)=>{e.life-=.016;if(e.life<=0){effects.splice(i,1);return}ctx.globalAlpha=e.life/e.max;ctx.font='32px serif';ctx.fillText(e.emoji,e.x-16,e.y-55)});ctx.globalAlpha=1;
   [player,enemy].forEach(ent=>{if(ent.specialFlash>0){ctx.beginPath();ctx.strokeStyle=`rgba(255,255,100,${ent.specialFlash})`;ctx.lineWidth=6;ctx.arc(ent.x,ent.y,60+(1-ent.specialFlash)*30,0,Math.PI*2);ctx.stroke();ctx.fillStyle=`rgba(255,200,50,${ent.specialFlash*.25})`;ctx.beginPath();ctx.arc(ent.x,ent.y,55,0,Math.PI*2);ctx.fill()}});
@@ -465,8 +634,18 @@ function endBattle(playerWin){
       if(!isBossFight)defeated.add(enemyChar.id);
       document.getElementById('vic-player').src=playerChar.face_n;document.getElementById('vic-enemy').src=enemyChar.face_a;document.getElementById('vic-txt').textContent=playerChar.win_txt;showScreen('victory-screen');
       setTimeout(()=>{
-        if(!isBossFight){const remaining=characters.filter(x=>x.id!==playerChar.id&&!defeated.has(x.id));if(remaining.length===0){bossIndex=0;isBossFight=true;enemyChar=bosses[0];goToVS()}else{enemyChar=remaining[Math.floor(Math.random()*remaining.length)];goToVS()}}
-        else{bossIndex++;if(bossIndex>=bosses.length)startEnding();else{enemyChar=bosses[bossIndex];goToVS()}}
+        if(!isBossFight){
+          const remaining=characters.filter(x=>x.id!==playerChar.id&&!defeated.has(x.id));
+          if(remaining.length===0){
+            bossIndex=0;isBossFight=true;enemyChar=bosses[0];goToVS();
+          }else{
+            enemyChar=remaining[Math.floor(Math.random()*remaining.length)];goToVS();
+          }
+        }else{
+          bossIndex++;
+          if(bossIndex>=bosses.length)startEnding();
+          else{enemyChar=bosses[bossIndex];goToVS()}
+        }
       },2800);
     }else{
       document.getElementById('fail-player').src=playerChar.face_a;document.getElementById('fail-enemy').src=enemyChar.face_n;document.getElementById('fail-txt').textContent=enemyChar.win_txt;showScreen('fail-screen');
@@ -518,7 +697,7 @@ function startEnding() {
     }
   }, 28);
 
-  // 9초 후 자동으로 Game Over로 이동
+  // 10초 후 자동으로 Game Over로 이동
   setTimeout(() => {
     if (gameState === 'ending') {
       clearInterval(typingTimer);
@@ -539,7 +718,8 @@ function startEnding() {
       }, 6000);
     }
   }, 10000);
-  }
+}
+
 document.getElementById('ending-screen').addEventListener('click',()=>{
   if(gameState!=='ending')return;
   if(endingPhase===0){clearInterval(typingTimer);document.getElementById('ending-txt').textContent=fullFtxt;document.getElementById('ending-hint').textContent='다시 클릭하면 GAME OVER';endingPhase=1}
