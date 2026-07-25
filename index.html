@@ -159,7 +159,7 @@ body{background:#1a1a1a;color:#fff;font-family:'Segoe UI','Malgun Gothic',sans-s
         <div class="hp-pct" id="player-hp-pct">100.0%</div>
       </div>
     </div>
-    <div class="timer" id="timer">30</div>
+    <div class="timer" id="timer">120</div>
     <div class="hp-box" style="flex-direction:row-reverse">
       <img id="enemy-face" src="" alt="">
       <div class="hp-bar-wrap">
@@ -501,7 +501,7 @@ function startBattle(){
   const pEng=playerChar.Eng, eEng=enemyChar.Eng;
   player={x:W/2,y:H-110,char:playerChar,eng:pEng,maxEng:pEng,spd:playerChar.spd,type:playerChar.type,bomb:playerChar.bomb,hitTimer:0,fireCD:0,bombUsed:false,status:{},specialFlash:0,speedMul:1};
   enemy={x:W/2,y:110,char:enemyChar,eng:eEng,maxEng:eEng,spd:enemyChar.spd,type:enemyChar.type,bomb:enemyChar.bomb,hitTimer:0,fireCD:1.5,bombUsed:false,status:{},specialFlash:0,aiTimer:0,aiDirX:1,aiDirY:0,speedMul:1};
-  bullets=[];effects=[];particles=[];timer=30;battleActive=true;shakeTime=0;
+  bullets=[];effects=[];particles=[];timer=120;battleActive=true;shakeTime=0;
   document.getElementById('player-face').src=playerChar.face_n;document.getElementById('enemy-face').src=enemyChar.face_n;
   updateHPBars();document.getElementById('timer').textContent=timer;
   clearInterval(timerInterval);
