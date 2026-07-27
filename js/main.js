@@ -1,10 +1,10 @@
-// ===== Global State =====
+// ===== Shared Global State =====
+let gameState = "title";
 let defeated = new Set();
 let playerChar = null;
 let enemyChar = null;
 let bossIndex = 0;
 let isBossFight = false;
-let gameState = "title";
 let cheatBuffer = "";
 let unlockedIds = new Set();
 let pendingChar = null;
@@ -102,11 +102,15 @@ function endBattle(playerWinRound){
   clearInterval(timerInterval);
   window.onkeydown = null;
   window.onkeyup = null;
-  stopBgm(true);
 
   if(playerWinRound) matchScore.p++;
   else matchScore.e++;
   updateRoundInfo();
+
+  // 매치가 끝났을 때만 BGM 정지 (다음 라운드면 유지)
+  if(matchScore.p >= 2 || matchScore.e >= 2){
+    stopBgm(true);
+  }
 
   setTimeout(() => {
     // ===== Match Win (first to 2) =====
