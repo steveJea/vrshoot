@@ -172,5 +172,5 @@ function startEnding() {
       showScreen('gameover-screen');
       endingPhase = 2;
     }
-  }, 18000);
+  }, 10000);
 }
