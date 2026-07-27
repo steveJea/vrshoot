@@ -1,113 +1,17 @@
-// ===== Global State =====
-let defeated = new Set();
-let playerChar = null;
-let enemyChar = null;
-let bossIndex = 0;
-let isBossFight = false;
-let gameState = "title";
-let cheatBuffer = "";
-let unlockedIds = new Set();
-let pendingChar = null;
-
-let matchScore = {p:0, e:0};
-let currentRound = 1;
-let continuesLeft = 3;
-let specialUsedThisMatch = false;
-let flags = {noQ_10006: false, noQ_10001: false};
-let conInterval = null;
-let conTime = 10.00;
-
-// ===== Utility =====
-function findChar(id){
-  return allChars.find(c => c.id === id);
-}
-
-// ===== Event Listeners =====
-document.addEventListener('contextmenu', e => e.preventDefault());
-
-document.addEventListener('keydown', function(e){
-  if(gameState === 'title'){
-    tryStartTitleBgm();
-    showScreen('select-screen');
-    renderSelect();
-    return;
-  }
-  if(gameState === 'select'){
-    if(e.key.length === 1 && /[a-zA-Z]/.test(e.key)){
-      cheatBuffer += e.key.toLowerCase();
-      if(cheatBuffer.length > 30) cheatBuffer = cheatBuffer.slice(-30);
-      for(const ch of unlockables){
-        if(ch.pw && cheatBuffer.endsWith(ch.pw)){
-          addUnlockCard(ch);
-          cheatBuffer = "";
-          break;
-        }
-      }
-    }
-  }
-  if(gameState === 'continue'){
-    doContinue();
-  }
-  if(gameState === 'gameover'){
-    returnToTitle();
-  }
-});
-
-document.getElementById('title-screen').addEventListener('click', tryStartTitleBgm);
-document.getElementById('gameover-screen').addEventListener('click', returnToTitle);
-
-document.getElementById('modal-confirm').onclick = function(){
-  if(!pendingChar) return;
-  document.getElementById('profile-modal').classList.remove('show');
-  confirmSelect(pendingChar);
-  pendingChar = null;
-};
-
-document.getElementById('modal-close').onclick = function(){
-  document.getElementById('profile-modal').classList.remove('show');
-  pendingChar = null;
-};
-
-document.getElementById('ending-screen').addEventListener('click', () => {
-  if(gameState !== 'ending') return;
-  if(endingPhase === 0){
-    clearInterval(typingTimer);
-    document.getElementById('ending-txt').textContent = fullFtxt;
-    document.getElementById('ending-hint').textContent = '다시 클릭하면 GAME OVER';
-    endingPhase = 1;
-  } else if(endingPhase === 1){
-    const go = document.getElementById('gameover-screen');
-    go.style.backgroundImage = `url('${playerChar.win_img}')`;
-    go.style.backgroundSize = 'cover';
-    go.style.backgroundPosition = 'center';
-    showScreen('gameover-screen');
-    endingPhase = 2;
-  }
-});
-
-// ===== Core Flow =====
-function confirmSelect(c){
-  playerChar = c;
-  const candidates = characters.filter(x => x.id !== c.id);
-  enemyChar = candidates[Math.floor(Math.random() * candidates.length)];
-  isBossFight = false;
-  matchScore = {p:0, e:0};
-  currentRound = 1;
-  specialUsedThisMatch = false;
-  setTimeout(goToVS, 400);
-}
-
 function endBattle(playerWinRound){
   battleActive = false;
   clearInterval(timerInterval);
   window.onkeydown = null;
   window.onkeyup = null;
-// 매치가 끝났을 때만 BGM 정지 (다음 라운드면 유지)
-  if(matchScore.p >= 2 || matchScore.e >= 2){
-    stopBgm(true);
+
   if(playerWinRound) matchScore.p++;
   else matchScore.e++;
   updateRoundInfo();
+
+  // 매치가 끝났을 때만 BGM 정지 (다음 라운드면 유지)
+  if(matchScore.p >= 2 || matchScore.e >= 2){
+    stopBgm(true);
+  }
 
   setTimeout(() => {
     // ===== Match Win (first to 2) =====
@@ -193,11 +97,4 @@ function endBattle(playerWinRound){
       }, 1200);
     }
   }, 400);
-}
-
-function endBattleByTime(){
-  const pRatio = player.eng / player.maxEng;
-  const eRatio = enemy.eng / enemy.maxEng;
-  if(pRatio >= eRatio) endBattle(true);
-  else endBattle(false);
 }
