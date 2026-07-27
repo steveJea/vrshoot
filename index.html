@@ -72,22 +72,30 @@
 <div id="battle-screen" class="screen">
   <div id="battle-ui">
     <div class="hp-box">
-      <img id="player-face" src="" alt="">
+      <div class="face-score">
+        <img id="player-face" src="" alt="">
+        <div class="score-num" id="player-score">0</div>
+      </div>
       <div class="hp-bar-wrap">
         <div class="hp-bar" id="player-hp-bar"></div>
         <div class="hp-pct" id="player-hp-pct">100.0%</div>
       </div>
     </div>
-    <div class="timer" id="timer">120</div>
+    <div class="center-info">
+      <div id="round-info">ROUND 1</div>
+      <div class="timer" id="timer">120</div>
+    </div>
     <div class="hp-box" style="flex-direction:row-reverse">
-      <img id="enemy-face" src="" alt="">
+      <div class="face-score">
+        <img id="enemy-face" src="" alt="">
+        <div class="score-num" id="enemy-score">0</div>
+      </div>
       <div class="hp-bar-wrap">
         <div class="hp-bar" id="enemy-hp-bar"></div>
         <div class="hp-pct" id="enemy-hp-pct">100.0%</div>
       </div>
     </div>
   </div>
-  <div id="round-info">ROUND 1<br>0 - 0</div>
   <canvas id="battle-canvas"></canvas>
   <div class="battle-info">←→↑↓ / WASD 이동 | SPACE : 공격 | Q : 특수공격 (1회)</div>
 </div>

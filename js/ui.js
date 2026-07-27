@@ -5,7 +5,9 @@ function showScreen(id){
 }
 
 function updateRoundInfo(){
-  document.getElementById('round-info').innerHTML = `ROUND ${currentRound}<br>${matchScore.p} - ${matchScore.e}`;
+  document.getElementById('round-info').textContent = `ROUND ${currentRound}`;
+  document.getElementById('player-score').textContent = matchScore.p;
+  document.getElementById('enemy-score').textContent = matchScore.e;
 }
 
 function renderSelect(){

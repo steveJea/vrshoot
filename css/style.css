@@ -53,14 +53,17 @@ body{background:#1a1a1a;color:#fff;font-family:'Segoe UI','Malgun Gothic',sans-s
 .boss-vs-name{position:absolute;bottom:70px;left:50%;transform:translateX(-50%);font-size:2.2rem;color:#fff;text-shadow:0 0 12px #000,0 0 24px #ff0000;letter-spacing:3px;background:rgba(0,0,0,.55);padding:8px 24px;border-radius:8px}
 
 #battle-screen{background:#d0d0d0;flex-direction:column}
-#battle-ui{display:flex;justify-content:space-between;padding:10px 18px;background:#333;border-bottom:2px solid #555;align-items:center;color:#fff}
-.hp-box{display:flex;align-items:center;gap:10px;width:270px}
-.hp-box img{width:46px;height:46px;border-radius:50%;border:2px solid #888;object-fit:cover}
+#battle-ui{display:flex;justify-content:space-between;padding:8px 16px;background:#333;border-bottom:2px solid #555;align-items:center;color:#fff}
+.hp-box{display:flex;align-items:center;gap:8px;width:280px}
+.face-score{position:relative;flex-shrink:0}
+.face-score img{width:46px;height:46px;border-radius:50%;border:2px solid #888;object-fit:cover;display:block}
+.score-num{position:absolute;bottom:-4px;right:-6px;min-width:22px;height:22px;background:#111;border:2px solid #ffcc00;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:bold;color:#ffcc00;text-shadow:0 0 4px #000;z-index:2}
 .hp-bar-wrap{flex:1;height:16px;background:#555;border-radius:4px;overflow:hidden;position:relative}
 .hp-bar{height:100%;background:linear-gradient(90deg,#ffcc00,#ff8800);transition:width .15s}
 .hp-pct{position:absolute;right:4px;top:0;bottom:0;display:flex;align-items:center;font-size:11px;font-weight:bold;color:#fff;text-shadow:0 0 3px #000}
-.timer{font-size:2rem;font-weight:bold;color:#fff;min-width:70px;text-align:center;text-shadow:0 0 8px #ff4444}
-#round-info{position:absolute;left:50%;transform:translateX(-50%);top:8px;text-align:center;font-size:1.1rem;font-weight:bold;color:#ffcc00;text-shadow:0 0 8px #000;z-index:5;line-height:1.3}
+.center-info{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:90px}
+#round-info{font-size:0.85rem;font-weight:bold;color:#ffcc00;letter-spacing:1px;text-shadow:0 0 6px #000;margin-bottom:1px}
+.timer{font-size:2rem;font-weight:bold;color:#fff;text-align:center;text-shadow:0 0 8px #ff4444;line-height:1}
 #battle-canvas{flex:1;width:100%;display:block;background-size:cover;background-position:center;background-repeat:no-repeat}
 .battle-info{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-size:.8rem;color:#555}
 
