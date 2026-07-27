@@ -1,21 +1,7 @@
-// ===== Shared Global State =====
-let gameState = "title";
-let defeated = new Set();
-let playerChar = null;
-let enemyChar = null;
-let bossIndex = 0;
-let isBossFight = false;
-let cheatBuffer = "";
-let unlockedIds = new Set();
-let pendingChar = null;
-
-let matchScore = {p:0, e:0};
-let currentRound = 1;
-let continuesLeft = 3;
-let specialUsedThisMatch = false;
-let flags = {noQ_10006: false, noQ_10001: false};
-let conInterval = null;
-let conTime = 10.00;
+// ===== Utility =====
+function findChar(id){
+  return allChars.find(c => c.id === id);
+}
 
 // ===== Utility =====
 function findChar(id){
