@@ -1,3 +1,83 @@
+// ===== Utility =====
+function findChar(id){
+  return allChars.find(c => c.id === id);
+}
+
+// ===== Event Listeners =====
+document.addEventListener('contextmenu', e => e.preventDefault());
+
+document.addEventListener('keydown', function(e){
+  if(gameState === 'title'){
+    tryStartTitleBgm();
+    showScreen('select-screen');
+    renderSelect();
+    return;
+  }
+  if(gameState === 'select'){
+    if(e.key.length === 1 && /[a-zA-Z]/.test(e.key)){
+      cheatBuffer += e.key.toLowerCase();
+      if(cheatBuffer.length > 30) cheatBuffer = cheatBuffer.slice(-30);
+      for(const ch of unlockables){
+        if(ch.pw && cheatBuffer.endsWith(ch.pw)){
+          addUnlockCard(ch);
+          cheatBuffer = "";
+          break;
+        }
+      }
+    }
+  }
+  if(gameState === 'continue'){
+    doContinue();
+  }
+  if(gameState === 'gameover'){
+    returnToTitle();
+  }
+});
+
+document.getElementById('title-screen').addEventListener('click', tryStartTitleBgm);
+document.getElementById('gameover-screen').addEventListener('click', returnToTitle);
+
+document.getElementById('modal-confirm').onclick = function(){
+  if(!pendingChar) return;
+  document.getElementById('profile-modal').classList.remove('show');
+  confirmSelect(pendingChar);
+  pendingChar = null;
+};
+
+document.getElementById('modal-close').onclick = function(){
+  document.getElementById('profile-modal').classList.remove('show');
+  pendingChar = null;
+};
+
+document.getElementById('ending-screen').addEventListener('click', () => {
+  if(gameState !== 'ending') return;
+  if(endingPhase === 0){
+    clearInterval(typingTimer);
+    document.getElementById('ending-txt').textContent = fullFtxt;
+    document.getElementById('ending-hint').textContent = '다시 클릭하면 GAME OVER';
+    endingPhase = 1;
+  } else if(endingPhase === 1){
+    const go = document.getElementById('gameover-screen');
+    go.style.backgroundImage = `url('${playerChar.win_img}')`;
+    go.style.backgroundSize = 'cover';
+    go.style.backgroundPosition = 'center';
+    showScreen('gameover-screen');
+    endingPhase = 2;
+  }
+});
+
+// ===== Core Flow =====
+function confirmSelect(c){
+  playerChar = c;
+  const candidates = characters.filter(x => x.id !== c.id);
+  enemyChar = candidates[Math.floor(Math.random() * candidates.length)];
+  isBossFight = false;
+  matchScore = {p:0, e:0};
+  currentRound = 1;
+  specialUsedThisMatch = false;
+  setTimeout(goToVS, 400);
+}
+
 function endBattle(playerWinRound){
   battleActive = false;
   clearInterval(timerInterval);
@@ -97,4 +177,11 @@ function endBattle(playerWinRound){
       }, 1200);
     }
   }, 400);
+}
+
+function endBattleByTime(){
+  const pRatio = player.eng / player.maxEng;
+  const eRatio = enemy.eng / enemy.maxEng;
+  if(pRatio >= eRatio) endBattle(true);
+  else endBattle(false);
 }
