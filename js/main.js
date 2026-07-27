@@ -3,11 +3,6 @@ function findChar(id){
   return allChars.find(c => c.id === id);
 }
 
-// ===== Utility =====
-function findChar(id){
-  return allChars.find(c => c.id === id);
-}
-
 // ===== Event Listeners =====
 document.addEventListener('contextmenu', e => e.preventDefault());
 
