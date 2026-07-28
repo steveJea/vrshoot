@@ -97,18 +97,18 @@ const bosses = [
    f_txt:"No one can replace me. I am a great existence. Even a god cannot stand against me. Simply put—everything begins because of me, and everything ends because of me."}
 ];
 
-const hiddenChars = [
+const hiddenChars = [ 
   {id:10016,name:"S.H.",Pwr:600,Eng:1050,spd:270,delay:0.7,b_spd:400,RPS:10,sim_f:6,bomb:"abyss",pw:"madplanner",isHidden:true,
    face_a:RAW+"10016_fa.jpg",face_n:RAW+"10016_fn.jpg",SD_full:RAW+"10016_full.jpg",pf_img:RAW+"10016_pf.jpg",
    boss_img:RAW+"boss_10016.jpg",win_txt:"The darkness of the abyss will erode you away.",
-   lose_img:RAW+"10016_lose.jpg",win_img:RAW+"10016_end.jpg",win_mp4:RAW+"10016_end.mp4",bg_img:RAW+"10001_bg.jpg",
-   con_img:RAW+"10016_con.jpg",bgm:BGM_RAW+"10013.mp3",
+   lose_img:RAW+"10016_lose.jpg",win_img:RAW+"10016_end.jpg",win_mp4:RAW+"10016_end.mp4",bg_img:RAW+"10016_bg.jpg",
+   con_img:RAW+"10016_con.jpg",bgm:BGM_RAW+"10016.mp3",
    f_txt:"The evil instinct has awakened in the new demon who put the previous one to sleep. Now there is no one left who can stop her. Having finished her preparations to bring this world to ruin, she will slowly begin to reveal herself. “I’m coming now. Let’s all have a wonderful time.”"},
-  {id:10017,name:"J.Y.",Pwr:600,Eng:1500,spd:200,delay:0.5,b_spd:400,RPS:6,sim_f:10,bomb:"abyss",pw:"yanuaegi",isHidden:true,
+    {id:10017,name:"J.Y.",Pwr:600,Eng:1500,spd:200,delay:0.5,b_spd:400,RPS:6,sim_f:10,bomb:"abyss",pw:"yanuaegi",isHidden:true,
    face_a:RAW+"10017_fa.jpg",face_n:RAW+"10017_fn.jpg",SD_full:RAW+"10017_full.jpg",pf_img:RAW+"10017_pf.jpg",
    boss_img:RAW+"boss_10017.jpg",win_txt:"With that level of skill, maybe you should hit the books instead.",
-   lose_img:RAW+"10017_lose.jpg",win_img:RAW+"10017_end.jpg",win_mp4:RAW+"10017_end.mp4",bg_img:RAW+"10001_bg.jpg",
-   con_img:RAW+"10017_con.jpg",bgm:BGM_RAW+"10015.mp3",
+   lose_img:RAW+"10017_lose.jpg",win_img:RAW+"10017_end.jpg",win_mp4:RAW+"10017_end.mp4",bg_img:RAW+"10017_bg.jpg",
+   con_img:RAW+"10017_con.jpg",bgm:BGM_RAW+"10017.mp3",
    f_txt:"J.Y. defeated the incarnation of the devil. Yet far too many villains still remain in this world. Unable to turn away from the power granted by God, J.Y. continues to hunt down evil today—even with her fragile girl’s body. “Villains, wait. I will punish you with the power of light.”"}
 ];
 
