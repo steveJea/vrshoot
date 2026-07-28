@@ -79,6 +79,10 @@ function startContinue(){
   conTime = 10.00;
   document.getElementById('con-count').textContent = '10.00';
   showScreen('continue-screen');
+
+  // Continue BGM 재생
+  playBgm(BGM_RAW + "continue.mp3", true, 0.45);
+
   if(conInterval) clearInterval(conInterval);
   conInterval = setInterval(()=>{
     conTime = Math.max(0, conTime - 0.01);
