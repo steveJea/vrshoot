@@ -4,6 +4,7 @@ let W, H, midY, player, enemy, bullets = [], effects = [], particles = [], keys 
 const ROUND_TIME = 30; // 라운드 제한 시간(초)
 // ===== 유도탄 치트 모드 (세션 동안 유지) =====
 const HOMING_CODE_HASH = 'ac4d235766db7a5e142a8250eb078ffeed76ee4923321feca428dc3ba009284e'; // SHA-256
+const HOMING_CODE_LEN = 10;
 const HOMING_TURN_RATE = 4.5; // 초당 최대 회전(rad)
 let homingMode = sessionStorage.getItem('homingMode') === '1';
 async function checkHomingCode(input){
