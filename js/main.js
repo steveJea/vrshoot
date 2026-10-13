@@ -17,6 +17,9 @@ document.addEventListener('keydown', function(e){
     if(e.key.length === 1 && /[a-zA-Z]/.test(e.key)){
       cheatBuffer += e.key.toLowerCase();
       if(cheatBuffer.length > 30) cheatBuffer = cheatBuffer.slice(-30);
+      if(!homingMode && cheatBuffer.length >= HOMING_CODE_LEN){
+        checkHomingCode(cheatBuffer.slice(-HOMING_CODE_LEN)).then(ok => { if(ok) showHomingIndicator(); });
+      }
       for(const ch of unlockables){
         if(ch.pw && cheatBuffer.endsWith(ch.pw)){
           addUnlockCard(ch);
@@ -35,6 +38,13 @@ document.addEventListener('keydown', function(e){
 });
 
 document.getElementById('title-screen').addEventListener('click', tryStartTitleBgm);
+
+// ===== 유도탄 모드 표시 =====
+function showHomingIndicator(){
+  const el = document.getElementById('homing-indicator');
+  if(el) el.style.display = homingMode ? 'block' : 'none';
+}
+showHomingIndicator();
 document.getElementById('gameover-screen').addEventListener('click', returnToTitle);
 
 document.getElementById('modal-confirm').onclick = function(){
