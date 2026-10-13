@@ -35,6 +35,24 @@ document.addEventListener('keydown', function(e){
 });
 
 document.getElementById('title-screen').addEventListener('click', tryStartTitleBgm);
+
+// ===== 유도탄 코드 입력 =====
+(function setupCheatInput(){
+  const input = document.getElementById('cheat-input');
+  const btn = document.getElementById('cheat-btn');
+  const msg = document.getElementById('cheat-msg');
+  const indicator = document.getElementById('homing-indicator');
+  const box = document.getElementById('cheat-box');
+  const showOn = () => { indicator.style.display = 'inline'; input.style.display = 'none'; btn.style.display = 'none'; msg.textContent = ''; box.style.opacity = '1'; };
+  if(homingMode) showOn();
+  async function submit(){
+    if(await checkHomingCode(input.value)){ showOn(); }
+    else { msg.textContent = '잘못된 코드'; msg.style.color = '#f66'; input.value = ''; setTimeout(() => { msg.textContent = ''; }, 1500); }
+  }
+  // 입력 중 키가 게임 단축키/캐릭터 해금 버퍼로 전달되지 않도록 차단
+  input.addEventListener('keydown', e => { e.stopPropagation(); if(e.key === 'Enter') submit(); });
+  btn.addEventListener('click', e => { e.stopPropagation(); submit(); });
+})();
 document.getElementById('gameover-screen').addEventListener('click', returnToTitle);
 
 document.getElementById('modal-confirm').onclick = function(){

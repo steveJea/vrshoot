@@ -2,6 +2,20 @@ const canvas = document.getElementById('battle-canvas');
 const ctx = canvas.getContext('2d');
 let W, H, midY, player, enemy, bullets = [], effects = [], particles = [], keys = {};
 const ROUND_TIME = 30; // 라운드 제한 시간(초)
+// ===== 유도탄 치트 모드 (세션 동안 유지) =====
+const HOMING_CODE_HASH = 'ac4d235766db7a5e142a8250eb078ffeed76ee4923321feca428dc3ba009284e'; // SHA-256
+const HOMING_TURN_RATE = 4.5; // 초당 최대 회전(rad)
+let homingMode = sessionStorage.getItem('homingMode') === '1';
+async function checkHomingCode(input){
+  const code = (input || '').trim().toLowerCase();
+  if(!code || !window.crypto || !crypto.subtle) return false;
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(code));
+  const hex = [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+  if(hex !== HOMING_CODE_HASH) return false;
+  homingMode = true;
+  sessionStorage.setItem('homingMode', '1');
+  return true;
+}
 let timer = ROUND_TIME, timerInterval = null, lastTime = 0, battleActive = false, shakeTime = 0;
 
 function resizeCanvas(){
@@ -149,6 +163,18 @@ function update(dt){
       b.vx = (dx / dist) * speed;
       b.vy = (dy / dist) * speed;
     }
+    else if(b.steer && enemy){
+      // 유도탄 모드: 속도는 유지하고 방향만 제한된 속도로 적을 향해 회전
+      const speed = Math.hypot(b.vx, b.vy) || 1;
+      const cur = Math.atan2(b.vy, b.vx);
+      const want = Math.atan2(enemy.y - b.y, enemy.x - b.x);
+      let diff = want - cur;
+      diff = Math.atan2(Math.sin(diff), Math.cos(diff));
+      const maxTurn = HOMING_TURN_RATE * dt;
+      const ang = cur + Math.max(-maxTurn, Math.min(maxTurn, diff));
+      b.vx = Math.cos(ang) * speed;
+      b.vy = Math.sin(ang) * speed;
+    }
     b.x += b.vx * dt;
     b.y += b.vy * dt;
     const target = b.owner === 'player' ? enemy : player;
@@ -214,7 +240,8 @@ function firePattern(ent, dir){
           vy: speed * 0.96,
           dmg: baseDmg,
           owner: dir < 0 ? 'player' : 'enemy',
-          color: dir < 0 ? '#4af' : '#f44'
+          color: dir < 0 ? '#4af' : '#f44',
+          steer: homingMode && dir < 0
         });
       });
     }, i * interval);

@@ -38,6 +38,13 @@
   <h2>Select Your Fighter</h2>
   <div class="char-grid" id="char-grid"></div>
   <div class="boss-area" id="boss-area"></div>
+  <div id="cheat-box" style="position:absolute;right:12px;bottom:10px;display:flex;align-items:center;gap:6px;font-size:12px;opacity:.55;z-index:5">
+    <span id="homing-indicator" style="display:none;color:#4af;font-weight:bold;opacity:1">🎯 유도탄 모드 ON</span>
+    <input id="cheat-input" type="text" placeholder="코드 입력" autocomplete="off" autocapitalize="off" spellcheck="false"
+      style="width:110px;padding:4px 8px;border-radius:6px;border:1px solid #555;background:rgba(0,0,0,.6);color:#fff;font-size:12px">
+    <button id="cheat-btn" style="padding:4px 8px;border-radius:6px;border:1px solid #555;background:#222;color:#ddd;font-size:12px;cursor:pointer">확인</button>
+    <span id="cheat-msg" style="min-width:0"></span>
+  </div>
 </div>
 
 <div class="modal-overlay" id="profile-modal">
