@@ -1,7 +1,8 @@
 const canvas = document.getElementById('battle-canvas');
 const ctx = canvas.getContext('2d');
 let W, H, midY, player, enemy, bullets = [], effects = [], particles = [], keys = {};
-let timer = 120, timerInterval = null, lastTime = 0, battleActive = false, shakeTime = 0;
+const ROUND_TIME = 30; // 라운드 제한 시간(초)
+let timer = ROUND_TIME, timerInterval = null, lastTime = 0, battleActive = false, shakeTime = 0;
 
 function resizeCanvas(){
   const rect = canvas.parentElement.getBoundingClientRect();
@@ -37,7 +38,7 @@ function startBattle(){
   player = {x:W/2, y:H-110, char:playerChar, eng:pEng, maxEng:pEng, spd:playerChar.spd, bomb:playerChar.bomb, hitTimer:0, fireCD:0, bombUsed:false, status:{}, specialFlash:0, speedMul:1};
   enemy  = {x:W/2, y:110,   char:enemyChar,  eng:eEng, maxEng:eEng, spd:enemyChar.spd,  bomb:enemyChar.bomb,  hitTimer:0, fireCD:1.2, bombUsed:false, status:{}, specialFlash:0, aiTimer:0, aiDirX:1, aiDirY:0, speedMul:1};
   bullets = []; effects = []; particles = [];
-  timer = 120; battleActive = true; shakeTime = 0;
+  timer = ROUND_TIME; battleActive = true; shakeTime = 0;
 
   document.getElementById('player-face').src = playerChar.face_n;
   document.getElementById('enemy-face').src  = enemyChar.face_n;
