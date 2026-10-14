@@ -183,5 +183,7 @@ if(sessionStorage.getItem('yuriAwaken') === '1') applyAwakenYuri();
 const HIDDEN_BOSS_YURI = Object.assign({}, AWAKEN_YURI, {isHidden:true});
 HIDDEN_BOSS_YURI.img_n = new Image(); HIDDEN_BOSS_YURI.img_n.src = HIDDEN_BOSS_YURI.face_n;
 HIDDEN_BOSS_YURI.img_a = new Image(); HIDDEN_BOSS_YURI.img_a.src = HIDDEN_BOSS_YURI.face_a;
-let noHitRun = true;      // 이번 판 동안 플레이어가 한 번도 피해를 받지 않았는지
-let endingOverride = null; // 히든 보스 격파 시 엔딩 연출 교체
+let noHitMatch = true;     // 현재 매치(라운드 묶음) 동안 플레이어가 피해를 받지 않았는지
+let yuriBossDone = false;  // 각성 유리는 한 판에 한 번만
+let hiddenBossReturn = null; // 각성 유리전 이후 복귀할 진행 상태
+let endingOverride = null;
