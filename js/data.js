@@ -155,7 +155,7 @@ const AWAKEN_YURI = {id:10018,name:"[AWAKEN] YURI",Pwr:1000,Eng:2000,spd:300,del
   lose_txt:"Ha… haha… dying again? …This is getting old.", // 패배 시 대사 (이 캐릭터 전용)
   lose_img:RAW+"10018_lose.jpg",win_img:RAW+"10018_end.jpg",win_mp4:RAW+"10018_end.mp4",bg_img:RAW+"10018_bg.jpg",
   con_img:RAW+"10018_con.jpg",bgm:BGM_RAW+"10001.mp3", // 10018 전용 BGM 없음 → 유리 BGM 유지
-  f_txt:"She looked up at the empty sky.\n\n\"No gods. No meaning.\nSo I'll just play.\"\n\nShe snapped her fingers. The fallen twitched.\n\n\"Get up. One more round.\n…Dead toys are no fun.\""};
+  f_txt:"She looked up at the empty sky.\n\"No gods. No meaning.\nSo I'll just play.\"\nShe snapped her fingers. The fallen twitched.\n\"Get up. One more round.\n…Dead toys are no fun.\""};
 let yuriAwakened = false;
 function applyAwakenYuri(){
   // 플레이어 선택 슬롯에서만 교체 (상대 풀/일반 스테이지는 원래 YURI 10001 유지)
