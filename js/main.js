@@ -172,7 +172,7 @@ function endBattle(playerWinRound){
     else if(matchScore.e >= 2){
       document.getElementById('fail-player').src = playerChar.face_a;
       document.getElementById('fail-enemy').src  = enemyChar.face_n;
-      document.getElementById('fail-txt').textContent = enemyChar.win_txt;
+      document.getElementById('fail-txt').textContent = playerChar.lose_txt || enemyChar.win_txt;
       showScreen('fail-screen');
       setTimeout(() => {
         if(continuesLeft > 0){
@@ -217,7 +217,7 @@ function showHiddenBossWarning(next){
   const el = document.createElement('div');
   el.id = 'hidden-boss-warning';
   el.innerHTML = '<div class="w1">⚠ WARNING ⚠</div><div class="w2">A HIDDEN CHALLENGER APPROACHES</div>'
-    + '<div class="w3">[AWAKEN] YURI</div><div class="w4">"DIE OUT."</div>';
+    + '<div class="w3">[AWAKEN] YURI</div><div class="w4">Humiliated, the Empress of the Void has returned — as a true demon.</div>';
   document.body.appendChild(el);
   setTimeout(() => { el.remove(); next(); }, 4000);
 }
