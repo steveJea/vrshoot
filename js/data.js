@@ -157,14 +157,11 @@ const AWAKEN_YURI = {id:10018,name:"[AWAKEN] YURI",Pwr:1000,Eng:2000,spd:300,del
   f_txt:"DIE OUT."};
 let yuriAwakened = false;
 function applyAwakenYuri(){
-  const idx = characters.findIndex(c => c.id === 10001 || c.id === 10018);
-  if(idx < 0) return;
-  const c = Object.assign({}, AWAKEN_YURI);
-  c.img_n = new Image(); c.img_n.src = c.face_n;
-  c.img_a = new Image(); c.img_a.src = c.face_a;
-  characters[idx] = c;
-  const ai = allChars.findIndex(x => x.id === 10001);
-  if(ai >= 0) allChars[ai] = c;
+  // 플레이어 선택 슬롯에서만 교체 (상대 풀/일반 스테이지는 원래 YURI 10001 유지)
+  if(!AWAKEN_YURI.img_n){
+    AWAKEN_YURI.img_n = new Image(); AWAKEN_YURI.img_n.src = AWAKEN_YURI.face_n;
+    AWAKEN_YURI.img_a = new Image(); AWAKEN_YURI.img_a.src = AWAKEN_YURI.face_a;
+  }
   yuriAwakened = true;
   sessionStorage.setItem('yuriAwaken', '1');
 }

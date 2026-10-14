@@ -15,7 +15,8 @@ function renderSelect(){
   grid.innerHTML = '';
   document.getElementById('boss-area').innerHTML = '';
   unlockedIds.clear();
-  characters.forEach(c => {
+  characters.forEach(orig => {
+    const c = (yuriAwakened && orig.id === 10001) ? AWAKEN_YURI : orig;
     const card = document.createElement('div');
     card.className = 'char-card';
     card.innerHTML = '<img src="'+c.pf_img+'" alt="'+c.name+'"><div class="name">'+c.name+'</div>';
