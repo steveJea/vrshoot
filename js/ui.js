@@ -126,7 +126,9 @@ function returnToTitle(){
   continuesLeft = 3;
   specialUsedThisMatch = false;
   flags = {noQ_10006:false, noQ_10001:false};
-  noHitRun = true;
+  noHitMatch = true;
+  yuriBossDone = false;
+  hiddenBossReturn = null;
   endingOverride = null;
   document.getElementById('gameover-screen').style.backgroundImage = '';
   titleBgmStarted = false;

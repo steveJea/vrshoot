@@ -109,7 +109,9 @@ function confirmSelect(c){
   const candidates = characters.filter(x => x.id !== c.id);
   enemyChar = candidates[Math.floor(Math.random() * candidates.length)];
   isBossFight = false;
-  noHitRun = true;
+  noHitMatch = true;
+  yuriBossDone = false;
+  hiddenBossReturn = null;
   endingOverride = null;
   matchScore = {p:0, e:0};
   currentRound = 1;
@@ -147,61 +149,23 @@ function endBattle(playerWinRound){
       showScreen('victory-screen');
 
       setTimeout(() => {
-        if(!isBossFight){
-          if(defeated.size < MAX_NORMAL_FIGHTS){
-            const remaining = characters.filter(x => x.id !== playerChar.id && !defeated.has(x.id));
-            if(remaining.length === 0){
-              bossIndex = 0; isBossFight = true; enemyChar = bosses[0];
-              matchScore = {p:0,e:0}; currentRound = 1; specialUsedThisMatch = false;
-              goToVS();
-            } else {
-              enemyChar = remaining[Math.floor(Math.random() * remaining.length)];
-              matchScore = {p:0,e:0}; currentRound = 1; specialUsedThisMatch = false;
-              goToVS();
-            }
-          } else {
-            bossIndex = 0; isBossFight = true; enemyChar = bosses[0];
+        // 히든 보스: 상대 YURI(10001)를 노데미지로 이기면 바로 각성 유리 등장 (한 판에 1번)
+        if(enemyChar.id === 10001 && noHitMatch && !yuriBossDone){
+          yuriBossDone = true;
+          hiddenBossReturn = {isBossFight, enemyChar};
+          showHiddenBossWarning(() => {
+            isBossFight = true; enemyChar = HIDDEN_BOSS_YURI;
             matchScore = {p:0,e:0}; currentRound = 1; specialUsedThisMatch = false;
             goToVS();
-          }
-        } else {
-          // Boss / Secret progression
-          const eid = enemyChar.id;
-          if(eid === 10014 && flags.noQ_10006){
-            enemyChar = findChar(10016);
-            matchScore = {p:0,e:0}; currentRound = 1; specialUsedThisMatch = false;
-            goToVS();
-          } else if(eid === 10016){
-            enemyChar = findChar(10015);
-            matchScore = {p:0,e:0}; currentRound = 1; specialUsedThisMatch = false;
-            goToVS();
-          } else if(eid === 10015 && flags.noQ_10001){
-            enemyChar = findChar(10017);
-            matchScore = {p:0,e:0}; currentRound = 1; specialUsedThisMatch = false;
-            goToVS();
-          } else if((eid === 10017 || eid === 10015) && playerChar.id === 10001 && noHitRun){
-            // 히든 보스: YURI로 한 대도 안 맞고 최종 보스까지 클리어
-            showHiddenBossWarning(() => {
-              enemyChar = HIDDEN_BOSS_YURI;
-              matchScore = {p:0,e:0}; currentRound = 1; specialUsedThisMatch = false;
-              goToVS();
-            });
-          } else if(eid === 10018){
-            endingOverride = HIDDEN_BOSS_YURI;
-            startEnding();
-          } else if(eid === 10017 || eid === 10015){
-            startEnding();
-          } else {
-            bossIndex++;
-            if(bossIndex >= bosses.length){
-              startEnding();
-            } else {
-              enemyChar = bosses[bossIndex];
-              matchScore = {p:0,e:0}; currentRound = 1; specialUsedThisMatch = false;
-              goToVS();
-            }
-          }
+          });
+          return;
         }
+        // 각성 유리 격파 → 원래 진행으로 복귀
+        if(enemyChar.id === 10018 && hiddenBossReturn){
+          isBossFight = hiddenBossReturn.isBossFight; enemyChar = hiddenBossReturn.enemyChar;
+          hiddenBossReturn = null;
+        }
+        proceedAfterWin();
       }, 2800);
     }
     // ===== Match Lose =====
@@ -256,4 +220,53 @@ function showHiddenBossWarning(next){
     + '<div class="w3">[AWAKEN] YURI</div><div class="w4">"DIE OUT."</div>';
   document.body.appendChild(el);
   setTimeout(() => { el.remove(); next(); }, 4000);
+}
+
+// ===== 매치 승리 후 일반 진행 =====
+function proceedAfterWin(){
+        if(!isBossFight){
+          if(defeated.size < MAX_NORMAL_FIGHTS){
+            const remaining = characters.filter(x => x.id !== playerChar.id && !defeated.has(x.id));
+            if(remaining.length === 0){
+              bossIndex = 0; isBossFight = true; enemyChar = bosses[0];
+              matchScore = {p:0,e:0}; currentRound = 1; specialUsedThisMatch = false;
+              goToVS();
+            } else {
+              enemyChar = remaining[Math.floor(Math.random() * remaining.length)];
+              matchScore = {p:0,e:0}; currentRound = 1; specialUsedThisMatch = false;
+              goToVS();
+            }
+          } else {
+            bossIndex = 0; isBossFight = true; enemyChar = bosses[0];
+            matchScore = {p:0,e:0}; currentRound = 1; specialUsedThisMatch = false;
+            goToVS();
+          }
+        } else {
+          // Boss / Secret progression
+          const eid = enemyChar.id;
+          if(eid === 10014 && flags.noQ_10006){
+            enemyChar = findChar(10016);
+            matchScore = {p:0,e:0}; currentRound = 1; specialUsedThisMatch = false;
+            goToVS();
+          } else if(eid === 10016){
+            enemyChar = findChar(10015);
+            matchScore = {p:0,e:0}; currentRound = 1; specialUsedThisMatch = false;
+            goToVS();
+          } else if(eid === 10015 && flags.noQ_10001){
+            enemyChar = findChar(10017);
+            matchScore = {p:0,e:0}; currentRound = 1; specialUsedThisMatch = false;
+            goToVS();
+          } else if(eid === 10017 || eid === 10015){
+            startEnding();
+          } else {
+            bossIndex++;
+            if(bossIndex >= bosses.length){
+              startEnding();
+            } else {
+              enemyChar = bosses[bossIndex];
+              matchScore = {p:0,e:0}; currentRound = 1; specialUsedThisMatch = false;
+              goToVS();
+            }
+          }
+        }
 }
