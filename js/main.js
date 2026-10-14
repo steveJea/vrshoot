@@ -56,7 +56,7 @@ function showAwakenIndicator(){
 }
 showAwakenIndicator();
 function popAwakenCard(){
-  const idx = characters.findIndex(c => c.id === 10018);
+  const idx = characters.findIndex(c => c.id === 10001);
   const card = document.querySelectorAll('#char-grid .char-card')[idx];
   if(!card) return;
   if(!document.getElementById('awaken-style')){
