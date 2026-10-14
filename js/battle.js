@@ -313,6 +313,7 @@ function useBomb(ent){
   }
   else if(type === 'abyss'){
     const dmg = target.maxEng * 0.40;
+    if(target === player) noHitRun = false;
     target.eng = Math.max(0, target.eng - dmg);
     updateHPBars();
     target.status.freeze = 3;
@@ -326,6 +327,7 @@ function applyDamage(ent, dmg){
   if(ent.eng < 0) ent.eng = 0;
   ent.hitTimer = 0.28;
   if(ent === player){
+    noHitRun = false;
     document.getElementById('player-face').src = playerChar.face_a;
     shakeTime = 0.4;
     document.getElementById('battle-screen').classList.add('shake');
@@ -337,6 +339,11 @@ function applyDamage(ent, dmg){
 }
 
 function updateStatus(ent, dt){
+  const engBefore = ent.eng;
+  updateStatusInner(ent, dt);
+  if(ent === player && ent.eng < engBefore) noHitRun = false;
+}
+function updateStatusInner(ent, dt){
   if(ent.status.dark > 0){
     ent.status.dark -= dt;
     ent.eng = Math.max(0, ent.eng - ent.status.darkDmg * dt);

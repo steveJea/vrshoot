@@ -178,3 +178,10 @@ async function checkAwakenCode(input){
   return true;
 }
 if(sessionStorage.getItem('yuriAwaken') === '1') applyAwakenYuri();
+
+// ===== 히든 보스: 각성 유리 (YURI로 노히트 클리어 시 등장) =====
+const HIDDEN_BOSS_YURI = Object.assign({}, AWAKEN_YURI, {isHidden:true});
+HIDDEN_BOSS_YURI.img_n = new Image(); HIDDEN_BOSS_YURI.img_n.src = HIDDEN_BOSS_YURI.face_n;
+HIDDEN_BOSS_YURI.img_a = new Image(); HIDDEN_BOSS_YURI.img_a.src = HIDDEN_BOSS_YURI.face_a;
+let noHitRun = true;      // 이번 판 동안 플레이어가 한 번도 피해를 받지 않았는지
+let endingOverride = null; // 히든 보스 격파 시 엔딩 연출 교체

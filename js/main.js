@@ -109,6 +109,8 @@ function confirmSelect(c){
   const candidates = characters.filter(x => x.id !== c.id);
   enemyChar = candidates[Math.floor(Math.random() * candidates.length)];
   isBossFight = false;
+  noHitRun = true;
+  endingOverride = null;
   matchScore = {p:0, e:0};
   currentRound = 1;
   specialUsedThisMatch = false;
@@ -177,6 +179,16 @@ function endBattle(playerWinRound){
             enemyChar = findChar(10017);
             matchScore = {p:0,e:0}; currentRound = 1; specialUsedThisMatch = false;
             goToVS();
+          } else if((eid === 10017 || eid === 10015) && playerChar.id === 10001 && noHitRun){
+            // 히든 보스: YURI로 한 대도 안 맞고 최종 보스까지 클리어
+            showHiddenBossWarning(() => {
+              enemyChar = HIDDEN_BOSS_YURI;
+              matchScore = {p:0,e:0}; currentRound = 1; specialUsedThisMatch = false;
+              goToVS();
+            });
+          } else if(eid === 10018){
+            endingOverride = HIDDEN_BOSS_YURI;
+            startEnding();
           } else if(eid === 10017 || eid === 10015){
             startEnding();
           } else {
@@ -221,4 +233,27 @@ function endBattleByTime(){
   const eRatio = enemy.eng / enemy.maxEng;
   if(pRatio >= eRatio) endBattle(true);
   else endBattle(false);
+}
+
+// ===== 히든 보스 경고 연출 =====
+function showHiddenBossWarning(next){
+  stopBgm(true);
+  if(!document.getElementById('hb-style')){
+    const st = document.createElement('style'); st.id = 'hb-style';
+    st.textContent = '@keyframes hbFlash{0%,100%{background:rgba(120,0,0,.85)}50%{background:rgba(0,0,0,.95)}}'
+      + '@keyframes hbBlink{0%,100%{opacity:1}50%{opacity:.2}}'
+      + '@keyframes hbZoom{0%{transform:scale(3);opacity:0}60%{transform:scale(.95);opacity:1}100%{transform:scale(1)}}'
+      + '#hidden-boss-warning{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;justify-content:center;align-items:center;animation:hbFlash .5s infinite;color:#fff;font-family:inherit;text-align:center}'
+      + '#hidden-boss-warning .w1{font-size:64px;font-weight:900;color:#ff2a2a;letter-spacing:.15em;text-shadow:0 0 20px #f00;animation:hbBlink .35s infinite}'
+      + '#hidden-boss-warning .w2{margin-top:14px;font-size:22px;letter-spacing:.2em;color:#ddd}'
+      + '#hidden-boss-warning .w3{margin-top:24px;font-size:40px;font-weight:900;color:#c4f;text-shadow:0 0 18px #c4f;animation:hbZoom .9s ease-out 1.2s both}'
+      + '#hidden-boss-warning .w4{margin-top:10px;font-size:16px;color:#f88;animation:hbZoom .6s ease-out 2s both}';
+    document.head.appendChild(st);
+  }
+  const el = document.createElement('div');
+  el.id = 'hidden-boss-warning';
+  el.innerHTML = '<div class="w1">⚠ WARNING ⚠</div><div class="w2">A HIDDEN CHALLENGER APPROACHES</div>'
+    + '<div class="w3">[AWAKEN] YURI</div><div class="w4">"DIE OUT."</div>';
+  document.body.appendChild(el);
+  setTimeout(() => { el.remove(); next(); }, 4000);
 }
