@@ -151,10 +151,11 @@ const AWAKEN_CODE_HASH = 'b526c0d2f8ae2b8678bae62a3697a1ff809595ea644eb7752a90c8
 const AWAKEN_CODE_LEN = 10;
 const AWAKEN_YURI = {id:10018,name:"[AWAKEN] YURI",Pwr:1000,Eng:2000,spd:300,delay:0.3,b_spd:500,RPS:6,sim_f:10,bomb:"abyss",
   face_a:RAW+"10018_fa.jpg",face_n:RAW+"10018_fn.jpg",SD_full:RAW+"10018_full.jpg",pf_img:RAW+"10018_pf.jpg",
-  boss_img:RAW+"boss_10018.jpg",win_txt:"DIE OUT.",
+  boss_img:RAW+"boss_10018.jpg",win_txt:"A goddess? Funny… none came when I died, either.",
+  lose_txt:"Ha… haha… dying again? …This is getting old.", // 패배 시 대사 (이 캐릭터 전용)
   lose_img:RAW+"10018_lose.jpg",win_img:RAW+"10018_end.jpg",win_mp4:RAW+"10018_end.mp4",bg_img:RAW+"10018_bg.jpg",
   con_img:RAW+"10018_con.jpg",bgm:BGM_RAW+"10001.mp3", // 10018 전용 BGM 없음 → 유리 BGM 유지
-  f_txt:"DIE OUT."};
+  f_txt:"She looked up at the sky. It was empty.\n\n\"No gods. No end. No meaning.\nSo I'll just play.\nWatching you all struggle…\nthat's the only fun I have left.\"\n\nYuri snapped her fingers, and the fallen bodies twitched.\n\n\"Get up. One more round.\nOh, don't worry. I won't kill you this time either.\n…Dead toys are no fun.\""};
 let yuriAwakened = false;
 function applyAwakenYuri(){
   // 플레이어 선택 슬롯에서만 교체 (상대 풀/일반 스테이지는 원래 YURI 10001 유지)
