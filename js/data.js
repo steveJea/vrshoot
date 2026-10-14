@@ -145,3 +145,43 @@ let specialUsedThisMatch = false;
 let flags = {noQ_10006: false, noQ_10001: false};
 let conInterval = null;
 let conTime = 10.00;
+
+// ===== 각성 유리 치트 (선택 화면에서 'yuriisback' 입력, 세션 동안 유지) =====
+const AWAKEN_CODE_HASH = 'b526c0d2f8ae2b8678bae62a3697a1ff809595ea644eb7752a90c840fff9432a'; // SHA-256
+const AWAKEN_CODE_LEN = 10;
+const AWAKEN_YURI = {id:10018,name:"[AWAKEN] YURI",Pwr:1000,Eng:2000,spd:300,delay:0.3,b_spd:500,RPS:6,sim_f:10,bomb:"abyss",
+  face_a:RAW+"10018_fa.jpg",face_n:RAW+"10018_fn.jpg",SD_full:RAW+"10018_full.jpg",pf_img:RAW+"10018_pf.jpg",
+  boss_img:RAW+"boss_10018.jpg",win_txt:"DIE OUT.",
+  lose_img:RAW+"10018_lose.jpg",win_img:RAW+"10018_end.jpg",win_mp4:RAW+"10018_end.mp4",bg_img:RAW+"10018_bg.jpg",
+  con_img:RAW+"10018_con.jpg",bgm:BGM_RAW+"10001.mp3", // 10018 전용 BGM 없음 → 유리 BGM 유지
+  f_txt:"DIE OUT."};
+let yuriAwakened = false;
+function applyAwakenYuri(){
+  const idx = characters.findIndex(c => c.id === 10001 || c.id === 10018);
+  if(idx < 0) return;
+  const c = Object.assign({}, AWAKEN_YURI);
+  c.img_n = new Image(); c.img_n.src = c.face_n;
+  c.img_a = new Image(); c.img_a.src = c.face_a;
+  characters[idx] = c;
+  const ai = allChars.findIndex(x => x.id === 10001);
+  if(ai >= 0) allChars[ai] = c;
+  yuriAwakened = true;
+  sessionStorage.setItem('yuriAwaken', '1');
+}
+async function checkAwakenCode(input){
+  const code = (input || '').trim().toLowerCase();
+  if(!code || !window.crypto || !crypto.subtle) return false;
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(code));
+  const hex = [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+  if(hex !== AWAKEN_CODE_HASH) return false;
+  applyAwakenYuri();
+  return true;
+}
+if(sessionStorage.getItem('yuriAwaken') === '1') applyAwakenYuri();
+
+// ===== 히든 보스: 각성 유리 (YURI로 노히트 클리어 시 등장) =====
+const HIDDEN_BOSS_YURI = Object.assign({}, AWAKEN_YURI, {isHidden:true});
+HIDDEN_BOSS_YURI.img_n = new Image(); HIDDEN_BOSS_YURI.img_n.src = HIDDEN_BOSS_YURI.face_n;
+HIDDEN_BOSS_YURI.img_a = new Image(); HIDDEN_BOSS_YURI.img_a.src = HIDDEN_BOSS_YURI.face_a;
+let noHitRun = true;      // 이번 판 동안 플레이어가 한 번도 피해를 받지 않았는지
+let endingOverride = null; // 히든 보스 격파 시 엔딩 연출 교체
