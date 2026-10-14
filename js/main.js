@@ -20,6 +20,9 @@ document.addEventListener('keydown', function(e){
       if(!homingMode && cheatBuffer.length >= HOMING_CODE_LEN){
         checkHomingCode(cheatBuffer.slice(-HOMING_CODE_LEN)).then(ok => { if(ok) showHomingIndicator(); });
       }
+      if(!yuriAwakened && cheatBuffer.length >= AWAKEN_CODE_LEN){
+        checkAwakenCode(cheatBuffer.slice(-AWAKEN_CODE_LEN)).then(ok => { if(ok){ renderSelect(); showAwakenIndicator(); popAwakenCard(); } });
+      }
       for(const ch of unlockables){
         if(ch.pw && cheatBuffer.endsWith(ch.pw)){
           addUnlockCard(ch);
@@ -45,6 +48,30 @@ function showHomingIndicator(){
   if(el) el.style.display = homingMode ? 'block' : 'none';
 }
 showHomingIndicator();
+
+// ===== 각성 유리 표시 =====
+function showAwakenIndicator(){
+  const el = document.getElementById('awaken-indicator');
+  if(el) el.style.display = yuriAwakened ? 'block' : 'none';
+}
+showAwakenIndicator();
+function popAwakenCard(){
+  const idx = characters.findIndex(c => c.id === 10018);
+  const card = document.querySelectorAll('#char-grid .char-card')[idx];
+  if(!card) return;
+  if(!document.getElementById('awaken-style')){
+    const st = document.createElement('style'); st.id = 'awaken-style';
+    st.textContent = '@keyframes awakenPop{0%{transform:scale(1);filter:brightness(1)}25%{transform:scale(1.35) rotate(-4deg);filter:brightness(3) drop-shadow(0 0 20px #c4f)}55%{transform:scale(.9) rotate(3deg);filter:brightness(1.6)}100%{transform:scale(1);filter:brightness(1)}}'
+      + '.awaken-pop{animation:awakenPop .7s ease-out;position:relative;z-index:10;box-shadow:0 0 24px #c4f}'
+      + '@keyframes awakenTxt{0%{opacity:0;transform:translate(-50%,0) scale(.5)}30%{opacity:1;transform:translate(-50%,-20px) scale(1.3)}100%{opacity:0;transform:translate(-50%,-60px) scale(1)}}'
+      + '.awaken-txt{position:absolute;left:50%;top:10%;font-weight:900;font-size:28px;color:#fff;text-shadow:0 0 10px #c4f,0 0 20px #f0f;pointer-events:none;animation:awakenTxt 1.2s ease-out forwards;white-space:nowrap}';
+    document.head.appendChild(st);
+  }
+  card.classList.add('awaken-pop');
+  const t = document.createElement('div'); t.className = 'awaken-txt'; t.textContent = '뿅~ ✨';
+  card.appendChild(t);
+  setTimeout(() => { card.classList.remove('awaken-pop'); t.remove(); }, 1300);
+}
 document.getElementById('gameover-screen').addEventListener('click', returnToTitle);
 
 document.getElementById('modal-confirm').onclick = function(){
