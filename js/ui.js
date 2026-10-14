@@ -126,6 +126,10 @@ function returnToTitle(){
   continuesLeft = 3;
   specialUsedThisMatch = false;
   flags = {noQ_10006:false, noQ_10001:false};
+  noHitMatch = true;
+  yuriBossDone = false;
+  hiddenBossReturn = null;
+  endingOverride = null;
   document.getElementById('gameover-screen').style.backgroundImage = '';
   titleBgmStarted = false;
   tryStartTitleBgm();
@@ -135,13 +139,13 @@ let typingTimer = null, fullFtxt = '', typedLen = 0, endingPhase = 0;
 
 function startEnding() {
   endingPhase = 0;
-  fullFtxt = playerChar.f_txt || "Victory... The true ending begins.";
+  fullFtxt = (endingOverride || playerChar).f_txt || "Victory... The true ending begins.";
   typedLen = 0;
 
   stopBgm(true);
   setTimeout(() => playBgm(BGM_RAW + "ending.mp3", true, 0.5), 400);
 
-  const media = playerChar.win_mp4 || playerChar.win_img;
+  const media = (endingOverride || playerChar).win_mp4 || (endingOverride || playerChar).win_img;
   const isVideo = media && media.endsWith('.mp4');
   const old = document.getElementById('ending-img');
 
@@ -170,7 +174,7 @@ function startEnding() {
     if (gameState === 'ending') {
       clearInterval(typingTimer);
       const go = document.getElementById('gameover-screen');
-      go.style.backgroundImage = `url('${playerChar.win_img}')`;
+      go.style.backgroundImage = `url('${(endingOverride || playerChar).win_img}')`;
       go.style.backgroundSize = 'cover';
       go.style.backgroundPosition = 'center';
       showScreen('gameover-screen');
