@@ -124,6 +124,7 @@ function endBattle(playerWinRound){
   clearInterval(timerInterval);
   window.onkeydown = null;
   window.onkeyup = null;
+  resetInputKeys();
 
   if(playerWinRound) matchScore.p++;
   else matchScore.e++;
