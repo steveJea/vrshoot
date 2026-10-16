@@ -3,7 +3,7 @@ body{background:#1a1a1a;color:#fff;font-family:'Segoe UI','Malgun Gothic',sans-s
 .screen{display:none;width:100%;max-width:960px;height:100vh;max-height:720px;position:relative;background:#222;border:2px solid #444;overflow:hidden}
 .screen.active{display:flex;flex-direction:column}
 
-#title-screen{justify-content:center;align-items:center;text-align:center;background:url('https://raw.githubusercontent.com/steveJea/vrshoot/main/img/main.jpg') center/cover no-repeat}
+#title-screen{justify-content:center;align-items:center;text-align:center;background:url('https://raw.githubusercontent.com/steveJea/vrshoot/main/img/main.webp') center/cover no-repeat}
 #title-screen::before{content:'';position:absolute;inset:0;background:rgba(0,0,0,.55)}
 #title-screen>*{position:relative;z-index:1}
 #title-screen h1{font-size:3.2rem;letter-spacing:6px;color:#ff2222;text-shadow:0 0 20px #ff0000,0 0 40px #aa0000;margin-bottom:8px}
