@@ -31,6 +31,15 @@ window.addEventListener('resize', () => {
   if(gameState === 'battle') resizeCanvas();
 });
 
+// 입력 상태: e.key 대신 물리 키(e.code)로 저장 → Shift/CapsLock/한글 입력기로 keydown·keyup 값이 달라져 키가 눌린 채 남는 문제 방지
+const MOVE_CODES = {ArrowLeft:'L', KeyA:'L', ArrowRight:'R', KeyD:'R', ArrowUp:'U', KeyW:'U', ArrowDown:'D', KeyS:'D'};
+function keyId(e){ return MOVE_CODES[e.code] || e.key; }
+function resetInputKeys(){ keys = {}; }
+// keyup은 항상 받기 (라운드 사이에 손을 떼도 놓친 keyup이 없도록)
+window.addEventListener('keyup', e => { keys[keyId(e)] = false; if(e.key) keys[e.key] = false; });
+window.addEventListener('blur', resetInputKeys);
+document.addEventListener('visibilitychange', () => { if(document.hidden) resetInputKeys(); });
+
 function startBattle(){
   if(currentRound === 1) noHitMatch = true;
   showScreen('battle-screen');
@@ -72,8 +81,9 @@ function startBattle(){
   lastTime = performance.now();
   requestAnimationFrame(battleLoop);
 
+  resetInputKeys();
   window.onkeydown = e => {
-    keys[e.key] = true;
+    keys[keyId(e)] = true;
     if(e.key === ' ' || e.key === 'Spacebar'){
       e.preventDefault();
       if(player.fireCD <= 0 && !player.status.freeze){
@@ -81,9 +91,9 @@ function startBattle(){
         player.fireCD = playerChar.delay;
       }
     }
-    if((e.key === 'q' || e.key === 'Q') && !player.bombUsed) useBomb(player);
+    if((e.key === 'q' || e.key === 'Q' || e.code === 'KeyQ') && !player.bombUsed) useBomb(player);
   };
-  window.onkeyup = e => { keys[e.key] = false; };
+  window.onkeyup = e => { keys[keyId(e)] = false; };
 }
 
 function updateHPBars(){
@@ -106,10 +116,10 @@ function battleLoop(now){
 
 function update(dt){
   let mx = 0, my = 0;
-  if(keys['ArrowLeft'] || keys['a'] || keys['A']) mx = -1;
-  if(keys['ArrowRight']|| keys['d'] || keys['D']) mx = 1;
-  if(keys['ArrowUp']   || keys['w'] || keys['W']) my = -1;
-  if(keys['ArrowDown'] || keys['s'] || keys['S']) my = 1;
+  if(keys['L']) mx -= 1;
+  if(keys['R']) mx += 1;
+  if(keys['U']) my -= 1;
+  if(keys['D']) my += 1;
 
   const pSpeed = (player.spd / 100) * 260 * (player.speedMul || 1) * (player.status.slow ? 0.2 : 1);
   if(!player.status.freeze){
